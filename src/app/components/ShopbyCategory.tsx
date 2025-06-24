@@ -3,11 +3,31 @@
 import Image from "next/image";
 
 const categories = [
-  { title: "Drawing & Writing Tools", image: "/carousel/1.png" },
-  { title: "Paints, Inks & Color Media", image: "/carousel/2.png" },
-  { title: "Brushes & Tools", image: "/carousel/3.png" },
-  { title: "Surfaces & Papers", image: "/carousel/4.png" },
-  { title: "Specialty Tools & Accessories", image: "/carousel/5.png" },
+  {
+    title: "Drawing & Writing Tools",
+    image:
+      "https://i.pinimg.com/736x/9a/3f/6f/9a3f6f4128a065169ed76c1d133c447e.jpg",
+  },
+  {
+    title: "Paints, Inks & Color Media",
+    image:
+      "https://i.pinimg.com/736x/98/e0/f7/98e0f7b0f1f63c3ef4bf4e1d92b170d2.jpg",
+  },
+  {
+    title: "Brushes & Tools",
+    image:
+      "https://i.pinimg.com/736x/42/25/e8/4225e828da0b14f714482a7e3c137436.jpg",
+  },
+  {
+    title: "Surfaces & Papers",
+    image:
+      "https://i.pinimg.com/736x/ad/2d/7c/ad2d7c17705c4df6a07f9024cc1ae960.jpg",
+  },
+  {
+    title: "Specialty Tools & Accessories",
+    image:
+      "https://i.pinimg.com/736x/76/81/cf/7681cfce7cbb93e186854147792e6893.jpg",
+  },
 ];
 
 export default function ShopByCategory() {
@@ -29,31 +49,26 @@ export default function ShopByCategory() {
 
       {/* Category Section */}
       <section className="relative bg-[#a8d9e8] py-16 text-center overflow-hidden">
-        <h2 className="text-4xl font-extrabold text-gray-800 mb-12">
+        <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-800 mb-10 sm:mb-14 tracking-tight">
           SHOP BY CATEGORY
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-4 md:px-10 max-w-7xl mx-auto">
+        {/* Responsive Layout */}
+        <div className="md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 px-4 md:px-10 max-w-7xl mx-auto hidden md:grid">
           {categories.map((category, index) => (
-            <div
-              key={index}
-              className="relative group cursor-pointer transition-transform duration-300 hover:scale-105"
-            >
-              <div className="overflow-hidden rounded-xl ">
-                <Image
-                  src={category.image}
-                  alt={category.title}
-                  width={400}
-                  height={400}
-                  className="object-cover w-full h-48"
-                />
-              </div>
-
-              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-90 text-brown-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap shadow">
-                {category.title}
-              </div>
-            </div>
+            <CategoryCard key={index} category={category} />
           ))}
+        </div>
+
+        {/* Mobile Scrollable Layout */}
+        <div className="md:hidden overflow-x-auto px-4 -mx-2">
+          <div className="flex gap-4 snap-x snap-mandatory pb-2">
+            {categories.map((category, index) => (
+              <div key={index} className="snap-start min-w-[16rem] sm:min-w-[18rem]">
+                <CategoryCard category={category} />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -71,5 +86,31 @@ export default function ShopByCategory() {
         </svg>
       </div>
     </>
+  );
+}
+
+function CategoryCard({ category }: { category: { title: string; image: string } }) {
+  return (
+    <div className="relative group rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 border border-transparent hover:border-pink-400">
+      <div className="relative h-64 w-full">
+        <Image
+          src={category.image}
+          alt={category.title}
+          layout="fill"
+          objectFit="cover"
+          className="transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-90"
+          unoptimized
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 text-center">
+          <h3 className="text-white font-bold text-base sm:text-lg md:text-xl">
+            {category.title}
+          </h3>
+          <button className="mt-2 px-4 py-1 text-sm sm:text-base bg-white text-gray-800 rounded-full shadow hover:bg-pink-600 hover:text-white transition duration-300">
+            Explore
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

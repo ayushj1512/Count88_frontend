@@ -48,7 +48,7 @@ export default function OffersSection() {
   return (
     <section className="relative bg-[#FEF1CB] pt-0">
       <h2 className="text-center text-3xl font-bold text-gray-800 mb-10">
-        SHOP BY OFFERS
+        SHOP BY ART TYPE
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 pb-10 md:px-20">

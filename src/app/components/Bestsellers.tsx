@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import CartDrawer from "./CartDrawer";
 import { useCartStore } from "../store/cartStore";
+import ProductCard from "../components/ProductCard";
 
 export default function BestsellerSection() {
   const [bestsellers, setBestsellers] = useState<any[]>([]);
@@ -19,7 +19,6 @@ export default function BestsellerSection() {
 
   const isCartOpen = useCartStore((state) => state.isOpen);
   const toggleCart = useCartStore((state) => state.toggleCart);
-  const addToCart = useCartStore((state) => state.addToCart);
 
   const fetchBestsellers = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -27,7 +26,6 @@ export default function BestsellerSection() {
     try {
       const res = await fetch(`/api/bestsellers?page=${page}`);
       const data = await res.json();
-
       if (data.length === 0) {
         setHasMore(false);
       } else {
@@ -57,12 +55,10 @@ export default function BestsellerSection() {
         threshold: 1.0,
       }
     );
-
     const target = loadMoreRef.current;
     if (target && scrollRef.current) {
       observer.observe(target);
     }
-
     return () => {
       if (target) observer.unobserve(target);
     };
@@ -74,13 +70,6 @@ export default function BestsellerSection() {
     const newScroll =
       direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
     scrollRef.current.scrollTo({ left: newScroll, behavior: "smooth" });
-  };
-
-  const handleAddToCart = (product: any) => {
-    addToCart(product);
-    toast.success(`${product.title} added to cart`);
-    toggleCart(true);
-    setSelectedProduct(null);
   };
 
   return (
@@ -104,72 +93,41 @@ export default function BestsellerSection() {
         `}
       </style>
 
-      <section className="py-12 bg-[#F7CFD8] relative z-10">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+      <section className="py-12 px-4 sm:px-6 md:px-12 lg:px-20 bg-[#F7CFD8] relative z-10">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-10 sm:mb-12">
           B E S T S E L L E R
         </h2>
 
-        <div className="relative pl-12 pr-12">
+        <div className="relative">
           <button
             onClick={() => scroll("left")}
-            className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg p-2 rounded-full hover:bg-gray-100"
+            className="absolute z-10 left-1 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg p-2 sm:p-3 rounded-full hover:bg-gray-100"
           >
             &#8249;
           </button>
 
           <div
             ref={scrollRef}
-            className="flex overflow-x-auto no-scrollbar space-x-4 px-6 snap-x snap-mandatory scroll-smooth"
+            className="flex overflow-x-auto no-scrollbar space-x-4 px-2 sm:px-6 snap-x snap-mandatory scroll-smooth"
           >
             {bestsellers.map((item, idx) => (
-              <div
+              <ProductCard
                 key={idx}
+                product={item}
                 onClick={() => setSelectedProduct(item)}
-                className="min-w-[250px] flex-shrink-0 bg-white rounded-xl shadow hover:shadow-lg snap-start transition-transform duration-300 ease-in-out cursor-pointer"
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-40 object-cover rounded-t-xl"
-                />
-                <div className="p-4 space-y-2">
-                  <h3 className="text-md font-semibold text-gray-700 text-center">
-                    {item.title}
-                  </h3>
-                  <div className="flex justify-center items-center space-x-2">
-                    <span className="text-red-600 text-sm font-bold">
-                      ₹{item.price}
-                    </span>
-                    {item.regular && (
-                      <span className="text-gray-400 line-through">
-                        ₹{item.regular}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex justify-center space-x-1">
-                    {item.colors?.map((c: string, i: number) => (
-                      <span
-                        key={i}
-                        className={`w-5 h-5 rounded-full border`}
-                        style={{ backgroundColor: c === "transparent" ? "#ccc" : c }}
-                        title={c}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+              />
             ))}
             <div ref={loadMoreRef} className="w-1 h-1" />
           </div>
 
           <button
             onClick={() => scroll("right")}
-            className="absolute z-10 right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg p-2 rounded-full hover:bg-gray-100"
+            className="absolute z-10 right-1 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg p-2 sm:p-3 rounded-full hover:bg-gray-100"
           >
             &#8250;
           </button>
 
-          <div className="mt-14 flex justify-center">
+          <div className="mt-10 sm:mt-14 flex justify-center">
             <button
               onClick={() => router.push("/bestsellers")}
               className="px-6 py-3 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-800 transition"
@@ -180,32 +138,31 @@ export default function BestsellerSection() {
         </div>
       </section>
 
-      {/* Product Drawer */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-end justify-center">
-          <div className="bg-white w-full max-w-2xl rounded-t-3xl p-6 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center ">
-              <h3 className="text-2xl font-bold text-gray-800">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-end sm:items-center justify-center">
+          <div className="bg-white w-full sm:w-[90%] md:max-w-2xl rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
                 {selectedProduct.title}
               </h3>
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="text-3xl text-gray-500 hover:text-black transition"
+                className="text-2xl sm:text-3xl text-gray-500 hover:text-black transition"
               >
                 &times;
               </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <img
                 src={selectedProduct.image}
                 alt={selectedProduct.title}
-                className="w-full h-64 object-cover rounded-xl shadow"
+                className="w-full h-52 sm:h-64 object-cover rounded-xl shadow"
               />
 
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <span className="text-xl font-semibold text-pink-600">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg sm:text-xl font-semibold text-pink-600">
                     ₹{selectedProduct.price}
                   </span>
                   {selectedProduct.regular && (
@@ -216,13 +173,15 @@ export default function BestsellerSection() {
                 </div>
 
                 {selectedProduct.colors?.length > 0 && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm text-gray-600">Colors:</span>
                     {selectedProduct.colors.map((color: string, idx: number) => (
                       <span
                         key={idx}
-                        className="w-6 h-6 rounded-full border"
-                        style={{ backgroundColor: color === "transparent" ? "#ccc" : color }}
+                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border"
+                        style={{
+                          backgroundColor: color === "transparent" ? "#ccc" : color,
+                        }}
                         title={color}
                       />
                     ))}
@@ -239,7 +198,11 @@ export default function BestsellerSection() {
                 </div>
 
                 <button
-                  onClick={() => handleAddToCart(selectedProduct)}
+                  onClick={() => {
+                    useCartStore.getState().addToCart(selectedProduct);
+                    useCartStore.getState().toggleCart(true);
+                    setSelectedProduct(null);
+                  }}
                   className="w-full mt-4 py-3 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition"
                 >
                   Add to Cart
@@ -250,33 +213,32 @@ export default function BestsellerSection() {
         </div>
       )}
 
-      {/* Cart Drawer */}
-     {isCartOpen && (
-  <div
-    className="fixed inset-0 z-[50] bg-black bg-opacity-50 flex justify-end"
-    onClick={() => toggleCart(false)}
-  >
-    <div
-      className="w-full sm:w-[400px] bg-white h-full shadow-lg"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <CartDrawer isOpen={isCartOpen} onClose={() => toggleCart(false)} />
-    </div>
-  </div>
-)}
+      {isCartOpen && (
+        <div
+          className="fixed inset-0 z-[50] bg-black bg-opacity-50 flex justify-end"
+          onClick={() => toggleCart(false)}
+        >
+          <div
+            className="w-full sm:w-[400px] bg-white h-full shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CartDrawer isOpen={isCartOpen} onClose={() => toggleCart(false)} />
+          </div>
+        </div>
+      )}
 
-      )
-
-      {/* Decorative SVG */}
-<div className="-mt-12 overflow-hidden leading-none rotate-180 bg-[#EBFFD9]">
-  <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-20">
-    <path
-      d="M0,0 C100,50 150,-30 300,30 C450,90 550,-20 700,40 C850,100 1000,-10 1200,50 L1200,120 L0,120 Z"
-      fill="#F7CFD8"
-    />
-  </svg>
-</div>
-
+      <div className="-mt-12 overflow-hidden leading-none rotate-180 bg-[#EBFFD9]">
+        <svg
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+          className="w-full h-16 sm:h-20"
+        >
+          <path
+            d="M0,0 C100,50 150,-30 300,30 C450,90 550,-20 700,40 C850,100 1000,-10 1200,50 L1200,120 L0,120 Z"
+            fill="#F7CFD8"
+          />
+        </svg>
+      </div>
     </>
   );
 }

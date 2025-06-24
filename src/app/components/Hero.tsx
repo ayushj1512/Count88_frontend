@@ -4,27 +4,35 @@ import { useState, useEffect } from "react";
 
 const slides = [
   {
-    image: "/carousel/carousel1.jpg",
+    image: "https://i.pinimg.com/736x/63/81/f9/6381f9391540bd23b082ac8cb59f9b98.jpg",
     title: "Whimsical Wall Art",
     subtitle: "Add joy and personality to your spaces.",
     button: "Explore Collection",
-    position: "justify-center items-center text-center"
+    position: "justify-center items-center text-center",
   },
   {
     image: "/carousel/carousel2.jpg",
     title: "Pastel Perfection",
     subtitle: "Where calm hues meet creativity.",
     button: "Shop Pastels",
-    position: "justify-start items-start text-left pl-10 pt-10"
+    position: "justify-start items-start text-left pl-4 sm:pl-8 md:pl-10 pt-4 sm:pt-6 md:pt-10",
   },
   {
     image: "/carousel/carousel3.jpg",
     title: "Crafted With Love",
     subtitle: "Every piece tells a story.",
     button: "Browse Now",
-    position: "justify-end items-end text-right pr-10 pb-10"
-  }
+    position: "justify-end items-end text-right pr-4 sm:pr-8 md:pr-10 pb-4 sm:pb-6 md:pb-10",
+  },
+  {
+    image: "https://i.pinimg.com/736x/6c/d0/f1/6cd0f1ed028b55810125e60b71766e28.jpg",
+    title: "Inspired by Nature",
+    subtitle: "Discover earthy tones and organic textures.",
+    button: "See Nature Picks",
+    position: "justify-center items-start text-center pt-6 md:pt-10",
+  },
 ];
+
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
@@ -38,12 +46,11 @@ export default function Hero() {
         setBlink(false);
       }, 150);
     }, 4000);
-
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative w-full h-[400px] md:h-[410px] overflow-hidden font-[Montserrat]">
+    <section className="relative w-full h-[320px] sm:h-[400px] md:h-[500px] lg:h-[580px] xl:h-[640px] overflow-hidden font-[Montserrat]">
       {/* Background Images */}
       {slides.map((slide, index) => (
         <img
@@ -56,16 +63,18 @@ export default function Hero() {
         />
       ))}
 
-      {/* Overlay Text */}
+      {/* Overlay Content */}
       <div
-        className={`absolute top-0 left-0 w-full h-full z-10 flex ${slides[current].position} bg-black bg-opacity-30 transition-all duration-700`}
+        className={`absolute top-0 left-0 w-full h-full z-10 flex ${slides[current].position} bg-black/30 transition-all duration-700`}
       >
-        <div className="text-white max-w-lg space-y-4 p-4">
-          <h2 className="text-3xl md:text-4xl font-semibold drop-shadow-lg">
+        <div className="text-white max-w-md sm:max-w-lg md:max-w-xl space-y-3 sm:space-y-4 p-4 sm:p-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-lg">
             {slides[current].title}
           </h2>
-          <p className="text-base md:text-lg drop-shadow">{slides[current].subtitle}</p>
-          <button className="bg-gray-800 text-white px-6 py-2 rounded-xl shadow hover:opacity-90 transition">
+          <p className="text-sm sm:text-base md:text-lg drop-shadow">
+            {slides[current].subtitle}
+          </p>
+          <button className="bg-gray-800 text-white px-5 sm:px-6 py-2 rounded-xl shadow hover:bg-gray-700 transition">
             {slides[current].button}
           </button>
         </div>

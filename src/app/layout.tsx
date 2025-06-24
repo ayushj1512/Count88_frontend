@@ -1,4 +1,9 @@
 // File: src/app/layout.tsx
+
+import { Toaster } from "react-hot-toast";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+
 export const metadata = {
   title: "Craftra",
   description: "Art and craft products",
@@ -17,16 +22,26 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
           rel="stylesheet"
         />
-        {/* Tailwind CDN - client-side only, so it won’t affect SSR */}
+        {/* Tailwind CSS via CDN for fallback */}
         <script src="https://cdn.tailwindcss.com"></script>
-        {/* Fallback font styling */}
         <style>{`
           body {
             font-family: 'Montserrat', sans-serif;
           }
         `}</style>
       </head>
-      <body>{children}</body>
+      <body className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        {/* Toast positioned bottom-center */}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
+      </body>
     </html>
   );
 }

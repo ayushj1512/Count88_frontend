@@ -3,33 +3,36 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-[#FFF2E1] text-gray-800 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-sm sm:text-base">
         
         {/* Company Info */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide">Craftra</h4>
-          <p>
+          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+            Craftra
+          </h4>
+          <p className="text-gray-700 leading-relaxed">
             Crafted for creators — explore thoughtfully curated art and stationery supplies made with love.
           </p>
         </div>
 
         {/* Quick Links */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide">COMPANY INFO</h4>
-          <ul className="space-y-2">
+          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+            Company Info
+          </h4>
+          <ul className="space-y-2 text-gray-700">
             <li>
-              <Link href="/about" className="hover:underline">
+              <Link href="/about" className="hover:text-red-600 transition">
                 About Us
               </Link>
             </li>
-      
             <li>
-              <Link href="/contact" className="hover:underline">
+              <Link href="/contact" className="hover:text-red-600 transition">
                 Contact
               </Link>
             </li>
-             <li>
-              <Link href="/FAQ" className="hover:underline">
+            <li>
+              <Link href="/FAQ" className="hover:text-red-600 transition">
                 Help & FAQs
               </Link>
             </li>
@@ -38,26 +41,28 @@ export default function Footer() {
 
         {/* Customer Service */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide">Customer Service</h4>
-          <ul className="space-y-2">
+          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+            Customer Service
+          </h4>
+          <ul className="space-y-2 text-gray-700">
             <li>
-              <Link href="/returns" className="hover:underline">
+              <Link href="/returns" className="hover:text-red-600 transition">
                 Returns & Exchanges
               </Link>
             </li>
             <li>
-              <Link href="/shipping" className="hover:underline">
+              <Link href="/shipping" className="hover:text-red-600 transition">
                 Shipping Policy
               </Link>
             </li>
             <li>
-              <Link href="/privacypolicy" className="hover:underline">
+              <Link href="/privacypolicy" className="hover:text-red-600 transition">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link href="/refund" className="hover:underline">
-                Refund and Cancellation Policy
+              <Link href="/refund" className="hover:text-red-600 transition">
+                Refund & Cancellation
               </Link>
             </li>
           </ul>
@@ -65,23 +70,28 @@ export default function Footer() {
 
         {/* Contact Info */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide">Get In Touch</h4>
-          <p>
+          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+            Get In Touch
+          </h4>
+          <p className="text-gray-700">
             Email:{" "}
-            <a href="mailto:craftra1199@gmail.com" className="underline">
+            <a
+              href="mailto:craftra1199@gmail.com"
+              className="underline hover:text-red-600 transition"
+            >
               craftra1199@gmail.com
             </a>
           </p>
-          <p>
+          <p className="text-gray-700 mt-2">
             Mobile:{" "}
-            <a>
+            <a href="tel:+919811195362" className="hover:underline">
               +91 9811195362
             </a>
           </p>
         </div>
       </div>
 
-      <div className="border-t border-gray-300 text-center py-4 text-xs text-gray-500">
+      <div className="border-t border-gray-300 text-center py-4 text-xs sm:text-sm text-gray-500">
         © 2025 Craftra. All rights reserved.
       </div>
     </footer>
