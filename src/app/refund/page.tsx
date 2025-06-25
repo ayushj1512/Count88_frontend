@@ -7,7 +7,6 @@ import { FiMessageCircle, FiRotateCw, FiGift, FiBox } from "react-icons/fi";
 export default function RefundPolicyPage() {
     return (
         <>
-            <Header />
 
             {/* Main Content */}
             <section className="max-w-4xl mx-auto px-6 py-16">
@@ -99,7 +98,6 @@ export default function RefundPolicyPage() {
                 </div>
             </section>
 
-            <Footer />
         </>
     );
 }

@@ -7,7 +7,6 @@ import { FaEnvelope, FaUndo, FaGift, FaBox } from 'react-icons/fa';
 export default function ContactPage() {
   return (
     <>
-      <Header />
 
      
 
@@ -66,7 +65,6 @@ export default function ContactPage() {
           <InfoCard icon={<FaBox size={28} />} title="Bulk Order" subtitle="Get Customized Stationery" />
         </div>
       </div>
-      <Footer />
     </>
   );
 }

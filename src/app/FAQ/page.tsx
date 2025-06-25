@@ -48,10 +48,9 @@ export default function FAQPage() {
 
   return (
     <>
-      <Header />
 
       <section className="max-w-4xl mx-auto px-6 py-16">
-        <h1 className="text-4xl font-bold text-center mb-12 text-gray-900 bg-gray-800 text-white">FAQs</h1>
+        <h1 className="text-4xl font-bold text-center mb-12  bg-gray-800 text-white">FAQs</h1>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => {
@@ -82,7 +81,6 @@ export default function FAQPage() {
         </div>
       </section>
 
-      <Footer />
     </>
   );
 }

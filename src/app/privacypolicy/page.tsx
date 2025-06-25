@@ -6,7 +6,6 @@ import { FiMessageCircle, FiRotateCw, FiGift, FiBox } from "react-icons/fi";
 export default function PrivacyPolicyPage() {
     return (
         <>
-            <Header />
             <h1 className="text-4xl pt-10 pb-8 font-extrabold bg-purple-100 text-center">PRIVACY POLICY</h1>
             <p className="pl-20 pr-20 pb-8 mx-auto text-center text-gray-700 bg-purple-100">
                 We value your privacy and appreciate the trust you place in us. This policy explains what information we collect, how we use it, and your choices regarding your personal data.
@@ -126,7 +125,6 @@ export default function PrivacyPolicyPage() {
                 </div>
             </section>
 
-            <Footer />
         </>
     );
 }

@@ -7,7 +7,6 @@ import { FiMessageCircle, FiRotateCw, FiGift, FiBox } from "react-icons/fi";
 export default function ShippingPolicyPage() {
   return (
     <>
-      <Header />
 
       {/* Main Content */}
 <section className="max-w-4xl mx-auto px-6 py-16">
@@ -81,7 +80,6 @@ export default function ShippingPolicyPage() {
   </div>
 </section>
 
-      <Footer />
     </>
   );
 }

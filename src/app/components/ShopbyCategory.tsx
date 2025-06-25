@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const categories = [
   {
@@ -31,6 +32,8 @@ const categories = [
 ];
 
 export default function ShopByCategory() {
+  const router = useRouter();
+
   return (
     <>
       {/* Top Wave Divider */}
@@ -53,19 +56,19 @@ export default function ShopByCategory() {
           SHOP BY CATEGORY
         </h2>
 
-        {/* Responsive Layout */}
+        {/* Desktop Grid */}
         <div className="md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 px-4 md:px-10 max-w-7xl mx-auto hidden md:grid">
           {categories.map((category, index) => (
-            <CategoryCard key={index} category={category} />
+            <CategoryCard key={index} category={category} router={router} />
           ))}
         </div>
 
-        {/* Mobile Scrollable Layout */}
+        {/* Mobile Scroll */}
         <div className="md:hidden overflow-x-auto px-4 -mx-2">
           <div className="flex gap-4 snap-x snap-mandatory pb-2">
             {categories.map((category, index) => (
               <div key={index} className="snap-start min-w-[16rem] sm:min-w-[18rem]">
-                <CategoryCard category={category} />
+                <CategoryCard category={category} router={router} />
               </div>
             ))}
           </div>
@@ -89,7 +92,13 @@ export default function ShopByCategory() {
   );
 }
 
-function CategoryCard({ category }: { category: { title: string; image: string } }) {
+function CategoryCard({
+  category,
+  router,
+}: {
+  category: { title: string; image: string };
+  router: any;
+}) {
   return (
     <div className="relative group rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 border border-transparent hover:border-pink-400">
       <div className="relative h-64 w-full">
@@ -106,7 +115,10 @@ function CategoryCard({ category }: { category: { title: string; image: string }
           <h3 className="text-white font-bold text-base sm:text-lg md:text-xl">
             {category.title}
           </h3>
-          <button className="mt-2 px-4 py-1 text-sm sm:text-base bg-white text-gray-800 rounded-full shadow hover:bg-pink-600 hover:text-white transition duration-300">
+          <button
+            onClick={() => router.push("/collection")}
+            className="mt-2 px-4 py-1 text-sm sm:text-base bg-white text-gray-800 rounded-full shadow hover:bg-pink-600 hover:text-white transition duration-300"
+          >
             Explore
           </button>
         </div>

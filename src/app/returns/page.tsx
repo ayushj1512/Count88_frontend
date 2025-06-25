@@ -12,7 +12,6 @@ export default function ReturnsPage() {
 
   return (
     <>
-      <Header />
 
       {/* Main Section */}
       <section className="max-w-7xl mx-auto py-16 px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center min-h-[70vh]">
@@ -86,7 +85,6 @@ export default function ReturnsPage() {
         </div>
       </div>
 
-      <Footer />
     </>
   );
 }

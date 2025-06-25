@@ -93,10 +93,7 @@ function ArtTypeCard({
   router: any;
 }) {
   return (
-    <div
-      className="bg-white p-4 rounded-lg shadow hover:shadow-xl transition-all duration-300 cursor-pointer"
-      onClick={() => router.push(type.link)}
-    >
+    <div className="bg-white p-4 rounded-lg shadow hover:shadow-xl transition-all duration-300">
       <div className="w-full h-52 sm:h-60 overflow-hidden rounded-md">
         <img
           src={type.image}
@@ -108,7 +105,10 @@ function ArtTypeCard({
         <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
           {type.name}
         </h3>
-        <button className="border border-gray-800 bg-red-600 text-white px-4 py-1 rounded hover:bg-white hover:text-red-500 transition">
+        <button
+          onClick={() => router.push("/collection")}
+          className="border border-gray-800 bg-red-600 text-white px-4 py-1 rounded hover:bg-white hover:text-red-500 transition"
+        >
           EXPLORE
         </button>
       </div>
