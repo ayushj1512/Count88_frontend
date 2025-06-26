@@ -56,8 +56,8 @@ export default function Header() {
             <button onClick={() => handleNavClick("/collection")} className="hover:underline">
               Collection
             </button>
-            <button onClick={() => handleNavClick("/showcase")} className="hover:underline">
-              Showcase
+            <button onClick={() => handleNavClick("/blogs")} className="hover:underline">
+              Blogs
             </button>
 
 
