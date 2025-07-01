@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 type ShippingInfoProps = {
@@ -35,11 +35,17 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
   cartItemCount,
 }) => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    if (!isFormComplete || cartItemCount === 0) return;
-    onCheckout(); // Your API or payment logic here
-    router.push("/order-successful");
+  const handleSubmit = async () => {
+    if (!isFormComplete || cartItemCount === 0 || loading) return;
+    setLoading(true);
+    try {
+      await onCheckout(); // Your API or payment logic here
+      router.push("/order-successful");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -145,14 +151,20 @@ const ShippingInfo: React.FC<ShippingInfoProps> = ({
       {/* Checkout Button */}
       <button
         onClick={handleSubmit}
-        disabled={!isFormComplete || cartItemCount === 0}
-        className={`w-full mt-6 py-3 rounded-md font-semibold text-lg border border-black transition ${
-          !isFormComplete || cartItemCount === 0
+        disabled={!isFormComplete || cartItemCount === 0 || loading}
+        className={`w-full mt-6 py-3 rounded-md font-semibold text-lg border border-black flex justify-center items-center gap-2 transition ${!isFormComplete || cartItemCount === 0 || loading
             ? "bg-gray-400 cursor-not-allowed text-white"
             : "bg-[#FFF2E1] hover:bg-[#ffe4c1]"
-        }`}
+          }`}
       >
-        Place Order
+        {loading ? (
+          <>
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            Processing...
+          </>
+        ) : (
+          "Place Order"
+        )}
       </button>
     </div>
   );

@@ -231,7 +231,7 @@ export default function BestsellerSection() {
         <svg
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
-          className="w-full h-16 sm:h-20"
+          className="w-full h-24 sm:h-24"
         >
           <path
             d="M0,0 C100,50 150,-30 300,30 C450,90 550,-20 700,40 C850,100 1000,-10 1200,50 L1200,120 L0,120 Z"

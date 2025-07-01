@@ -53,7 +53,7 @@ export default function ArtTypeSection() {
   return (
     <section className="relative bg-[#FEF1CB] pt-0 pb-12">
       <h2 className="text-center text-3xl sm:text-4xl font-bold text-gray-800 mb-10">
-        SHOP BY ART TYPE
+        SHOP BY STYLE
       </h2>
 
       {/* Desktop Grid */}

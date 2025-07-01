@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#FFF2E1] text-gray-800 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-sm sm:text-base">
-        
+
         {/* Company Info */}
         <div>
           <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
@@ -76,16 +76,16 @@ export default function Footer() {
           <p className="text-gray-700">
             Email:{" "}
             <a
-              href="mailto:craftra1199@gmail.com"
+              href="mailto: craftraco25@gmail.com"
               className="underline hover:text-red-600 transition"
             >
-              craftra1199@gmail.com
+              craftraco25@gmail.com
             </a>
           </p>
           <p className="text-gray-700 mt-2">
             Mobile:{" "}
-            <a href="tel:+919811195362" className="hover:underline">
-              +91 9811195362
+            <a href="tel:+919899938464" className="hover:underline">
+              +91 9899938464
             </a>
           </p>
         </div>

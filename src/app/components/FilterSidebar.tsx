@@ -32,7 +32,7 @@ export default function FilterSidebar({
   ) => (
     <div>
       <h3 className="text-base font-semibold mb-3 text-gray-800 flex items-center gap-2 uppercase tracking-wide">
-        <FaFilter className="text-pink-500" />
+        <FaFilter className="text-red-500" />
         {title}
       </h3>
       <div className="space-y-2">
@@ -41,7 +41,7 @@ export default function FilterSidebar({
             key={`${type}-${item}`}
             className={`flex items-center gap-2 cursor-pointer text-sm rounded-md px-2 py-1 transition ${
               selected.includes(item)
-                ? 'bg-pink-50 text-pink-600 font-semibold'
+                ? 'bg-red-50 text-red-600 font-semibold'
                 : 'hover:bg-gray-100 text-gray-700'
             }`}
           >
@@ -49,7 +49,7 @@ export default function FilterSidebar({
               type="checkbox"
               checked={selected.includes(item)}
               onChange={() => toggleFilter(type, item)}
-              className="accent-pink-600"
+              className="accent-red-600"
             />
             {item}
           </label>

@@ -53,7 +53,7 @@ export default function CheckoutPage() {
         customerEmail: form.email,
         customerMobile: form.phone,
         products: cartItems.map((item) => ({
-          productId: item.id,
+          productId: String(item.id), // 🔁 Ensure it's a string for MongoDB schema
           name: item.title,
           quantity: item.quantity,
           price: item.price,
@@ -74,7 +74,7 @@ export default function CheckoutPage() {
       };
 
       const res = await fetch(
-        "https://craftra-backend.onrender.com/api/orders",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -130,11 +130,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-     
-
-      {/* Responsive Layout */}
       <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-8 sm:gap-10">
-        {/* Shipping Info */}
         <div>
           <ShippingInfo
             form={form}
@@ -145,7 +141,6 @@ export default function CheckoutPage() {
           />
         </div>
 
-        {/* Order Summary */}
         <div className="bg-white rounded-xl border shadow p-5 sm:p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Order Summary
@@ -163,7 +158,6 @@ export default function CheckoutPage() {
             </div>
           ) : (
             <>
-              {/* Cart Items */}
               <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
                 {cartItems.map((item) => (
                   <div
@@ -190,7 +184,6 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              {/* Coupon Section */}
               <div className="mt-6">
                 <label className="block mb-2 text-sm font-medium text-gray-700">
                   Apply Coupon
@@ -216,7 +209,6 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* Shipping Info */}
               {subtotal - discount < 500 ? (
                 <p className="mt-4 text-yellow-700 text-sm">
                   Add ₹{500 - (subtotal - discount)} more for free shipping 🚚
@@ -227,15 +219,13 @@ export default function CheckoutPage() {
                 </p>
               )}
 
-              {/* Price Summary */}
               <div className="mt-6 pt-4 border-t text-right space-y-1 text-sm sm:text-base">
                 <p className="text-gray-700">
                   Subtotal: <span className="font-medium">₹{subtotal}</span>
                 </p>
                 {discount > 0 && (
                   <p className="text-green-700">
-                    Discount:{" "}
-                    <span className="font-medium">− ₹{discount}</span>
+                    Discount: <span className="font-medium">− ₹{discount}</span>
                   </p>
                 )}
                 <p className="text-gray-700">

@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useCartStore } from '../../store/cartStore';
+import toast from 'react-hot-toast';
 
 type Product = {
   _id: string;
@@ -11,7 +13,7 @@ type Product = {
   brand: string;
   category: string;
   subcategory?: string;
-  description?: string[];
+  description?: string | string[];
   tags?: string[];
   images: { url: string }[];
   variants: {
@@ -23,32 +25,41 @@ type Product = {
 };
 
 export default function ProductFromCollectionPage() {
-  const searchParams = useSearchParams();
+  const { slug } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<Product['variants'][0] | null>(null);
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+  const addToCart = useCartStore((state) => state.addToCart);
 
   useEffect(() => {
-    const encodedData = searchParams.get('data');
-    if (!encodedData) {
-      console.error('No product data found in query params.');
-      return;
-    }
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/products/slug/${slug}`);
+        if (!res.ok) throw new Error('Product not found');
+        const data = await res.json();
+        setProduct(data);
+        setActiveImage(data.images?.[0]?.url || '');
+        setSelectedVariant(data.variants?.[0] || null);
+      } catch (err) {
+        console.error(err);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    try {
-      const parsed = JSON.parse(decodeURIComponent(encodedData)) as Product;
-      setProduct(parsed);
-      setActiveImage(parsed.images?.[0]?.url || '');
-    } catch (err) {
-      console.error('Error parsing product data:', err);
-    }
-  }, [searchParams]);
+    if (slug) fetchProduct();
+  }, [slug]);
 
-  if (!product) {
-    return <div className="p-10 text-center text-red-600">Product not found.</div>;
-  }
+  if (loading) return <div className="p-10 text-center">Loading...</div>;
+  if (!product) return <div className="p-10 text-center text-red-600">Product not found.</div>;
 
-  const { name, brand, category, description, images, variants } = product;
-  const { mrp, discountedPrice } = variants?.[0] || {};
+  const { _id, name, brand, category, description, images, variants } = product;
+  const mrp = selectedVariant?.mrp ?? 0;
+  const discountedPrice = selectedVariant?.discountedPrice ?? 0;
   const discount = mrp ? Math.round(((mrp - discountedPrice) / mrp) * 100) : 0;
 
   return (
@@ -73,7 +84,7 @@ export default function ProductFromCollectionPage() {
               <img
                 key={idx}
                 src={img.url}
-                className={`h-20 w-20 object-cover rounded-md border cursor-pointer hover:ring-2 ring-pink-500 transition ${activeImage === img.url ? 'ring-2 ring-pink-500' : ''
+                className={`h-20 w-20 object-cover rounded-md border cursor-pointer hover:ring-2 ring-red-500 transition ${activeImage === img.url ? 'ring-2 ring-red-500' : ''
                   }`}
                 onClick={() => setActiveImage(img.url)}
               />
@@ -84,11 +95,33 @@ export default function ProductFromCollectionPage() {
         {/* Product Details */}
         <div className="space-y-6">
           <h1 className="text-3xl font-bold text-gray-800">{name}</h1>
+
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-semibold text-pink-600">₹{discountedPrice}</span>
+            <span className="text-2xl font-semibold text-red-600">₹{discountedPrice}</span>
             <span className="line-through text-gray-500">₹{mrp}</span>
             <span className="text-sm font-medium text-green-600">({discount}% OFF)</span>
           </div>
+
+          {variants.length > 1 && (
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Choose Variant:</label>
+              <select
+                className="border px-3 py-2 rounded-md"
+                value={selectedVariant?.variant}
+                onChange={(e) =>
+                  setSelectedVariant(
+                    variants.find((v) => v.variant === e.target.value) || variants[0]
+                  )
+                }
+              >
+                {variants.map((v, idx) => (
+                  <option key={idx} value={v.variant}>
+                    {v.variant}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="text-sm text-gray-600 space-y-1">
             <p><strong className="text-gray-700">Brand:</strong> {brand}</p>
@@ -97,14 +130,29 @@ export default function ProductFromCollectionPage() {
 
           <div>
             <h2 className="text-lg font-semibold text-gray-700 mb-2">Features:</h2>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              {(Array.isArray(description) ? description : [description || '']).map((point, idx) => (
-                <li key={idx}>{point}</li>
-              ))}
-            </ul>
+            {typeof description === 'string' ? (
+              <p className="text-gray-600">{description}</p>
+            ) : (
+              <ul className="list-disc list-inside text-gray-600 space-y-1">
+                {(description ?? []).map((point, idx) => (
+                  <li key={idx}>{point}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          <button className="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition">
+          <button
+            onClick={() => {
+              addToCart({
+                id: _id, // 🔁 Ensure this matches backend productId
+                title: name,
+                image: activeImage ?? '',
+                price: discountedPrice,
+              });
+              toast.success(`${name} added to cart`);
+            }}
+            className="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition"
+          >
             Add to Cart
           </button>
         </div>

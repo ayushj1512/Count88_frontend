@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 const slides = [
   {
-    image: "https://i.pinimg.com/736x/63/81/f9/6381f9391540bd23b082ac8cb59f9b98.jpg",
+    image: "https://i.pinimg.com/736x/eb/47/e0/eb47e0c084f7eaae93e6de5f83a11bff.jpg",
     title: "Whimsical Wall Art",
     subtitle: "Add joy and personality to your spaces.",
     button: "Explore Collection",
@@ -25,7 +25,7 @@ const slides = [
     position: "justify-end items-end text-right pr-4 sm:pr-8 md:pr-10 pb-4 sm:pb-6 md:pb-10",
   },
   {
-    image: "https://i.pinimg.com/736x/6c/d0/f1/6cd0f1ed028b55810125e60b71766e28.jpg",
+    image: "https://i.pinimg.com/736x/14/04/78/14047897ee0e078e85ae9363f88e35ef.jpg",
     title: "Inspired by Nature",
     subtitle: "Discover earthy tones and organic textures.",
     button: "See Nature Picks",
@@ -57,9 +57,8 @@ export default function Hero() {
           key={index}
           src={slide.image}
           alt={`Slide ${index + 1}`}
-          className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${
-            index === current ? "opacity-100 z-0" : "opacity-0 z-0"
-          } ${index === current && blink ? "animate-blink" : ""}`}
+          className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${index === current ? "opacity-100 z-0" : "opacity-0 z-0"
+            } ${index === current && blink ? "animate-blink" : ""}`}
         />
       ))}
 

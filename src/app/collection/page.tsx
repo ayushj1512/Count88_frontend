@@ -16,7 +16,7 @@ type Product = {
   brand: string;
   category: string;
   subcategory?: string;
-  description?: string[];
+  description?: string[] | string;
   tags?: string[];
   images: { url: string }[];
   variants: {
@@ -43,6 +43,7 @@ export default function CollectionPage() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/products`);
         const data = await res.json();
+        console.log('Fetched products:', data);
         setProducts(data);
       } catch (err) {
         console.error('Failed to fetch products:', err);
@@ -125,6 +126,7 @@ export default function CollectionPage() {
                 const mrp = product.variants?.[0]?.mrp ?? 0;
                 const price = product.variants?.[0]?.discountedPrice ?? 0;
                 const discount = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : 0;
+                const slug = product.slug;
 
                 return (
                   <motion.div
@@ -141,7 +143,7 @@ export default function CollectionPage() {
                           {(product.tags ?? []).map((tag) => (
                             <span
                               key={tag}
-                              className="bg-pink-100 text-pink-800 text-xs font-semibold px-2 py-0.5 rounded"
+                              className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded"
                             >
                               {tag}
                             </span>
@@ -149,8 +151,16 @@ export default function CollectionPage() {
                         </div>
                       )}
 
-
-                      <Link href={`/collection/${product.slug}`} className="flex-1 flex flex-col">
+                      <Link
+                        href={slug ? `/collection/${slug}` : '#'}
+                        className="flex-1 flex flex-col"
+                        onClick={(e) => {
+                          if (!slug) {
+                            e.preventDefault();
+                            toast.error('Product link not available');
+                          }
+                        }}
+                      >
                         <img
                           src={image}
                           alt={product.name}
@@ -160,7 +170,7 @@ export default function CollectionPage() {
                         <p className="text-sm text-gray-600 mb-1">{product.brand}</p>
                         <div className="flex items-center gap-2">
                           <p className="text-gray-500 line-through text-sm">₹{mrp}</p>
-                          <p className="font-semibold text-lg text-pink-600">₹{price}</p>
+                          <p className="font-semibold text-lg text-red-600">₹{price}</p>
                           {discount > 0 && (
                             <span className="text-green-600 text-xs font-semibold">({discount}% OFF)</span>
                           )}

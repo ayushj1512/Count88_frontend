@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import GATracker from "../app/components/GAtracker"; // 👈 Route tracking component
+import GATracker from "../app/components/GAtracker";
 
 export const metadata = {
   title: "Craftra",
@@ -20,19 +20,23 @@ export default function RootLayout({
       <head>
         {/* Google Fonts */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Comic+Relief&display=swap"
           rel="stylesheet"
         />
 
-        {/* Tailwind fallback via CDN */}
+        {/* Tailwind via CDN (fallback) */}
         <script src="https://cdn.tailwindcss.com"></script>
+
         <style>{`
           body {
             font-family: 'Montserrat', sans-serif;
           }
+          .font-comic {
+            font-family: 'Comic Relief', cursive;
+          }
         `}</style>
 
-        {/* ✅ Google Analytics for B2C */}
+        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-S0LVNNTB34"
           strategy="afterInteractive"

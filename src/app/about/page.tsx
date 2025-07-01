@@ -6,16 +6,15 @@ export default function AboutPage() {
   return (
     <div className="bg-white text-gray-800">
 
-
       {/* Hero Section */}
-      <section className="bg-blue-100 py-16 px-6 text-center">
-        <h1 className="text-4xl font-bold mb-4">About Craftra</h1>
+      <section className="bg-purple-100 py-16 px-6 text-center">
+        <h1 className="text-4xl font-bold mb-4">About Us</h1>
         <p className="max-w-2xl mx-auto text-lg text-gray-700">
-          At Craftra, we bring creativity to life through thoughtfully selected art and stationery tools. Whether you're a doodler, journaler, or a full-time maker — we’re here to color your world.
+          At Craftra, we bring creativity to life through thoughtfully selected art and stationery tools to nurture creativity in every corner. Empowering artists of all kinds with access to quality materials, helpful guidance, and a legacy of personal care that transcends time and space. We believe that creativity deserves room to grow—and we're here to support it at every stroke, cut, or splash.
         </p>
       </section>
 
-      {/* Our Story */}
+      {/* Our Journey */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
 
@@ -31,66 +30,73 @@ export default function AboutPage() {
           {/* Text Content */}
           <div className="order-1 md:order-2">
             <h2 className="text-4xl font-bold mb-6 text-gray-900">Our Journey</h2>
-            <p className="text-gray-700 leading-8 text-md pr-14  text-justify">
-              Since the 1960s, we have built a strong reputation and loyal customer base through decades of excellence. Specializing in a wide range of office and school supplies—from pens and notebooks to folders and paper—we’ve grown alongside your needs.
+            <p className="text-gray-700 leading-8 text-md pr-14 text-justify">
+              From humble beginnings in the 1960s, nestled in the creative corners of Delhi NCR, our physical stores have been a trusted resource for generations of artists, hobbyists, educators, and design professionals.
               <br /><br />
-              With over 60 years of experience, we’ve cultivated strong supplier partnerships and an in-depth understanding of the stationery industry. Our commitment to top-tier customer service has made us a trusted source for everyday essentials.
+              With six decades of passion and expertise in fine art, craft materials, graphic supplies, instructional books, and more, we’ve proudly been at the heart of every inspired creation.
               <br /><br />
-              We collaborate with local and global creators to curate stationery and art tools that are not only functional but also spark creativity. From minimalist planners to playful washi tapes—everything we offer is designed to uplift your daily creative flow.
+              Now, with the launch of our online store, we’re bringing that legacy directly to your doorstep—anytime, anywhere. Whether you're a seasoned illustrator, a curious student, or simply someone rediscovering the joy of making, our digital shelves are stocked with hand-picked materials that uphold the same standard of quality and variety our walk-in customers have always loved.
             </p>
           </div>
-
 
         </div>
       </section>
 
-
       {/* Our Mission */}
-      <section className="bg-blue-100 py-16 px-6">
+      <section className="bg-purple-100 py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold mb-4">Our Mission</h2>
           <p className="text-gray-700 leading-relaxed text-lg">
-            We believe creativity lives in everyone. Our mission is to make the journey of creating joyful and accessible — whether it’s through premium tools, personalized recommendations, or an uplifting community.
+            Our mission has always been simple: support every creator with the tools, materials, and knowledge they need to bring their vision to life. We know that no two artists are the same, which is why we treat every interaction—online or off—with care and responsiveness.
+            <br /><br />
+            Thank you for making us part of your creative journey for over 60 years. Here’s to continuing it—together—online.
           </p>
         </div>
       </section>
 
-      {/* Why Craftra */}
-      <section className="py-16 px-6 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-extrabold text-center mb-10">Why Choose Craftra?</h2>
+      {/* Our Vision */}
+      <section className="py-16 px-6 max-w-4xl mx-auto text-center">
+        <h2 className="text-3xl font-extrabold mb-4">Our Vision</h2>
+        <p className="text-gray-700 leading-relaxed text-lg">
+          To nurture creativity in every corner—by empowering artists of all kinds with access to quality materials, helpful guidance, and a legacy of personal care that transcends time and space. We believe that creativity deserves room to grow—and we're here to support it at every stroke, cut, or splash.
+        </p>
+      </section>
+
+      {/* Get In Touch / Why Craftra */}
+      <section className="bg-purple-100 py-16 px-6  mx-auto">
+        <h2 className="text-3xl font-extrabold text-center mb-10">Get In Touch</h2>
         <div className="grid md:grid-cols-3 gap-10 text-center">
           <div>
-            <FaCheckCircle className="mx-auto mb-4 text-blue-200" size={48} />
-            <h3 className="text-xl font-bold mb-2">Curated Quality</h3>
+            <FaCheckCircle className="mx-auto mb-4 text-purple-300" size={48} />
+            <h3 className="text-xl font-bold mb-2">A Curated Collection</h3>
             <p className="text-gray-600">
-              Every item is handpicked to ensure quality, utility, and design excellence.
+              Explore an extensive range of art & craft supplies selected with care, creativity, and value in mind.
             </p>
           </div>
           <div>
-            <FaUsers className="mx-auto mb-4 text-blue-200" size={48} />
-            <h3 className="text-xl font-bold mb-2">Creative Community</h3>
+            <FaUsers className="mx-auto mb-4 text-purple-300" size={48} />
+            <h3 className="text-xl font-bold mb-2">Convenience Meets Personal Touch</h3>
             <p className="text-gray-600">
-              We’re more than a store — we’re a space where creators connect, learn, and grow.
+              Place orders at your own pace, 24/7, while still enjoying the warmth and attention that defines our in-store experience.
             </p>
           </div>
           <div>
-            <FaHeart className="mx-auto mb-4 text-blue-200" size={48} />
-            <h3 className="text-xl font-bold mb-2">Made With Love</h3>
+            <FaHeart className="mx-auto mb-4 text-purple-300" size={48} />
+            <h3 className="text-xl font-bold mb-2">Tailored Support</h3>
             <p className="text-gray-600">
-              Every detail matters. We design and deliver with care, passion, and purpose.
+              Can’t find a product online? Just reach out—our team will help locate it or take a custom order for you.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="bg-blue-100 py-16 px-6 text-center">
-        <h2 className="text-3xl font-semibold mb-4">Join the Craftra Family</h2>
-        <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-          Discover tools that inspire, products that last, and a community that celebrates you. Let’s craft something beautiful — together.
+      {/* Secure Shopping Info */}
+      <section className="py-16 px-6 text-center max-w-4xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-4">Secure Shopping</h2>
+        <p className="text-gray-700 text-lg">
+          Your trust matters. Transactions are handled via trusted gateways with full data protection, and your personal information stays strictly with us.
         </p>
       </section>
-
 
     </div>
   );
