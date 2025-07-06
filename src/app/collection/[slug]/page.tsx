@@ -6,6 +6,7 @@ import { useCartStore } from '../../store/cartStore';
 import toast from 'react-hot-toast';
 import RelatedProducts from '../../components/RelatedProducts';
 import Image from 'next/image';
+import '../../components/loader2.css'; // ✅
 
 interface Product {
   _id: string;
@@ -102,6 +103,8 @@ export default function ProductFromCollectionPage() {
   }, [slug]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (window.innerWidth < 768) return; // Disable on mobile
+
     const rect = imageContainerRef.current?.getBoundingClientRect();
     if (!rect) return;
 
@@ -117,7 +120,14 @@ export default function ProductFromCollectionPage() {
     setLensData({ left: offsetX, top: offsetY, bgX, bgY });
   };
 
-  if (loading) return <div className="p-10 text-center text-gray-600">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex flex-col gap-4 w-full h-[70vh] items-center justify-center">
+        <div className="w-20 h-20 border-4 border-transparent text-blue-400 text-4xl animate-spin flex items-center justify-center border-t-blue-400 rounded-full">
+          <div className="w-16 h-16 border-4 border-transparent text-red-400 text-2xl animate-spin flex items-center justify-center border-t-red-400 rounded-full"></div>
+        </div>
+      </div>
+    );
   if (!product) return <div className="p-10 text-center text-red-600">Product not found</div>;
 
   const { _id, name, brand, category, description, images, variants } = product;
@@ -127,21 +137,29 @@ export default function ProductFromCollectionPage() {
 
   const parseDescription = (desc: string): string[] =>
     desc
-      .split(/\n|\.|\u2022|\-/)
+      .split('.')
       .map((d) => d.trim())
       .filter((d) => d.length > 3);
 
-  const featurePoints = typeof description === 'string' ? parseDescription(description) : (description ?? []);
+  const featurePoints =
+    typeof description === 'string'
+      ? parseDescription(description)
+      : (description ?? []);
 
   return (
-    <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-20">
-      <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-start">
+    <div className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-16">
+      <div className="grid md:grid-cols-2 gap-8 items-start">
+        {/* Image + Zoom */}
         <div>
           <div
             ref={imageContainerRef}
-            className="relative border rounded-xl overflow-hidden bg-white shadow-sm w-full h-[400px] sm:h-[500px]"
-            onMouseEnter={() => setLensVisible(true)}
-            onMouseLeave={() => setLensVisible(false)}
+            className="relative border rounded-xl overflow-hidden bg-white shadow-sm w-full h-[350px] sm:h-[450px] md:h-[500px]"
+            onMouseEnter={() => {
+              if (window.innerWidth >= 768) setLensVisible(true);
+            }}
+            onMouseLeave={() => {
+              if (window.innerWidth >= 768) setLensVisible(false);
+            }}
             onMouseMove={handleMouseMove}
           >
             {activeImage && (
@@ -154,30 +172,30 @@ export default function ProductFromCollectionPage() {
               />
             )}
 
-            {lensVisible && (
-              <div
-                className="absolute z-50 border border-gray-300 pointer-events-none hidden md:block"
-                style={{
-                  width: `${lensSize}px`,
-                  height: `${lensSize}px`,
-                  left: `${lensData.left}px`,
-                  top: `${lensData.top}px`,
-                  backgroundImage: `url(${activeImage})`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: `${zoom * 100}%`,
-                  backgroundPosition: `${lensData.bgX}% ${lensData.bgY}%`,
-                  borderRadius: '50%',
-                }}
-              />
-            )}
+            {/* Zoom Lens */}
+            <div
+              className="absolute z-50 border border-gray-300 pointer-events-none hidden md:block"
+              style={{
+                width: `${lensSize}px`,
+                height: `${lensSize}px`,
+                left: `${lensData.left}px`,
+                top: `${lensData.top}px`,
+                backgroundImage: `url(${activeImage})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: `${zoom * 100}%`,
+                backgroundPosition: `${lensData.bgX}% ${lensData.bgY}%`,
+                borderRadius: '50%',
+                display: lensVisible ? 'block' : 'none',
+              }}
+            />
 
-            {discount > 0 && (
-              <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-                {discount}% OFF
-              </span>
-            )}
+            {/* Discount or Best Price */}
+            <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+              {discount > 0 ? `${discount}% OFF` : 'Best Price'}
+            </span>
           </div>
 
+          {/* Thumbnails */}
           <div className="flex gap-2 mt-4 flex-wrap justify-center sm:justify-start">
             {images.map((img, idx) => (
               <Image
@@ -196,12 +214,13 @@ export default function ProductFromCollectionPage() {
           </div>
         </div>
 
+        {/* Product Info */}
         <div className="space-y-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{name}</h1>
 
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-xl sm:text-2xl font-semibold text-red-600">₹{discountedPrice}</span>
-            {discount > 0 && (
+            {mrp !== discountedPrice && (
               <>
                 <span className="line-through text-gray-500 text-base sm:text-lg">₹{mrp}</span>
                 <span className="text-sm font-medium text-green-600">({discount}% OFF)</span>
@@ -209,6 +228,7 @@ export default function ProductFromCollectionPage() {
             )}
           </div>
 
+          {/* Variant Selector */}
           {variants.length > 1 && (
             <div>
               <label className="block text-sm text-gray-600 mb-1">Choose Variant:</label>
@@ -235,6 +255,7 @@ export default function ProductFromCollectionPage() {
             <p><strong className="text-gray-700">Category:</strong> {category}</p>
           </div>
 
+          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <button
               onClick={() => {
@@ -252,12 +273,13 @@ export default function ProductFromCollectionPage() {
                 addToCart({ id: _id, title: name, image: activeImage ?? '', price: discountedPrice });
                 router.push('/checkout');
               }}
-              className="bg-yellow-500 text-black px-6 py-3 rounded-md font-medium hover:bg-yellow-600 transition w-full sm:w-auto"
+              className="bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition w-full sm:w-auto"
             >
               Buy Now
             </button>
           </div>
 
+          {/* Feature List */}
           <div>
             <h2 className="text-lg font-semibold text-gray-700 mb-2 mt-2">Features:</h2>
             {featurePoints.length > 0 ? (
@@ -273,6 +295,7 @@ export default function ProductFromCollectionPage() {
         </div>
       </div>
 
+      {/* Related Products */}
       <RelatedProducts
         currentSlug={product.slug}
         category={product.category}

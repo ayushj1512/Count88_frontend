@@ -11,7 +11,7 @@ export default function Header() {
   const router = useRouter();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
+  const [, setShowSearch] = useState(false);
 
   const cartItems = useCartStore((state: { items: CartItem[] }) => state.items);
   const cartCount = cartItems.reduce(
@@ -85,17 +85,16 @@ export default function Header() {
         {/* Mobile Side Drawer Navigation */}
         {mobileNavOpen && (
           <div className="fixed inset-0 z-40">
-            {/* Overlay */}
+            {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black bg-opacity-40"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
               onClick={() => setMobileNavOpen(false)}
             />
 
             {/* Drawer */}
-            <div className="absolute top-0 left-0 h-full w-3/4 max-w-xs bg-white shadow-lg px-6 py-5 text-gray-800 animate-slide-in-left flex flex-col">
-              {/* Logo + Close */}
-              <div className="flex items-center justify-between mb-6">
-                {/* Logo */}
+            <div className="absolute top-0 left-0 h-full w-[80%] max-w-sm bg-white shadow-xl rounded-tr-3xl rounded-br-3xl p-6 text-gray-800 animate-slide-in-left flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
                 <div
                   className="text-2xl font-extrabold tracking-wide font-comic cursor-pointer"
                   onClick={() => handleNavClick("/")}
@@ -103,43 +102,34 @@ export default function Header() {
                   <span className="text-black">CRAF</span>
                   <span className="text-red-600">TЯA</span>
                 </div>
-                {/* Close button */}
-                <button className="text-xl text-gray-600 hover:text-black" onClick={() => setMobileNavOpen(false)}>
+                <button
+                  className="text-2xl text-gray-500 hover:text-red-500 transition"
+                  onClick={() => setMobileNavOpen(false)}
+                >
                   <FaTimes />
                 </button>
               </div>
 
               {/* Nav links */}
-              <nav className="flex flex-col gap-4">
-                <button
-                  onClick={() => handleNavClick("/")}
-                  className="py-2 px-2 rounded-md text-left text-base hover:bg-gray-100 transition"
-                >
-                  Home
-                </button>
-                <button
-                  onClick={() => handleNavClick("/collection")}
-                  className="py-2 px-2 rounded-md text-left text-base hover:bg-gray-100 transition"
-                >
-                  Collection
-                </button>
-                <button
-                  onClick={() => handleNavClick("/blogs")}
-                  className="py-2 px-2 rounded-md text-left text-base hover:bg-gray-100 transition"
-                >
-                  Blogs
-                </button>
-                <button
-                  onClick={() => handleNavClick("/about")}
-                  className="py-2 px-2 rounded-md text-left text-base hover:bg-gray-100 transition"
-                >
-                  About Us
-                </button>
+              <nav className="flex flex-col gap-4 overflow-y-auto">
+                {[
+                  { label: "Home", path: "/" },
+                  { label: "Collection", path: "/collection" },
+                  { label: "Blogs", path: "/blogs" },
+                  { label: "About Us", path: "/about" },
+                ].map(({ label, path }) => (
+                  <button
+                    key={path}
+                    onClick={() => handleNavClick(path)}
+                    className="py-3 px-4 text-left text-lg font-medium rounded-lg border border-gray-200 hover:bg-[#FFF2E1] active:scale-[0.98] transition"
+                  >
+                    {label}
+                  </button>
+                ))}
               </nav>
             </div>
           </div>
         )}
-
       </div>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

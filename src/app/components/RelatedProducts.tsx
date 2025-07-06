@@ -32,12 +32,22 @@ export default function RelatedProducts({ currentSlug, category, allProducts }: 
   if (related.length === 0) return null;
 
   return (
-    <div className="mt-20 px-4 sm:px-0">
+    <div className="mt-20 px-4 sm:px-0 relative">
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+
       <h2 className="text-2xl font-bold mb-8 text-gray-800 tracking-tight text-center sm:text-left">
         Related Products
       </h2>
 
-      <div className="flex overflow-x-auto gap-6 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="flex overflow-x-auto overflow-y-hidden no-scrollbar gap-6 sm:overflow-visible sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {related.map((product) => {
           const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 

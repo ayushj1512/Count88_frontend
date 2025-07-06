@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Configure external image domains
   images: {
-    domains: ["res.cloudinary.com"], // Allow loading images from Cloudinary
+    // Allow loading images from Cloudinary and Pinterest
+    domains: ["res.cloudinary.com", "i.pinimg.com"],
   },
 
   // Ignore ESLint errors during builds (useful for Vercel)

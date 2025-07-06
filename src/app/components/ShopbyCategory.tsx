@@ -58,14 +58,14 @@ export default function ShopByCategory() {
         </h2>
 
         {/* Desktop Grid */}
-        <div className="md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 px-4 md:px-10 max-w-7xl mx-auto hidden md:grid">
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 px-4 md:px-10 max-w-7xl mx-auto">
           {categories.map((category, index) => (
             <CategoryCard key={index} category={category} router={router} />
           ))}
         </div>
 
-        {/* Mobile Scroll */}
-        <div className="md:hidden overflow-x-auto px-4 -mx-2">
+        {/* Mobile Scrollable Carousel */}
+        <div className="md:hidden overflow-x-auto overflow-y-hidden px-4 -mx-2 no-scrollbar">
           <div className="flex gap-4 snap-x snap-mandatory pb-2">
             {categories.map((category, index) => (
               <div key={index} className="snap-start min-w-[16rem] sm:min-w-[18rem]">
@@ -89,6 +89,17 @@ export default function ShopByCategory() {
           />
         </svg>
       </div>
+
+      {/* Hide scrollbar globally for this section */}
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </>
   );
 }
@@ -106,9 +117,8 @@ function CategoryCard({
         <Image
           src={category.image}
           alt={category.title}
-          layout="fill"
-          objectFit="cover"
-          className="transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-90"
+          fill
+          className="transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-90 object-cover rounded-3xl"
           unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
