@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { BookOpenIcon, ArrowUpRightIcon } from "lucide-react";
 import clsx from "clsx";
 
@@ -28,6 +27,7 @@ export default function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("https://craftra-backend.onrender.com/api/blogs")
@@ -35,8 +35,12 @@ export default function BlogsPage() {
       .then((data) => {
         setBlogs(data);
         setFilteredBlogs(data);
+        setLoading(false);
       })
-      .catch((err) => console.error("Failed to fetch blogs", err));
+      .catch((err) => {
+        console.error("Failed to fetch blogs", err);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -86,52 +90,74 @@ export default function BlogsPage() {
 
       {/* Blog Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredBlogs.map((blog, i) => (
-          <Link
-            key={blog._id}
-            href={blog.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group"
-          >
-            <div
-              className={clsx(
-                "p-6 rounded-2xl shadow-md border transition-all duration-300",
-                "bg-white border-gray-200",
-                hoverColors[i % hoverColors.length],
-                "group-hover:scale-[1.02]"
-              )}
-            >
-              <div className="flex items-center gap-3 mb-3 text-gray-500">
-                <BookOpenIcon className="w-5 h-5" />
-                <span className="text-sm">{blog.label || "Creative Read"}</span>
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="p-6 rounded-2xl shadow-md border bg-white border-gray-200 animate-pulse space-y-4"
+              >
+                <div className="h-4 w-1/3 bg-gray-300 rounded" />
+                <div className="h-6 w-3/4 bg-gray-300 rounded" />
+                <div className="h-4 w-full bg-gray-200 rounded" />
+                <div className="h-4 w-5/6 bg-gray-200 rounded" />
+                <div className="flex gap-2 mt-4">
+                  <div className="h-6 w-14 bg-gray-200 rounded-full" />
+                  <div className="h-6 w-16 bg-gray-200 rounded-full" />
+                </div>
               </div>
+            ))
+          : filteredBlogs.map((blog, i) => (
+              <a
+                key={blog._id}
+                href={
+                  blog.link.startsWith("http") ? blog.link : `https://${blog.link}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group"
+              >
+                <div
+                  className={clsx(
+                    "p-6 rounded-2xl shadow-md border transition-all duration-300",
+                    "bg-white border-gray-200",
+                    hoverColors[i % hoverColors.length],
+                    "group-hover:scale-[1.02]"
+                  )}
+                >
+                  <div className="flex items-center gap-3 mb-3 text-gray-500">
+                    <BookOpenIcon className="w-5 h-5" />
+                    <span className="text-sm">
+                      {blog.label || "Creative Read"}
+                    </span>
+                  </div>
 
-              <h2 className="text-xl font-semibold text-gray-800 group-hover:text-[#000] transition">
-                {blog.title}
-              </h2>
+                  <h2 className="text-xl font-semibold text-gray-800 group-hover:text-[#000] transition">
+                    {blog.title}
+                  </h2>
 
-              <p className="text-gray-600 mt-2 line-clamp-3 text-sm">{blog.description}</p>
+                  <p className="text-gray-600 mt-2 line-clamp-3 text-sm">
+                    {blog.description}
+                  </p>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                {blog.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-[#FAF1E4] text-xs px-3 py-1 rounded-full text-gray-700"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {blog.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="bg-[#FAF1E4] text-xs px-3 py-1 rounded-full text-gray-700"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
 
-              <div className="mt-4 flex justify-end">
-                <span className="text-sm text-[#d49e00] group-hover:underline flex items-center gap-1 font-medium">
-                  Read more <ArrowUpRightIcon className="w-4 h-4" />
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
+                  <div className="mt-4 flex justify-end">
+                    <span className="text-sm text-[#d49e00] group-hover:underline flex items-center gap-1 font-medium">
+                      Read more <ArrowUpRightIcon className="w-4 h-4" />
+                    </span>
+                  </div>
+                </div>
+              </a>
+            ))}
       </div>
     </div>
   );
