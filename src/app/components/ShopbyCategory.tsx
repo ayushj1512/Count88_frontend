@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -100,7 +101,7 @@ function CategoryCard({
   router: any;
 }) {
   return (
-    <div className="relative group rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 border border-transparent hover:border-pink-400">
+    <div className="relative group rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 border border-transparent hover:border-red-400">
       <div className="relative h-64 w-full">
         <Image
           src={category.image}
@@ -117,7 +118,7 @@ function CategoryCard({
           </h3>
           <button
             onClick={() => router.push("/collection")}
-            className="mt-2 px-4 py-1 text-sm sm:text-base bg-white text-gray-800 rounded-full shadow hover:bg-pink-600 hover:text-white transition duration-300"
+            className="mt-2 px-4 py-1 text-sm sm:text-base bg-white text-gray-800 rounded-full shadow hover:bg-red-600 hover:text-white transition duration-300"
           >
             Explore
           </button>

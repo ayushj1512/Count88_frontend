@@ -43,7 +43,6 @@ export default function CollectionPage() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/products`);
         const data = await res.json();
-        console.log('Fetched products:', data);
         setProducts(data);
       } catch (err) {
         console.error('Failed to fetch products:', err);
@@ -85,7 +84,7 @@ export default function CollectionPage() {
   const brands = Array.from(new Set(products.map((p) => p.brand)));
 
   return (
-    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row gap-6">
         <FilterSidebar
           categories={categories}
@@ -98,15 +97,13 @@ export default function CollectionPage() {
         />
 
         <main className="flex-1">
-          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-            <p className="text-gray-700 text-sm">
-              {filteredProducts.length} of {products.length} products
-            </p>
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+            <p className="text-gray-700 text-sm">{filteredProducts.length} of {products.length} products</p>
 
             <div className="flex items-center gap-2 text-sm">
               <FaSortAmountDown className="text-gray-500" />
               <select
-                className="border px-3 py-1 rounded-md"
+                className="border border-gray-300 px-3 py-1.5 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
                 value={sortOption}
                 onChange={(e) =>
                   setSortOption(e.target.value as 'priceLowToHigh' | 'priceHighToLow' | 'alphabetical')
@@ -137,13 +134,13 @@ export default function CollectionPage() {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="relative bg-white p-4 rounded-lg border shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-1 flex flex-col h-full">
-                      {(product.tags?.length ?? 0) > 0 && (
-                        <div className="absolute top-2 left-2 flex flex-wrap gap-1 z-10">
-                          {(product.tags ?? []).map((tag) => (
+                    <div className="relative bg-white rounded-xl border shadow-md hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col h-full">
+                      {product.tags?.length && (
+                        <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1">
+                          {product.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded"
+                              className="bg-pink-100 text-pink-700 text-xs font-semibold px-2 py-0.5 rounded-full"
                             >
                               {tag}
                             </span>
@@ -153,44 +150,48 @@ export default function CollectionPage() {
 
                       <Link
                         href={slug ? `/collection/${slug}` : '#'}
-                        className="flex-1 flex flex-col"
                         onClick={(e) => {
                           if (!slug) {
                             e.preventDefault();
                             toast.error('Product link not available');
                           }
                         }}
+                        className="flex-1 flex flex-col"
                       >
                         <img
                           src={image}
                           alt={product.name}
-                          className="w-full h-48 object-cover rounded-md mb-3"
+                          className="w-full h-48 object-cover rounded-t-xl group-hover:scale-105 transition-transform duration-300"
                         />
-                        <h4 className="text-gray-800 font-medium text-sm mb-1 line-clamp-1">{product.name}</h4>
-                        <p className="text-sm text-gray-600 mb-1">{product.brand}</p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-gray-500 line-through text-sm">₹{mrp}</p>
-                          <p className="font-semibold text-lg text-red-600">₹{price}</p>
-                          {discount > 0 && (
-                            <span className="text-green-600 text-xs font-semibold">({discount}% OFF)</span>
-                          )}
+                        <div className="p-4 flex flex-col gap-1">
+                          <h4 className="text-gray-900 font-semibold text-sm truncate">{product.name}</h4>
+                          <p className="text-xs text-gray-500">{product.brand}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="line-through text-gray-400 text-sm">₹{mrp}</span>
+                            <span className="text-red-600 font-bold text-base">₹{price}</span>
+                            {discount > 0 && (
+                              <span className="text-green-600 text-xs font-bold">({discount}% OFF)</span>
+                            )}
+                          </div>
                         </div>
                       </Link>
 
-                      <button
-                        onClick={() => {
-                          addToCart({
-                            id: product._id,
-                            title: product.name,
-                            image: image,
-                            price: price,
-                          });
-                          toast.success(`${product.name} added to cart`);
-                        }}
-                        className="mt-4 bg-[#FFF2E1] font-bold text-black py-2 rounded hover:bg-black transition hover:text-[#FFF2E1] text-sm"
-                      >
-                        Add to Cart
-                      </button>
+                      <div className="p-4 pt-2">
+                        <button
+                          onClick={() => {
+                            addToCart({
+                              id: product._id,
+                              title: product.name,
+                              image: image,
+                              price: price,
+                            });
+                            toast.success(`${product.name} added to cart`);
+                          }}
+                          className="w-full py-2 rounded-md bg-black text-white hover:bg-orange-500 transition-colors duration-300 text-sm font-semibold"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 );
