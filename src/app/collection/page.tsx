@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FilterSidebar from '../components/FilterSidebar';
 import { useCartStore } from '../store/cartStore';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 type Product = {
   _id: string;
@@ -122,7 +123,7 @@ export default function CollectionPage() {
                 const image = product.images?.[0]?.url || 'https://via.placeholder.com/300';
                 const mrp = product.variants?.[0]?.mrp ?? 0;
                 const price = product.variants?.[0]?.discountedPrice ?? 0;
-                const discount = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : 0;
+                const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
                 const slug = product.slug;
 
                 return (
@@ -158,19 +159,27 @@ export default function CollectionPage() {
                         }}
                         className="flex-1 flex flex-col"
                       >
-                        <img
-                          src={image}
-                          alt={product.name}
-                          className="w-full h-48 object-cover rounded-t-xl group-hover:scale-105 transition-transform duration-300"
-                        />
+                        <div className="relative w-full h-48">
+                          <Image
+                            src={image}
+                            alt={product.name}
+                            fill
+                            className="object-cover rounded-t-xl group-hover:scale-105 transition-transform duration-300"
+                            sizes="(max-width: 768px) 100vw, 25vw"
+                          />
+                        </div>
                         <div className="p-4 flex flex-col gap-1">
                           <h4 className="text-gray-900 font-semibold text-sm truncate">{product.name}</h4>
                           <p className="text-xs text-gray-500">{product.brand}</p>
                           <div className="flex items-center gap-2">
-                            <span className="line-through text-gray-400 text-sm">₹{mrp}</span>
-                            <span className="text-red-600 font-bold text-base">₹{price}</span>
-                            {discount > 0 && (
-                              <span className="text-green-600 text-xs font-bold">({discount}% OFF)</span>
+                            {mrp > price ? (
+                              <>
+                                <span className="line-through text-gray-400 text-sm">₹{mrp}</span>
+                                <span className="text-red-600 font-bold text-base">₹{price}</span>
+                                <span className="text-green-600 text-xs font-bold">({discount}% OFF)</span>
+                              </>
+                            ) : (
+                              <span className="text-red-600 font-bold text-base">₹{price}</span>
                             )}
                           </div>
                         </div>
