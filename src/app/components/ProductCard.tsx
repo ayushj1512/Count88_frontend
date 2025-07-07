@@ -17,7 +17,6 @@ interface Product {
     discountedPrice: number;
   }[];
   category: string;
-  tags?: string[];
 }
 
 interface ProductCardProps {
@@ -50,21 +49,6 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
       className="w-[250px] h-[350px] bg-white rounded-xl shadow-md transition-all duration-300 cursor-pointer border border-gray-200 overflow-hidden flex-shrink-0 relative"
       onClick={onClick}
     >
-      {/* Tag Badges */}
-      {(product.tags?.length ?? 0) > 0 && (
-  <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1">
-    {product.tags?.slice(0, 2).map((tag) => (
-      <span
-        key={tag}
-        className="bg-yellow-200 text-yellow-800 text-[10px] font-semibold px-2 py-[2px] rounded-full uppercase"
-      >
-        {tag}
-      </span>
-    ))}
-  </div>
-)}
-
-
       {/* Image */}
       <div className="relative w-full h-[180px] rounded-t-xl overflow-hidden">
         <Image
@@ -82,7 +66,6 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
           <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 h-[40px]">
             {product.name}
           </h3>
-          {/* <p className="text-xs text-gray-500 mt-1">{product.brand}</p> */}
         </div>
 
         <div className="flex justify-center items-center gap-2 mt-2">

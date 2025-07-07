@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 
 import Hero from "./components/Hero";
-import ColumnSection from "./components/Column";
+// import ColumnSection from "./components/Column";
 import { Column } from "./components/Column";
 import ShopByCategory from "./components/ShopbyCategory";
 import BestsellerSection from "./components/Bestsellers";
-import OffersSection from "./components/OffersSection";
-import BrandPartners from "./components/BrandPartners";
+// import OffersSection from "./components/OffersSection";
+// import BrandPartners from "./components/BrandPartners";
 import { useCartStore } from "./store/cartStore";
 import ArtTypeSection from "./components/ArtTypeSection";
 

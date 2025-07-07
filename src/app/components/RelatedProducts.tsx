@@ -56,7 +56,7 @@ export default function RelatedProducts({ currentSlug, category, allProducts }: 
               key={product.id}
               className="min-w-[250px] sm:min-w-0 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col"
             >
-              <Link href={`/product/${product.slug}`} className="block">
+              <Link href={`/collection/${product.slug}`} className="block">
                 <div className="relative w-full h-48 sm:h-52 overflow-hidden">
                   <Image
                     src={product.images[0]}

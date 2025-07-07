@@ -8,7 +8,7 @@ import FilterSidebar from '../components/FilterSidebar';
 import { useCartStore } from '../store/cartStore';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
-import '../components/loader2.css'; // <-- Important: loader2.css
+import '../components/loader2.css';
 
 type Product = {
   _id: string;
@@ -19,7 +19,6 @@ type Product = {
   category: string;
   subcategory?: string;
   description?: string[] | string;
-  tags?: string[];
   images: { url: string }[];
   variants: {
     variant: string;
@@ -132,7 +131,6 @@ export default function CollectionPage() {
               </div>
             </div>
           ) : (
-
             <>
               <motion.div layout className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <AnimatePresence>
@@ -153,19 +151,6 @@ export default function CollectionPage() {
                         transition={{ duration: 0.3 }}
                       >
                         <div className="relative bg-white rounded-xl border shadow-md hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col h-full">
-                          {product.tags?.length && (
-                            <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1">
-                              {product.tags.map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="bg-pink-100 text-pink-700 text-xs font-semibold px-2 py-0.5 rounded-full"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
                           <Link
                             href={slug ? `/collection/${slug}` : '#'}
                             onClick={(e) => {

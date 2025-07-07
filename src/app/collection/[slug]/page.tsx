@@ -250,10 +250,24 @@ export default function ProductFromCollectionPage() {
             </div>
           )}
 
-          <div className="text-sm text-gray-600 space-y-1">
+          <div className="text-sm text-gray-600 space-y-2">
             <p><strong className="text-gray-700">Brand:</strong> {brand}</p>
             <p><strong className="text-gray-700">Category:</strong> {category}</p>
+
+            {product.tags && product.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {product.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="bg-yellow-200 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full uppercase"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
+
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
