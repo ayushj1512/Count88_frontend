@@ -3,23 +3,29 @@
 import React, { useState } from 'react';
 import { FaFilter, FaTimes } from 'react-icons/fa';
 
+type FilterType = 'category' | 'subcategory' | 'brand' | 'tag';
+
 type FilterSidebarProps = {
   categories: string[];
   subcategories: string[];
   brands: string[];
+  tags: string[];
   selectedCategories: string[];
   selectedSubcategories: string[];
   selectedBrands: string[];
-  toggleFilter: (type: 'category' | 'subcategory' | 'brand', value: string) => void;
+  selectedTags: string[];
+  toggleFilter: (type: FilterType, value: string) => void;
 };
 
 export default function FilterSidebar({
   categories,
   subcategories,
   brands,
+  tags,
   selectedCategories,
   selectedSubcategories,
   selectedBrands,
+  selectedTags,
   toggleFilter,
 }: FilterSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +34,7 @@ export default function FilterSidebar({
     title: string,
     items: string[],
     selected: string[],
-    type: 'category' | 'subcategory' | 'brand'
+    type: FilterType
   ) => (
     <div>
       <h3 className="text-sm font-bold mb-3 text-gray-700 uppercase tracking-wider flex items-center gap-2">
@@ -50,6 +56,7 @@ export default function FilterSidebar({
               checked={selected.includes(item)}
               onChange={() => toggleFilter(type, item)}
               className="accent-orange-600"
+              aria-label={`${type}-${item}`}
             />
             <span className="capitalize">{item}</span>
           </label>
@@ -63,6 +70,7 @@ export default function FilterSidebar({
       {renderFilterSection('Categories', categories, selectedCategories, 'category')}
       {renderFilterSection('Subcategories', subcategories, selectedSubcategories, 'subcategory')}
       {renderFilterSection('Brands', brands, selectedBrands, 'brand')}
+      {renderFilterSection('Tags', tags, selectedTags, 'tag')}
     </div>
   );
 
@@ -73,6 +81,7 @@ export default function FilterSidebar({
         <button
           className="flex items-center gap-2 text-sm px-4 py-2 border border-gray-300 rounded-md bg-white shadow-sm hover:shadow-md transition font-medium"
           onClick={() => setIsOpen(true)}
+          aria-label="Open Filters"
         >
           <FaFilter />
           Filters
@@ -85,6 +94,7 @@ export default function FilterSidebar({
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto"
             onClick={() => setIsOpen(false)}
+            aria-hidden="true"
           />
         )}
         <div
@@ -98,6 +108,7 @@ export default function FilterSidebar({
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-gray-500 hover:text-black"
+                aria-label="Close Filters"
               >
                 <FaTimes size={20} />
               </button>

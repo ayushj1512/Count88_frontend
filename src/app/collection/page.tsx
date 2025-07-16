@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FaSortAmountDown } from 'react-icons/fa';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,6 +19,7 @@ type Product = {
   brand: string;
   category: string;
   subcategory?: string;
+  tags?: string[];
   description?: string[] | string;
   images: { url: string }[];
   variants: {
@@ -34,12 +36,30 @@ export default function CollectionPage() {
   const [sortOption, setSortOption] = useState<'priceLowToHigh' | 'priceHighToLow' | 'alphabetical'>('priceLowToHigh');
   const [loading, setLoading] = useState(true);
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const addToCart = useCartStore((state) => state.addToCart);
 
+  // Populate filters from URL
+  useEffect(() => {
+    const categories = searchParams.getAll('category');
+    const subcategories = searchParams.getAll('subcategory');
+    const brands = searchParams.getAll('brand');
+    const tags = searchParams.getAll('tag');
+
+    setSelectedCategories(categories);
+    setSelectedSubcategories(subcategories);
+    setSelectedBrands(brands);
+    setSelectedTags(tags);
+  }, [searchParams]);
+
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -55,13 +75,34 @@ export default function CollectionPage() {
     fetchProducts();
   }, []);
 
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    selectedCategories.forEach((cat) => params.append('category', cat));
+    selectedSubcategories.forEach((sub) => params.append('subcategory', sub));
+    selectedBrands.forEach((brand) => params.append('brand', brand));
+    selectedTags.forEach((tag) => params.append('tag', tag));
+
+    router.replace(`?${params.toString()}`);
+  }, [selectedCategories, selectedSubcategories, selectedBrands, selectedTags, router]);
+
+  // Filter + Sort logic
   useEffect(() => {
     const filtered = products.filter((p) => {
       const catMatch = !selectedCategories.length || selectedCategories.includes(p.category);
       const subcatMatch = !selectedSubcategories.length || selectedSubcategories.includes(p.subcategory || '');
       const brandMatch = !selectedBrands.length || selectedBrands.includes(p.brand || '');
-      return catMatch && subcatMatch && brandMatch;
+      const tagMatch = !selectedTags.length || (p.tags && p.tags.some((tag) => selectedTags.includes(tag)));
+
+      return catMatch && subcatMatch && brandMatch && tagMatch;
     });
+
+    // 💡 If filtering by tag but no results, clear the tag and show all
+    if (selectedTags.length > 0 && filtered.length === 0) {
+      setSelectedTags([]);
+      return;
+    }
 
     const sorted = filtered.sort((a, b) => {
       const aPrice = a.variants?.[0]?.discountedPrice ?? 0;
@@ -72,20 +113,23 @@ export default function CollectionPage() {
     });
 
     setFilteredProducts(sorted);
-  }, [products, selectedCategories, selectedSubcategories, selectedBrands, sortOption]);
+  }, [products, selectedCategories, selectedSubcategories, selectedBrands, selectedTags, sortOption]);
 
-  const toggleFilter = (type: 'category' | 'subcategory' | 'brand', value: string) => {
+  const toggleFilter = (type: 'category' | 'subcategory' | 'brand' | 'tag', value: string) => {
     const toggle = (list: string[], value: string) =>
       list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 
     if (type === 'category') setSelectedCategories(toggle(selectedCategories, value));
     if (type === 'subcategory') setSelectedSubcategories(toggle(selectedSubcategories, value));
     if (type === 'brand') setSelectedBrands(toggle(selectedBrands, value));
+    if (type === 'tag') setSelectedTags(toggle(selectedTags, value));
   };
 
+  // Derived filters
   const categories = Array.from(new Set(products.map((p) => p.category)));
   const subcategories = Array.from(new Set(products.map((p) => p.subcategory).filter((s): s is string => !!s)));
   const brands = Array.from(new Set(products.map((p) => p.brand)));
+  const tags = Array.from(new Set(products.flatMap((p) => p.tags || [])));
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -94,9 +138,11 @@ export default function CollectionPage() {
           categories={categories}
           subcategories={subcategories}
           brands={brands}
+          tags={tags}
           selectedCategories={selectedCategories}
           selectedSubcategories={selectedSubcategories}
           selectedBrands={selectedBrands}
+          selectedTags={selectedTags}
           toggleFilter={toggleFilter}
         />
 
