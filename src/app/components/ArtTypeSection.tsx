@@ -111,22 +111,28 @@ function ArtTypeCard({
           sizes="(max-width: 640px) 100vw, 300px"
         />
       </div>
-      <div className="mt-4 text-center">
-        <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
-          {type.name}
-        </h3>
-        <button
-          onClick={handleExploreClick}
-          disabled={loading}
-          className={`border border-gray-800 px-4 py-1 rounded font-medium text-sm transition ${
-            loading
-              ? 'bg-gray-400 text-white cursor-not-allowed'
-              : 'bg-red-600 text-white hover:bg-white hover:text-red-600'
-          }`}
-        >
-          {loading ? 'Checking...' : 'EXPLORE'}
-        </button>
-      </div>
+      <div className="mt-4 flex flex-col items-center">
+  <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
+    {type.name}
+  </h3>
+
+  <button
+    onClick={handleExploreClick}
+    disabled={loading}
+    className={`w-32 h-10 flex items-center justify-center border px-4 py-1 rounded font-medium text-sm transition ${
+      loading
+        ? 'bg-gray-400 text-white cursor-not-allowed border-gray-400'
+        : 'bg-red-600 text-white border-gray-800 hover:bg-white hover:text-red-600'
+    }`}
+  >
+    {loading ? (
+      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+    ) : (
+      'EXPLORE'
+    )}
+  </button>
+</div>
+
     </div>
   );
 }
