@@ -213,16 +213,17 @@ export default function CollectionClient() {
                               <h4 className="text-gray-900 font-semibold text-sm truncate">{product.name}</h4>
                               <p className="text-xs text-gray-500">{product.brand}</p>
                               <div className="flex items-center gap-2">
-                                {mrp > price ? (
-                                  <>
-                                    <span className="line-through text-gray-400 text-sm">₹{mrp}</span>
-                                    <span className="text-red-600 font-bold text-base">₹{price}</span>
-                                    <span className="text-green-600 text-xs font-bold">({discount}% OFF)</span>
-                                  </>
-                                ) : (
-                                  <span className="text-red-600 font-bold text-base">₹{price}</span>
-                                )}
-                              </div>
+  {mrp > price ? (
+    <>
+      <span className="line-through text-gray-500 text-sm">₹{mrp}</span>
+      <span className="text-black font-bold text-base">₹{price}</span>
+      <span className="text-green-600 text-xs font-bold">({discount}% OFF)</span>
+    </>
+  ) : (
+    <span className="text-black font-bold text-base">₹{price}</span>
+  )}
+</div>
+
                             </div>
                           </Link>
                           <div className="p-4 pt-2">
