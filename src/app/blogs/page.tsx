@@ -55,7 +55,7 @@ export default function BlogsPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] px-6 py-10 font-sans">
-      <h1 className="text-4xl sm:text-5xl font-extrabold text-center mb-12 text-[#333]">
+      <h1 className="text-4xl sm:text-5xl font-extrabold text-center mb-12 text-[#8B5E3C]">
         Discover Our Latest Blogs
       </h1>
 
@@ -66,8 +66,8 @@ export default function BlogsPage() {
           className={clsx(
             "px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200",
             selectedTag === null
-              ? "bg-[#333] text-white"
-              : "bg-white text-[#333] border-gray-300 hover:bg-gray-100"
+              ? "bg-[#8B5E3C] text-white"
+              : "bg-white text-[#8B5E3C] border-gray-300 hover:bg-gray-100"
           )}
         >
           All
@@ -79,8 +79,8 @@ export default function BlogsPage() {
             className={clsx(
               "px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200",
               selectedTag === tag
-                ? "bg-[#333] text-white"
-                : "bg-white text-[#333] border-gray-300 hover:bg-gray-100"
+                ? "bg-[#8B5E3C] text-white"
+                : "bg-white text-[#8B5E3C] border-gray-300 hover:bg-gray-100"
             )}
           >
             {tag}
@@ -131,7 +131,7 @@ export default function BlogsPage() {
                     </span>
                   </div>
 
-                  <h2 className="text-xl font-semibold text-gray-800 group-hover:text-[#000] transition">
+                  <h2 className="text-xl font-semibold text-[#8B5E3C] group-hover:text-[#6B4226] transition">
                     {blog.title}
                   </h2>
 
