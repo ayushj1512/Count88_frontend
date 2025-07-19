@@ -75,21 +75,21 @@ export default function AboutPage() {
         <div className="grid md:grid-cols-3 gap-10 text-center max-w-6xl mx-auto">
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
             <FaCheckCircle className="mx-auto mb-4 text-[#8B5E3C]" size={48} />
-            <h3 className="text-xl font-semibold mb-2">A Curated Collection</h3>
+            <h3 className="text-xl text-[#8B5E3C] font-semibold mb-2">A Curated Collection</h3>
             <p className="text-gray-600">
               Explore an extensive range of art & craft supplies selected with care, creativity, and value in mind.
             </p>
           </div>
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
             <FaUsers className="mx-auto mb-4 text-[#8B5E3C]" size={48} />
-            <h3 className="text-xl font-semibold mb-2">Personal Touch Meets Convenience</h3>
+            <h3 className="text-xl text-[#8B5E3C] font-semibold mb-2">Personal Touch Meets Convenience</h3>
             <p className="text-gray-600">
               Shop at your pace, 24/7, while enjoying the warmth and attention of our in-store experience.
             </p>
           </div>
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
             <FaHeart className="mx-auto mb-4 text-[#8B5E3C]" size={48} />
-            <h3 className="text-xl font-semibold mb-2">Tailored Support</h3>
+            <h3 className="text-xl text-[#8B5E3C] font-semibold mb-2">Tailored Support</h3>
             <p className="text-gray-600">
               Can’t find what you need? Just reach out—our team will locate it or take a custom order just for you.
             </p>
