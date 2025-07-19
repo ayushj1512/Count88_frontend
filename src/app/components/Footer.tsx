@@ -7,7 +7,7 @@ export default function Footer() {
 
         {/* Company Info */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
             Craftra
           </h4>
           <p className="text-gray-700 leading-relaxed">
@@ -17,7 +17,7 @@ export default function Footer() {
 
         {/* Quick Links */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
             Company Info
           </h4>
           <ul className="space-y-2 text-gray-700">
@@ -41,7 +41,7 @@ export default function Footer() {
 
         {/* Customer Service */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
             Customer Service
           </h4>
           <ul className="space-y-2 text-gray-700">
@@ -70,7 +70,7 @@ export default function Footer() {
 
         {/* Contact Info */}
         <div>
-          <h4 className="font-semibold mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
             Get In Touch
           </h4>
           <p className="text-gray-700">
