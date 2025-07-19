@@ -190,7 +190,7 @@ export default function ProductFromCollectionPage() {
             />
 
             {/* Discount or Best Price */}
-            <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+            <span className="absolute top-3 left-3 bg-[#8B5E3C] text-white text-xs font-bold px-2 py-1 rounded">
               {discount > 0 ? `${discount}% OFF` : 'Best Price'}
             </span>
           </div>
@@ -219,7 +219,7 @@ export default function ProductFromCollectionPage() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{name}</h1>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-xl sm:text-2xl font-semibold text-red-600">₹{discountedPrice}</span>
+            <span className="text-xl sm:text-2xl font-semibold text-black">₹{discountedPrice}</span>
             {mrp !== discountedPrice && (
               <>
                 <span className="line-through text-gray-500 text-base sm:text-lg">₹{mrp}</span>
@@ -271,27 +271,28 @@ export default function ProductFromCollectionPage() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <button
-              onClick={() => {
-                addToCart({ id: _id, title: name, image: activeImage ?? '', price: discountedPrice });
-                toast.success(`${name} added to cart`);
-              }}
-              className="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition w-full sm:w-auto"
-            >
-              Add to Cart
-            </button>
+  <button
+    onClick={() => {
+      addToCart({ id: _id, title: name, image: activeImage ?? '', price: discountedPrice });
+      toast.success(`${name} added to cart`);
+    }}
+    className="bg-[#8B5E3C] text-white px-6 py-3 rounded-md font-medium hover:bg-[#8B5E58] transition w-full sm:w-auto"
+  >
+    Add to Cart
+  </button>
 
-            <button
-              onClick={() => {
-                clearCart();
-                addToCart({ id: _id, title: name, image: activeImage ?? '', price: discountedPrice });
-                router.push('/checkout');
-              }}
-              className="bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition w-full sm:w-auto"
-            >
-              Buy Now
-            </button>
-          </div>
+  <button
+    onClick={() => {
+      clearCart();
+      addToCart({ id: _id, title: name, image: activeImage ?? '', price: discountedPrice });
+      router.push('/checkout');
+    }}
+    className="bg-[#F8F4E3] text-[#3C2F2F] px-6 py-3 rounded-md font-medium hover:bg-[#E9E4D4] transition w-full sm:w-auto"
+  >
+    Buy Now
+  </button>
+</div>
+
 
           {/* Feature List */}
           <div>
