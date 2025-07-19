@@ -7,7 +7,7 @@ export default function AboutPage() {
 
       {/* Hero Section */}
       <section className="bg-[#FFF8DC] py-16 px-6 text-center">
-        <h1 className="text-5xl font-bold text-gray-900 mb-4">About Us</h1>
+        <h1 className="text-5xl font-bold text-[#8B5E3C] mb-4">About Us</h1>
         <p className="max-w-3xl mx-auto text-lg text-gray-700 leading-relaxed">
           At Craftra, we bring creativity to life through thoughtfully selected art and stationery tools.
           Empowering artists with quality materials, helpful guidance, and a legacy of personal care that transcends time.
@@ -33,7 +33,7 @@ export default function AboutPage() {
 
           {/* Text Content */}
           <div className="order-1 md:order-2">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900">Our Journey</h2>
+            <h2 className="text-4xl font-bold mb-6 text-[#8B5E3C]">Our Journey</h2>
             <p className="text-gray-700 leading-8 text-md text-justify">
               From humble beginnings in the 1960s in the creative corners of Delhi NCR,
               our physical stores have been a trusted resource for generations of artists, hobbyists, and design professionals.
@@ -48,9 +48,9 @@ export default function AboutPage() {
       </section>
 
       {/* Our Mission */}
-      <section className="bg-[#FFFAF0] py-16 px-6">
+      <section className="bg-[#FFF8DC] py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-extrabold mb-4 text-gray-900">Our Mission</h2>
+          <h2 className="text-3xl font-extrabold mb-4 text-[#8B5E3C]">Our Mission</h2>
           <p className="text-gray-700 leading-relaxed text-lg">
             To support every creator with the tools, materials, and knowledge they need to bring their vision to life.
             We know that no two artists are the same, which is why we treat every interaction—online or offline—with care and warmth.
@@ -62,7 +62,7 @@ export default function AboutPage() {
 
       {/* Our Vision */}
       <section className="py-16 px-6 max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl font-extrabold mb-4 text-gray-900">Our Vision</h2>
+        <h2 className="text-3xl font-extrabold mb-4 text-[#8B5E3C]">Our Vision</h2>
         <p className="text-gray-700 leading-relaxed text-lg">
           To nurture creativity in every corner—by empowering artists of all kinds with access to quality materials, guidance,
           and a legacy of care that transcends time. Creativity deserves room to grow—and we’re here to support it every step of the way.
@@ -71,24 +71,24 @@ export default function AboutPage() {
 
       {/* Get In Touch / Why Craftra */}
       <section className="bg-[#FFF8DC] py-16 px-6">
-        <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-10">Why Choose Craftra</h2>
+        <h2 className="text-3xl font-extrabold text-center text-[#8B5E3C] mb-10">Why Choose Craftra</h2>
         <div className="grid md:grid-cols-3 gap-10 text-center max-w-6xl mx-auto">
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <FaCheckCircle className="mx-auto mb-4 text-orange-500" size={48} />
+            <FaCheckCircle className="mx-auto mb-4 text-[#8B5E3C]" size={48} />
             <h3 className="text-xl font-semibold mb-2">A Curated Collection</h3>
             <p className="text-gray-600">
               Explore an extensive range of art & craft supplies selected with care, creativity, and value in mind.
             </p>
           </div>
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <FaUsers className="mx-auto mb-4 text-orange-500" size={48} />
+            <FaUsers className="mx-auto mb-4 text-[#8B5E3C]" size={48} />
             <h3 className="text-xl font-semibold mb-2">Personal Touch Meets Convenience</h3>
             <p className="text-gray-600">
               Shop at your pace, 24/7, while enjoying the warmth and attention of our in-store experience.
             </p>
           </div>
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <FaHeart className="mx-auto mb-4 text-orange-500" size={48} />
+            <FaHeart className="mx-auto mb-4 text-[#8B5E3C]" size={48} />
             <h3 className="text-xl font-semibold mb-2">Tailored Support</h3>
             <p className="text-gray-600">
               Can’t find what you need? Just reach out—our team will locate it or take a custom order just for you.
@@ -99,7 +99,7 @@ export default function AboutPage() {
 
       {/* Secure Shopping */}
       <section className="py-16 px-6 text-center max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Secure Shopping</h2>
+        <h2 className="text-2xl font-bold mb-4 text-[#8B5E3C]">Secure Shopping</h2>
         <p className="text-gray-700 text-lg">
           Your trust matters. All transactions are processed through trusted gateways with complete data protection.
           We value your privacy and safeguard your personal information at every step.
