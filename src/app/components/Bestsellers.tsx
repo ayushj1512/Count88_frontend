@@ -69,6 +69,19 @@ export default function BestsellerSection() {
         .product-hover {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        @keyframes shimmer {
+          0% {
+            background-position: -450px 0;
+          }
+          100% {
+            background-position: 450px 0;
+          }
+        }
+        .shimmer {
+          background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
+          background-size: 1000px 100%;
+          animation: shimmer 1.2s infinite linear;
+        }
       `}</style>
 
       <section className="py-12 bg-[#F7CFD8] relative z-10 w-full overflow-hidden">
@@ -100,23 +113,30 @@ export default function BestsellerSection() {
               style={{ minWidth: '100%' }}
             >
               {loading
-                ? Array.from({ length: 4 }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="w-[250px] h-[350px] bg-white rounded-xl shadow animate-pulse flex-shrink-0 snap-start"
-                  />
-                ))
+                ? Array.from({ length: 7 }).map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="w-[250px] h-[350px] bg-white rounded-xl shadow flex-shrink-0 snap-start overflow-hidden"
+                    >
+                      <div className="h-2/3 shimmer" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 w-3/4 rounded shimmer" />
+                        <div className="h-4 w-1/2 rounded shimmer" />
+                        <div className="h-6 w-1/3 rounded shimmer" />
+                      </div>
+                    </div>
+                  ))
                 : bestsellers.map((product) => (
-                  <div
-                    key={product._id}
-                    className="w-[250px] flex-shrink-0 snap-start product-hover"
-                  >
-                    <ProductCard
-                      product={product}
-                      onClick={() => router.push(`/collection/${product.slug}`)}
-                    />
-                  </div>
-                ))}
+                    <div
+                      key={product._id}
+                      className="w-[250px] flex-shrink-0 snap-start product-hover"
+                    >
+                      <ProductCard
+                        product={product}
+                        onClick={() => router.push(`/collection/${product.slug}`)}
+                      />
+                    </div>
+                  ))}
             </div>
           </div>
         </div>
