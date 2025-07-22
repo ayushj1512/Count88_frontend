@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // import useRouter
+import Image from "next/image";
 
 const slides = [
   {
-    image: "https://i.pinimg.com/736x/eb/47/e0/eb47e0c084f7eaae93e6de5f83a11bff.jpg",
+    image:
+      "https://i.pinimg.com/736x/eb/47/e0/eb47e0c084f7eaae93e6de5f83a11bff.jpg",
     title: "Whimsical Wall Art",
     subtitle: "Add joy and personality to your spaces.",
     button: "Explore Collection",
@@ -16,17 +18,20 @@ const slides = [
     title: "Pastel Perfection",
     subtitle: "Where calm hues meet creativity.",
     button: "Shop Pastels",
-    position: "justify-start items-start text-left pl-4 sm:pl-8 md:pl-10 pt-4 sm:pt-6 md:pt-10",
+    position:
+      "justify-start items-start text-left pl-4 sm:pl-8 md:pl-10 pt-4 sm:pt-6 md:pt-10",
   },
   {
     image: "/carousel/carousel3.jpg",
     title: "Crafted With Love",
     subtitle: "Every piece tells a story.",
     button: "Browse Now",
-    position: "justify-end items-end text-right pr-4 sm:pr-8 md:pr-10 pb-4 sm:pb-6 md:pb-10",
+    position:
+      "justify-end items-end text-right pr-4 sm:pr-8 md:pr-10 pb-4 sm:pb-6 md:pb-10",
   },
   {
-    image: "https://i.pinimg.com/736x/14/04/78/14047897ee0e078e85ae9363f88e35ef.jpg",
+    image:
+      "https://i.pinimg.com/736x/14/04/78/14047897ee0e078e85ae9363f88e35ef.jpg",
     title: "Inspired by Nature",
     subtitle: "Discover earthy tones and organic textures.",
     button: "See Nature Picks",
@@ -53,14 +58,20 @@ export default function Hero() {
   return (
     <section className="relative w-full h-[320px] sm:h-[400px] md:h-[500px] lg:h-[580px] xl:h-[640px] overflow-hidden font-[Montserrat]">
       {slides.map((slide, index) => (
-        <img
+        <div
           key={index}
-          src={slide.image}
-          alt={`Slide ${index + 1}`}
-          className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${
+          className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
             index === current ? "opacity-100 z-0" : "opacity-0 z-0"
           } ${index === current && blink ? "animate-blink" : ""}`}
-        />
+        >
+          <Image
+            src={slide.image}
+            alt={`Slide ${index + 1}`}
+            fill
+            priority={index === 0} // prioritize first image
+            className="object-cover"
+          />
+        </div>
       ))}
 
       <div
