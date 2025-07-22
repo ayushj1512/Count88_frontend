@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // import useRouter
 
 const slides = [
   {
@@ -33,10 +34,10 @@ const slides = [
   },
 ];
 
-
 export default function Hero() {
   const [current, setCurrent] = useState(0);
   const [blink, setBlink] = useState(false);
+  const router = useRouter(); // initialize router
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -51,18 +52,17 @@ export default function Hero() {
 
   return (
     <section className="relative w-full h-[320px] sm:h-[400px] md:h-[500px] lg:h-[580px] xl:h-[640px] overflow-hidden font-[Montserrat]">
-      {/* Background Images */}
       {slides.map((slide, index) => (
         <img
           key={index}
           src={slide.image}
           alt={`Slide ${index + 1}`}
-          className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${index === current ? "opacity-100 z-0" : "opacity-0 z-0"
-            } ${index === current && blink ? "animate-blink" : ""}`}
+          className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${
+            index === current ? "opacity-100 z-0" : "opacity-0 z-0"
+          } ${index === current && blink ? "animate-blink" : ""}`}
         />
       ))}
 
-      {/* Overlay Content */}
       <div
         className={`absolute top-0 left-0 w-full h-full z-10 flex ${slides[current].position} bg-black/30 transition-all duration-700`}
       >
@@ -73,13 +73,15 @@ export default function Hero() {
           <p className="text-sm sm:text-base md:text-lg drop-shadow">
             {slides[current].subtitle}
           </p>
-          <button className="bg-gray-800 text-white px-5 sm:px-6 py-2 rounded-xl shadow hover:bg-gray-700 transition">
+          <button
+            className="bg-gray-800 text-white px-5 sm:px-6 py-2 rounded-xl shadow hover:bg-gray-700 transition"
+            onClick={() => router.push("/collection")} // navigate on click
+          >
             {slides[current].button}
           </button>
         </div>
       </div>
 
-      {/* Blink animation */}
       <style jsx>{`
         .animate-blink {
           animation: blink 0.3s ease-in-out;
