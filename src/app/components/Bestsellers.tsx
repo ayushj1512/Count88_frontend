@@ -1,181 +1,189 @@
-'use client';
+"use client";
+import { useState } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import CartDrawer from './CartDrawer';
-import { useCartStore } from '../store/cartStore';
-import ProductCard from '../components/ProductCard';
+const newArrivals = [
+  {
+    id: 1,
+    name: "Peony Heels",
+    price: "₹ 2,700",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 55%",
+    img: "https://i.pinimg.com/736x/d6/4a/c2/d64ac27cd9fc1d63c29c2880bdcdd6cf.jpg",
+  },
+  {
+    id: 2,
+    name: "Birdie Heels",
+    price: "₹ 2,700",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 55%",
+    img: "https://i.pinimg.com/736x/61/fe/a0/61fea0cf1224fdbd635061dfea41f8f0.jpg",
+  },
+  {
+    id: 3,
+    name: "Daisy Heels",
+    price: "₹ 2,700",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 55%",
+    img: "https://i.pinimg.com/1200x/21/11/00/211100583782c93a6cc69e50f4e7924f.jpg",
+  },
+  {
+    id: 4,
+    name: "Sand Heels",
+    price: "₹ 2,700",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 55%",
+    img: "https://i.pinimg.com/736x/8b/1e/df/8b1edffd2651bdec1cb4655d390a0f61.jpg",
+  },
+  {
+    id: 5,
+    name: "Zarah Heels",
+    price: "₹ 3,299",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 45%",
+    img: "https://i.pinimg.com/736x/6d/ea/9e/6dea9edc10065f449fad742feac86a93.jpg",
+  },
+];
 
-type Product = {
-  _id: string;
-  name: string;
-  slug: string;
-  brand: string;
-  category: string;
-  subcategory?: string;
-  description?: string | string[];
-  tags?: string[];
-  images: { url: string }[];
-  variants: {
-    variant: string;
-    mrp: number;
-    discountedPrice: number;
-  }[];
-  isActive: boolean;
-};
+const bestSellers = [
+  {
+    id: 6,
+    name: "Lotus Heels",
+    price: "₹ 2,999",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 50%",
+    img: "https://i.pinimg.com/736x/a5/68/ed/a568ed4b24c4b633875d376c179d38d6.jpg",
+  },
+  {
+    id: 7,
+    name: "Coral Heels",
+    price: "₹ 3,100",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 48%",
+    img: "https://i.pinimg.com/1200x/79/a5/f7/79a5f7c3c281f588784fa118ee51a0bb.jpg",
+  },
+  {
+    id: 8,
+    name: "Pearl Heels",
+    price: "₹ 2,899",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 52%",
+    img: "https://i.pinimg.com/736x/cf/d5/fa/cfd5fa6e9e1c1618d660037d9582c327.jpg",
+  },
+  {
+    id: 9,
+    name: "Ruby Heels",
+    price: "₹ 2,650",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 56%",
+    img: "https://i.pinimg.com/736x/d6/26/44/d6264419fa9d18e4aaafc7b9d09dc5de.jpg",
+  },
+  {
+    id: 10,
+    name: "Emerald Heels",
+    price: "₹ 2,800",
+    oldPrice: "₹ 5,999",
+    discount: "SAVE 53%",
+    img: "https://i.pinimg.com/1200x/ed/44/0d/ed440d588b736bf1f538d7675d24bb20.jpg",
+  },
+];
 
-export default function BestsellerSection() {
-  const [bestsellers, setBestsellers] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const scrollRef = useRef<HTMLDivElement>(null);
+export default function ProductCarousel() {
+  const [activeTab, setActiveTab] = useState("new");
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const isCartOpen = useCartStore((state) => state.isOpen);
-  const toggleCart = useCartStore((state) => state.toggleCart);
+  const itemsPerPage = 5;
+  const products = activeTab === "new" ? newArrivals : bestSellers;
+  const totalPages = Math.ceil(products.length / itemsPerPage);
 
-  const fetchBestsellers = useCallback(async () => {
-    try {
-      const res = await fetch('https://craftra-backend.onrender.com/api/products');
-      const data: Product[] = await res.json();
-      const filtered = data.filter((product) => product.tags?.includes('bestseller'));
-      setBestsellers(filtered);
-    } catch (err) {
-      console.error('Failed to fetch bestsellers', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchBestsellers();
-  }, [fetchBestsellers]);
-
-  const scrollBy = (offset: number) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
-    }
+  const handlePrev = () => {
+    setCurrentPage((prev) => (prev > 0 ? prev - 1 : totalPages - 1));
   };
 
+  const handleNext = () => {
+    setCurrentPage((prev) => (prev < totalPages - 1 ? prev + 1 : 0));
+  };
+
+  const visibleProducts = products.slice(
+    currentPage * itemsPerPage,
+    currentPage * itemsPerPage + itemsPerPage
+  );
+
   return (
-    <>
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .product-hover:hover {
-          transform: scale(1.02);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .product-hover {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        @keyframes shimmer {
-          0% {
-            background-position: -450px 0;
-          }
-          100% {
-            background-position: 450px 0;
-          }
-        }
-        .shimmer {
-          background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
-          background-size: 1000px 100%;
-          animation: shimmer 1.2s infinite linear;
-        }
-      `}</style>
+    <div className="bg-[#800000] py-8 relative">
+      {/* Arrows */}
+      <button
+        onClick={handlePrev}
+        className="absolute left-4 top-[45%] w-10 h-10 rounded-full border-2 border-orange-400 flex items-center justify-center text-white z-10"
+      >
+        <FaChevronLeft />
+      </button>
 
-      <section className="py-12 bg-[#F7CFD8] relative z-10 w-full overflow-hidden">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-10 sm:mb-12">
-          B E S T S E L L E R
-        </h2>
+      <button
+        onClick={handleNext}
+        className="absolute right-4 top-[45%] w-10 h-10 rounded-full border-2 border-orange-400 flex items-center justify-center text-white z-10"
+      >
+        <FaChevronRight />
+      </button>
 
-        {/* Arrows */}
-        <div className="relative">
+      {/* Tabs (centered) */}
+      <div className="flex justify-center mb-6">
+        <div className="space-x-2">
           <button
-            onClick={() => scrollBy(-300)}
-            className="hidden md:flex items-center justify-center absolute left-0 top-[40%] z-20 w-10 h-10 bg-white border rounded-full shadow hover:bg-gray-100 transition"
+            onClick={() => {
+              setActiveTab("new");
+              setCurrentPage(0);
+            }}
+            className={`px-4 py-1 border ${
+              activeTab === "new"
+                ? "bg-orange-500 text-white font-semibold"
+                : "bg-white text-[#800000] font-semibold"
+            }`}
           >
-            <ChevronLeft className="w-5 h-5 text-gray-700" />
+            NEW ARRIVALS
           </button>
-
           <button
-            onClick={() => scrollBy(300)}
-            className="hidden md:flex items-center justify-center absolute right-0 top-[40%] z-20 w-10 h-10 bg-white border rounded-full shadow hover:bg-gray-100 transition"
+            onClick={() => {
+              setActiveTab("bestsellers");
+              setCurrentPage(0);
+            }}
+            className={`px-4 py-1 border ${
+              activeTab === "bestsellers"
+                ? "bg-orange-500 text-white font-semibold"
+                : "bg-white text-[#800000] font-semibold"
+            }`}
           >
-            <ChevronRight className="w-5 h-5 text-gray-700" />
+            THE BESTSELLERS
           </button>
+        </div>
+      </div>
 
-          {/* Horizontal Scroll Wrapper */}
-          <div className="w-full overflow-x-auto overflow-y-hidden no-scrollbar">
-            <div
-              ref={scrollRef}
-              className="flex gap-4 px-4 sm:px-6 scroll-smooth snap-x snap-mandatory touch-pan-x h-[370px]"
-              style={{ minWidth: '100%' }}
-            >
-              {loading
-                ? Array.from({ length: 7 }).map((_, idx) => (
-                    <div
-                      key={idx}
-                      className="w-[250px] h-[350px] bg-white rounded-xl shadow flex-shrink-0 snap-start overflow-hidden"
-                    >
-                      <div className="h-2/3 shimmer" />
-                      <div className="p-4 space-y-3">
-                        <div className="h-4 w-3/4 rounded shimmer" />
-                        <div className="h-4 w-1/2 rounded shimmer" />
-                        <div className="h-6 w-1/3 rounded shimmer" />
-                      </div>
-                    </div>
-                  ))
-                : bestsellers.map((product) => (
-                    <div
-                      key={product._id}
-                      className="w-[250px] flex-shrink-0 snap-start product-hover"
-                    >
-                      <ProductCard
-                        product={product}
-                        onClick={() => router.push(`/collection/${product.slug}`)}
-                      />
-                    </div>
-                  ))}
+      {/* Product Cards */}
+      <div className="grid grid-cols-5 gap-6 px-16">
+        {visibleProducts.map((product) => (
+          <div key={product.id} className="relative">
+            <img
+              src={product.img}
+              alt={product.name}
+              className="w-full h-[300px] object-cover"
+            />
+            {/* Discount Badge */}
+            <span className="absolute top-2 right-2 bg-white text-black text-xs px-2 py-1 shadow">
+              {product.discount}
+            </span>
+            {/* Details */}
+            <div className="text-center mt-3 text-white">
+              <h3 className="font-medium">{product.name}</h3>
+              <div className="space-x-2">
+                <span className="text-white">{product.price}</span>
+                <span className="text-gray-300 line-through">
+                  {product.oldPrice}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* View All Button */}
-        <div className="mt-10 sm:mt-14 flex justify-center">
-          <button
-            onClick={() => router.push('/bestsellers')}
-            className="px-6 py-3 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-800 transition"
-          >
-            View All
-          </button>
-        </div>
-      </section>
-
-      {/* Cart Drawer */}
-      {isCartOpen && (
-        <div
-          className="fixed inset-0 z-[50] bg-black bg-opacity-50 flex justify-end"
-          onClick={() => toggleCart(false)}
-        >
-          <div
-            className="w-full sm:w-[400px] bg-white h-full shadow-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CartDrawer isOpen={isCartOpen} onClose={() => toggleCart(false)} />
-          </div>
-        </div>
-      )}
-
-      {/* Decorative SVG */}
-      <div className="-mt-12 overflow-hidden leading-none rotate-180 bg-[#EBFFD9]">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-24">
-          <path
-            d="M0,0 C100,50 150,-30 300,30 C450,90 550,-20 700,40 C850,100 1000,-10 1200,50 L1200,120 L0,120 Z"
-            fill="#F7CFD8"
-          />
-        </svg>
+        ))}
       </div>
-    </>
+    </div>
   );
 }

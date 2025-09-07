@@ -1,63 +1,86 @@
 "use client";
 import React from "react";
 
-interface ColumnProps {
-  imageSrc: string;
-  heading: string;
-  paragraph: string;
-  reverse?: boolean;
-}
-
-export function Column({
-  imageSrc,
-  heading,
-  paragraph,
-  reverse = false,
-}: ColumnProps) {
+export function Column() {
   return (
-    <div
-      className={`flex flex-col md:flex-row ${
-        reverse ? "md:flex-row-reverse" : ""
-      } items-center bg-[#f2ffe6] px-4 sm:px-6 md:px-12 lg:px-20 py-10 sm:py-14 md:py-20 gap-8 sm:gap-10 transition-all duration-300`}
-    >
-      {/* Image Block */}
-      <div className="w-full md:w-1/2">
-        <img
-          src={imageSrc}
-          alt={heading}
-          className="w-full h-64 sm:h-80 md:h-[28rem] object-cover rounded-2xl sm:rounded-3xl shadow-xl hover:scale-105 transition-transform duration-500"
-        />
+    <section className="w-full flex flex-col gap-20 py-10 px-4 md:px-20 bg-[#f5f1f0]">
+      {/* First Section: Image Left, Text Right */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10">
+        {/* Left Side Image */}
+        <div className="w-full md:w-1/2 flex justify-center">
+          <img
+            src="https://i.pinimg.com/1200x/54/16/39/54163940fe7347b72943f8c77537382c.jpg"
+            alt="Brown Shoes"
+            className="w-[500px] h-[400px] object-cover rounded-md"
+          />
+        </div>
+
+        {/* Right Side Content */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center h-[400px]">
+          <div className="text-center md:text-center mb-4">
+            <p className="text-base md:text-lg text-gray-700 mb-1">
+              A refined new direction,
+            </p>
+            
+          </div>
+
+          <div className="flex flex-col items-center">
+            <div className="bg-white p-4 rounded-md shadow-md mb-4 w-[180px] md:w-[200px]">
+              <img
+                src="https://i.pinimg.com/736x/c9/a3/67/c9a367926937502e3151f24245c1bd22.jpg"
+                alt="Grey Mules"
+                className="w-[160px] h-[160px] object-cover mb-2"
+              />
+              <p className="text-gray-800 font-medium text-sm md:text-base text-center">
+                Caia - Stone Grey (Mule)
+              </p>
+              <p className="text-gray-500 text-sm text-center">MRP ₹ 9,690</p>
+            </div>
+            <button className="px-8 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition">
+              View Product
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Text Block */}
-      <div className="w-full md:w-1/2 text-center md:text-left space-y-6 px-2 sm:px-4">
-        <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">
-          {heading}
-          <span className="block w-16 sm:w-20 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-500 mt-2 mx-auto md:mx-0 rounded-full" />
-        </h2>
-        <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed">
-          {paragraph}
-        </p>
+      {/* Second Section: Text Left, Image Right */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10">
+        {/* Left Side Content (Vertically Centered) */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:items-center h-[400px]">
+          <div className="text-center md:text-left mb-4">
+            <p className="text-base md:text-lg text-gray-700 mb-1">
+              Experience modern elegance,
+            </p>
+            
+          </div>
+
+          <div className="flex flex-col items-center">
+            <div className="bg-white p-4 rounded-md shadow-md mb-4 w-[180px] md:w-[200px]">
+              <img
+                src="https://i.pinimg.com/1200x/8b/7d/33/8b7d33b213550e2bd5fa3750eb51be81.jpg"
+                alt="Shoes Product"
+                className="w-[160px] h-[160px] object-cover mb-2"
+              />
+              <p className="text-gray-800 font-medium text-sm md:text-base text-center">
+                Nova - Midnight Black
+              </p>
+              <p className="text-gray-500 text-sm text-center">MRP ₹ 11,200</p>
+            </div>
+            <button className="px-8 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition">
+              View Product
+            </button>
+          </div>
+        </div>
+
+        {/* Right Side Image */}
+        <div className="w-full md:w-1/2 flex justify-center">
+          <img
+            src="https://i.pinimg.com/1200x/c8/c8/67/c8c8679919f71bafc23fb5cc3ab91ffc.jpg"
+            alt="Shoes Product"
+            className="w-[500px] h-[400px] object-cover rounded-md"
+          />
+        </div>
       </div>
-    </div>
-  );
-}
-
-export default function ColumnSection() {
-  return (
-    <section className="bg-[#f2ffe6]">
-      <Column
-        imageSrc="/carousel/bestseller2.jpg"
-        heading="Unleash Your Creativity"
-        paragraph="Explore our vibrant collection of art supplies, stationery, and handcrafted pieces designed to inspire your every day."
-      />
-
-      <Column
-        imageSrc="/carousel/bestseller4.jpg"
-        heading="Craft with Purpose"
-        paragraph="Whether you're journaling, drawing, or decorating, our carefully curated tools help turn ideas into masterpieces."
-        reverse
-      />
     </section>
   );
 }

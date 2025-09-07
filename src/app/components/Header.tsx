@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaSearch, FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
+import { FaSearch, FaShoppingBag, FaUser } from "react-icons/fa";
+import Image from "next/image";
 import CartDrawer from "./CartDrawer";
 import { useCartStore } from "../store/cartStore";
 import type { CartItem } from "../store/cartStore";
@@ -10,8 +11,6 @@ import type { CartItem } from "../store/cartStore";
 export default function Header() {
   const router = useRouter();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [, setShowSearch] = useState(false);
 
   const cartItems = useCartStore((state: { items: CartItem[] }) => state.items);
   const cartCount = cartItems.reduce(
@@ -21,131 +20,143 @@ export default function Header() {
 
   const handleNavClick = (path: string) => {
     router.push(path);
-    setMobileNavOpen(false);
   };
+
+  const promoText =
+    '| AVAIL EXTRA 15% OFF - USE CODE "FESTIVE15" | CLEARANCE SALE | FREE SHIPPING OVER ₹999 | LIMITED TIME OFFER |';
 
   return (
     <>
-      <div className="sticky top-0 z-30 bg-white shadow-md">
-        <header className="flex items-center justify-between px-4 sm:px-6 lg:px-10 py-4 bg-[#FFF2E1]">
-          {/* Left Section: Hamburger + Logo */}
-          <div className="flex items-center gap-4">
-            {/* Mobile Hamburger */}
-            <button
-              className="lg:hidden text-xl text-gray-800"
-              onClick={() => setMobileNavOpen(true)}
-              aria-label="Open Menu"
-            >
-              <FaBars />
-            </button>
+      {/* Top Moving Promo Bar */}
+      <div className="w-full bg-[#7a0d2e] text-white text-sm py-2 overflow-hidden">
+        <div className="relative flex overflow-x-auto scrollbar-thin scrollbar-thumb-[#7a0d0d] scrollbar-track-[#6c0000ff]">
+          <div className="animate-marquee flex whitespace-nowrap w-1/2">
+            <span className="mx-4">{promoText}</span>
+          </div>
+          <div className="animate-marquee2 absolute top-0 flex whitespace-nowrap w-1/2"></div>
+        </div>
+      </div>
 
-            {/* Logo */}
-            <div
-              className="text-2xl sm:text-3xl font-extrabold text-gray-800 cursor-pointer tracking-wide font-comic"
-              onClick={() => handleNavClick("/")}
+      {/* Main Navbar */}
+      <div className="sticky top-0 z-30 bg-white border-b border-gray-200">
+        <header className="flex items-center justify-between px-6 lg:px-12 py-4">
+          {/* Left: Logo + Brand Name */}
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => handleNavClick("/")}
+          >
+            <Image
+              src="/logo1.png" // place logo1.jpg inside /public
+              alt="Count88 Logo"
+              width={60}
+              height={60}
+              className="object-contain"
+              priority
+            />
+            <span
+              className="text-xl font-extrabold tracking-wide"
+              style={{ color: "#7a0d2e" }}
             >
-              <span className="text-black">CRAF</span>
-              <span className="text-red-600">TЯA</span>
-            </div>
+              COUNT88
+            </span>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex gap-6 text-sm xl:text-base text-gray-800 items-center">
-            <button onClick={() => handleNavClick("/")} className="hover:underline">
-              Home
+          {/* Center: Nav Links */}
+          <nav className="hidden md:flex gap-8 text-sm font-medium tracking-wide text-black">
+            <button
+              onClick={() => handleNavClick("/categories")}
+              className="hover:text-gray-600  font-extrabold"
+            >
+              ALL CATEGORIES
             </button>
-            <button onClick={() => handleNavClick("/collection")} className="hover:underline">
-              Collection
+            <button
+              onClick={() => handleNavClick("/new")}
+              className="hover:text-gray-600 font-extrabold"
+            >
+              NEW IN
             </button>
-            <button onClick={() => handleNavClick("/blogs")} className="hover:underline">
-              Blogs
+            <button
+              onClick={() => handleNavClick("/footwear")}
+              className="hover:text-gray-600  font-extrabold"
+            >
+              MEN
             </button>
-            <button onClick={() => handleNavClick("/about")} className="hover:underline">
-              About Us
+            <button
+              onClick={() => handleNavClick("/purses")}
+              className="hover:text-gray-600 font-extrabold"
+            >
+              WOMEN
+            </button>
+            <button
+              onClick={() => handleNavClick("/sale")}
+              className="text-red-800 hover:text-red-900 font-extrabold"
+            >
+              SALE
             </button>
           </nav>
 
-          {/* Right Icons */}
-          <div className="flex items-center gap-4 text-gray-700 text-xl lg:gap-6">
+          {/* Right: Icons */}
+          <div
+            className="flex items-center gap-6 text-lg"
+            style={{ color: "#7a0d2e" }}
+          >
             <FaSearch
               className="cursor-pointer hover:text-black"
-              onClick={() => setShowSearch(true)}
+              onClick={() => handleNavClick("/search")}
             />
-            <div className="relative cursor-pointer" onClick={() => setIsCartOpen(true)}>
-              <FaShoppingCart className="hover:text-black" />
+            <div
+              className="relative cursor-pointer"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <FaShoppingBag className="hover:text-black" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5">
+                <span className="absolute -top-2 -right-2 bg-[#7a0d0d] text-white text-xs rounded-full px-1.5">
                   {cartCount}
                 </span>
               )}
             </div>
           </div>
         </header>
-
-        {/* Mobile Side Drawer Navigation */}
-        {mobileNavOpen && (
-          <div className="fixed inset-0 z-40">
-            {/* Backdrop */}
-            <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
-              onClick={() => setMobileNavOpen(false)}
-            />
-
-            {/* Drawer */}
-            <div className="absolute top-0 left-0 h-full w-[80%] max-w-sm bg-white shadow-xl rounded-tr-3xl rounded-br-3xl p-6 text-gray-800 animate-slide-in-left flex flex-col">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-8">
-                <div
-                  className="text-2xl font-extrabold tracking-wide font-comic cursor-pointer"
-                  onClick={() => handleNavClick("/")}
-                >
-                  <span className="text-black">CRAF</span>
-                  <span className="text-red-600">TЯA</span>
-                </div>
-                <button
-                  className="text-2xl text-gray-500 hover:text-red-500 transition"
-                  onClick={() => setMobileNavOpen(false)}
-                >
-                  <FaTimes />
-                </button>
-              </div>
-
-              {/* Nav links */}
-              <nav className="flex flex-col gap-4 overflow-y-auto">
-                {[
-                  { label: "Home", path: "/" },
-                  { label: "Collection", path: "/collection" },
-                  { label: "Blogs", path: "/blogs" },
-                  { label: "About Us", path: "/about" },
-                ].map(({ label, path }) => (
-                  <button
-                    key={path}
-                    onClick={() => handleNavClick(path)}
-                    className="py-3 px-4 text-left text-lg font-medium rounded-lg border border-gray-200 hover:bg-[#FFF2E1] active:scale-[0.98] transition"
-                  >
-                    {label}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-        )}
       </div>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
-      {/* Slide-in animation */}
+      {/* Animations + Scrollbar Styling */}
       <style jsx>{`
-        @keyframes slideInLeft {
+        @keyframes marquee {
           0% {
-            transform: translateX(-100%);
+            transform: translateX(100%);
           }
           100% {
-            transform: translateX(0%);
+            transform: translateX(-100%);
           }
         }
-        .animate-slide-in-left {
-          animation: slideInLeft 0.3s ease-out forwards;
+        @keyframes marquee2 {
+          0% {
+            transform: translateX(0%);
+          }
+          100% {
+            transform: translateX(-200%);
+          }
+        }
+        .animate-marquee {
+          animation: marquee 40s linear infinite; /* slower */
+        }
+        .animate-marquee2 {
+          animation: marquee2 40s linear infinite; /* slower */
+        }
+
+        /* Thin Scrollbar */
+        .scrollbar-thin::-webkit-scrollbar {
+          height: 4px; /* horizontal scrollbar thickness */
+          width: 4px; /* vertical scrollbar thickness if needed */
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background-color: #7a0d2e;
+          border-radius: 9999px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background-color: #7a0d2e;
         }
       `}</style>
     </>

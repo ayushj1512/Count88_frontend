@@ -1,48 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // import useRouter
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const slides = [
-  {
-    image:
-      "https://i.pinimg.com/736x/eb/47/e0/eb47e0c084f7eaae93e6de5f83a11bff.jpg",
-    title: "Whimsical Wall Art",
-    subtitle: "Add joy and personality to your spaces.",
-    button: "Explore Collection",
-    position: "justify-center items-center text-center",
-  },
-  {
-    image: "/carousel/carousel2.jpg",
-    title: "Pastel Perfection",
-    subtitle: "Where calm hues meet creativity.",
-    button: "Shop Pastels",
-    position:
-      "justify-start items-start text-left pl-4 sm:pl-8 md:pl-10 pt-4 sm:pt-6 md:pt-10",
-  },
-  {
-    image: "/carousel/carousel3.jpg",
-    title: "Crafted With Love",
-    subtitle: "Every piece tells a story.",
-    button: "Browse Now",
-    position:
-      "justify-end items-end text-right pr-4 sm:pr-8 md:pr-10 pb-4 sm:pb-6 md:pb-10",
-  },
-  {
-    image:
-      "https://i.pinimg.com/736x/14/04/78/14047897ee0e078e85ae9363f88e35ef.jpg",
-    title: "Inspired by Nature",
-    subtitle: "Discover earthy tones and organic textures.",
-    button: "See Nature Picks",
-    position: "justify-center items-start text-center pt-6 md:pt-10",
-  },
+  { image: "/banner1.png", position: "justify-end items-end text-right pr-4 sm:pr-8 md:pr-10 pb-4 sm:pb-6 md:pb-10" },
+  { image: "/banner2.png", position: "justify-end items-end text-right pr-4 sm:pr-8 md:pr-10 pb-4 sm:pb-6 md:pb-10" },
+  { image: "/banner4.png", position: "justify-center items-start text-center pt-6 md:pt-10" },
+];
+
+// Category section data
+const categories = [
+  { name: "JUTTIS", image: "/category1.png", link: "/categories/juttis" },
+  { name: "HEELS", image: "/category2.png", link: "/categories/heels" },
+  { name: "POTLIS", image: "/category3.png", link: "/categories/potlis" },
+  { name: "MULES", image: "/category4.png", link: "/categories/mules" },
+  { name: "MEN", image: "/category5.png", link: "/categories/men" },
 ];
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
   const [blink, setBlink] = useState(false);
-  const router = useRouter(); // initialize router
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,60 +36,91 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative w-full h-[320px] sm:h-[400px] md:h-[500px] lg:h-[580px] xl:h-[640px] overflow-hidden font-[Montserrat]">
-      {slides.map((slide, index) => (
-        <div
-          key={index}
-          className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
-            index === current ? "opacity-100 z-0" : "opacity-0 z-0"
-          } ${index === current && blink ? "animate-blink" : ""}`}
-        >
-          <Image
-            src={slide.image}
-            alt={`Slide ${index + 1}`}
-            fill
-            priority={index === 0} // prioritize first image
-            className="object-cover"
-          />
-        </div>
-      ))}
-
-      <div
-        className={`absolute top-0 left-0 w-full h-full z-10 flex ${slides[current].position} bg-black/30 transition-all duration-700`}
-      >
-        <div className="text-white max-w-md sm:max-w-lg md:max-w-xl space-y-3 sm:space-y-4 p-4 sm:p-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-lg">
-            {slides[current].title}
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg drop-shadow">
-            {slides[current].subtitle}
-          </p>
-          <button
-            className="bg-gray-800 text-white px-5 sm:px-6 py-2 rounded-xl shadow hover:bg-gray-700 transition"
-            onClick={() => router.push("/collection")} // navigate on click
+    <>
+      {/* Hero Banner Section */}
+      <section className="relative w-full h-[200px] sm:h-[280px] md:h-[360px] lg:h-[420px] xl:h-[480px] overflow-hidden font-[Montserrat]">
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
+              index === current ? "opacity-100 z-0" : "opacity-0 z-0"
+            } ${index === current && blink ? "animate-blink" : ""}`}
           >
-            {slides[current].button}
-          </button>
+            <Image
+              src={slide.image}
+              alt={`Slide ${index + 1}`}
+              fill
+              priority={index === 0}
+              className="object-cover"
+            />
+          </div>
+        ))}
+
+        {slides[current].title && (
+          <div
+            className={`absolute top-0 left-0 w-full h-full z-10 flex ${slides[current].position} bg-black/30 transition-all duration-700`}
+          >
+            <div className="text-white max-w-md sm:max-w-lg md:max-w-xl space-y-3 sm:space-y-4 p-4 sm:p-6">
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold drop-shadow-lg">
+                {slides[current].title}
+              </h2>
+              <p className="text-xs sm:text-sm md:text-base drop-shadow">
+                {slides[current].subtitle}
+              </p>
+              <button
+                className="bg-[#bdb4a9] text-black px-4 sm:px-5 py-1.5 rounded-lg shadow hover:bg-[#a89c90] transition text-sm sm:text-base"
+                onClick={() => router.push("/collection")}
+              >
+                {slides[current].button}
+              </button>
+            </div>
+          </div>
+        )}
+
+        <style jsx>{`
+          .animate-blink {
+            animation: blink 0.3s ease-in-out;
+          }
+
+          @keyframes blink {
+            0% {
+              opacity: 1;
+            }
+            50% {
+              opacity: 0.2;
+            }
+            100% {
+              opacity: 1;
+            }
+          }
+        `}</style>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 justify-items-center">
+            {categories.map((cat) => (
+              <div
+                key={cat.name}
+                className="flex flex-col items-center cursor-pointer group"
+                onClick={() => router.push(cat.link)}
+              >
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  width={160}
+                  height={160}
+                  className="object-contain group-hover:scale-110 transition-transform"
+                />
+                <p className="mt-4 text-base font-medium tracking-wide text-gray-800">
+                  {cat.name}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-
-      <style jsx>{`
-        .animate-blink {
-          animation: blink 0.3s ease-in-out;
-        }
-
-        @keyframes blink {
-          0% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.2;
-          }
-          100% {
-            opacity: 1;
-          }
-        }
-      `}</style>
-    </section>
+      </section>
+    </>
   );
 }
