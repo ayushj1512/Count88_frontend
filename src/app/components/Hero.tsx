@@ -7,26 +7,24 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const slides = [
   {
-    image: "/assets/banner7.jpg",
-    position:
-      "justify-end items-end text-right pr-4 sm:pr-8 md:pr-12 pb-4 sm:pb-8 md:pb-12",
-    title: "Elegant Ethnic Wear",
-    subtitle: "Step into tradition with style and grace",
-    button: "Shop Collection",
+    image: "/assets/banner1.png",
+    position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10",
+    title: "Step into Style",
+    subtitle: "Discover our latest collection",
+    button: "Shop Now",
   },
   {
-    image: "/assets/banner3.png",
-    position:
-      "justify-left items-end text-left pl-8 pr-4 sm:pr-8 md:pr-12 pb-4 sm:pb-8 md:pb-12",
-    title: "Luxury Juttis & Heels",
-    subtitle: "Handcrafted with love and finesse",
-    button: "Explore Now",
+    image: "/assets/banner2.png",
+    position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10",
+    title: "Elegant & Comfortable",
+    subtitle: "Perfect pair for every occasion",
+    button: "Explore",
   },
   {
-    image: "/assets/banner9.png",
+    image: "/assets/banner4.png",
     position: "justify-center items-start text-center pt-6 md:pt-10",
-    title: "Vibrant Collection",
-    subtitle: "Perfect for festive occasions",
+    title: "New Arrivals",
+    subtitle: "Fresh designs just for you",
     button: "View Collection",
   },
 ];
@@ -97,7 +95,6 @@ export default function Hero() {
                   {/* Text Overlay */}
                   <div className={`absolute inset-0 z-10 flex ${slide.position} bg-black/20`}>
                     <motion.div
-                      key={slide.title}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
