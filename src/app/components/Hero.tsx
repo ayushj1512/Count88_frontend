@@ -5,9 +5,20 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const slides = [
-  { image: "/assets/banner1.png", position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10" },
-  { image: "/assets/banner2.png", position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10" },
-  { image: "/assets/banner4.png", position: "justify-center items-start text-center pt-6 md:pt-10" },
+  {
+    image: "/assets/banner1.png",
+    position:
+      "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10",
+  },
+  {
+    image: "/assets/banner2.png",
+    position:
+      "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10",
+  },
+  {
+    image: "/assets/banner4.png",
+    position: "justify-center items-start text-center pt-6 md:pt-10",
+  },
 ];
 
 // Category section data
@@ -56,32 +67,10 @@ export default function Hero() {
           </div>
         ))}
 
-        {slides[current].title && (
-          <div
-            className={`absolute inset-0 z-10 flex ${slides[current].position} bg-black/30 transition-all duration-700`}
-          >
-            <div className="text-white max-w-xs sm:max-w-md md:max-w-xl space-y-2 sm:space-y-4 p-3 sm:p-6">
-              <h2 className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold drop-shadow-lg">
-                {slides[current].title}
-              </h2>
-              <p className="text-xs sm:text-sm md:text-base drop-shadow">
-                {slides[current].subtitle}
-              </p>
-              <button
-                className="bg-[#bdb4a9] text-black px-3 sm:px-5 py-1.5 rounded-lg shadow hover:bg-[#a89c90] transition text-xs sm:text-sm md:text-base"
-                onClick={() => router.push("/collection")}
-              >
-                {slides[current].button}
-              </button>
-            </div>
-          </div>
-        )}
-
         <style jsx>{`
           .animate-blink {
             animation: blink 0.3s ease-in-out;
           }
-
           @keyframes blink {
             0% {
               opacity: 1;
