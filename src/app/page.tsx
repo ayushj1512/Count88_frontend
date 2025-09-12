@@ -5,9 +5,10 @@ import { FaWhatsapp } from "react-icons/fa";
 
 import Hero from "./components/Hero";
 // import ColumnSection from "./components/Column";
-import { Column } from "./components/Column";
+import ColumnLayout from "./components/Column";
 import ShopByCategory from "./components/FromCustomers";
 import BestsellerSection from "./components/Bestsellers";
+
 // import OffersSection from "./components/OffersSection";
 // import BrandPartners from "./components/BrandPartners";
 import { useCartStore } from "./store/cartStore";
@@ -27,7 +28,7 @@ export default function Home() {
 
       {/* Column Section */}
 
-      <Column
+      <ColumnLayout
 />
 
 

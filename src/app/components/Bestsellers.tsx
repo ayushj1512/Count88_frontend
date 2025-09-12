@@ -110,79 +110,94 @@ export default function ProductCarousel() {
   );
 
   return (
-    <div className="bg-[#800000] py-8 relative">
-      {/* Arrows */}
-      <button
-        onClick={handlePrev}
-        className="absolute left-4 top-[45%] w-10 h-10 rounded-full border-2 border-orange-400 flex items-center justify-center text-white z-10"
-      >
-        <FaChevronLeft />
-      </button>
+    <div
+      className="relative py-6 sm:py-8 bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "url('https://i.pinimg.com/1200x/79/38/da/7938da1e0808db25f2f31fba5a2e0e1e.jpg')",
+      }}
+    >
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-[#800000]/80"></div>
 
-      <button
-        onClick={handleNext}
-        className="absolute right-4 top-[45%] w-10 h-10 rounded-full border-2 border-orange-400 flex items-center justify-center text-white z-10"
-      >
-        <FaChevronRight />
-      </button>
+      <div className="relative z-10">
+        {/* Navigation Arrows */}
+        <button
+          onClick={handlePrev}
+          className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-orange-400 flex items-center justify-center text-white bg-[#800000]/70 hover:bg-orange-500 transition"
+        >
+          <FaChevronLeft size={14} />
+        </button>
 
-      {/* Tabs (centered) */}
-      <div className="flex justify-center mb-6">
-        <div className="space-x-2">
-          <button
-            onClick={() => {
-              setActiveTab("new");
-              setCurrentPage(0);
-            }}
-            className={`px-4 py-1 border ${
-              activeTab === "new"
-                ? "bg-orange-500 text-white font-semibold"
-                : "bg-white text-[#800000] font-semibold"
-            }`}
-          >
-            NEW ARRIVALS
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("bestsellers");
-              setCurrentPage(0);
-            }}
-            className={`px-4 py-1 border ${
-              activeTab === "bestsellers"
-                ? "bg-orange-500 text-white font-semibold"
-                : "bg-white text-[#800000] font-semibold"
-            }`}
-          >
-            THE BESTSELLERS
-          </button>
+        <button
+          onClick={handleNext}
+          className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-orange-400 flex items-center justify-center text-white bg-[#800000]/70 hover:bg-orange-500 transition"
+        >
+          <FaChevronRight size={14} />
+        </button>
+
+        {/* Tabs */}
+        <div className="flex justify-center mb-4 sm:mb-6">
+          <div className="flex flex-wrap gap-2 sm:space-x-2">
+            <button
+              onClick={() => {
+                setActiveTab("new");
+                setCurrentPage(0);
+              }}
+              className={`px-3 sm:px-4 py-1.5 text-sm sm:text-base rounded-md ${
+                activeTab === "new"
+                  ? "bg-orange-500 text-white font-semibold"
+                  : "bg-white text-[#800000] font-semibold"
+              }`}
+            >
+              NEW ARRIVALS
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("bestsellers");
+                setCurrentPage(0);
+              }}
+              className={`px-3 sm:px-4 py-1.5 text-sm sm:text-base rounded-md ${
+                activeTab === "bestsellers"
+                  ? "bg-orange-500 text-white font-semibold"
+                  : "bg-white text-[#800000] font-semibold"
+              }`}
+            >
+              THE BESTSELLERS
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Product Cards */}
-      <div className="grid grid-cols-5 gap-6 px-16">
-        {visibleProducts.map((product) => (
-          <div key={product.id} className="relative">
-            <img
-              src={product.img}
-              alt={product.name}
-              className="w-full h-[300px] object-cover"
-            />
-            {/* Discount Badge */}
-            <span className="absolute top-2 right-2 bg-white text-black text-xs px-2 py-1 shadow">
-              {product.discount}
-            </span>
-            {/* Details */}
-            <div className="text-center mt-3 text-white">
-              <h3 className="font-medium">{product.name}</h3>
-              <div className="space-x-2">
-                <span className="text-white">{product.price}</span>
-                <span className="text-gray-300 line-through">
-                  {product.oldPrice}
-                </span>
+        {/* Product Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6 px-3 sm:px-6 lg:px-12">
+          {visibleProducts.map((product) => (
+            <div key={product.id} className="relative">
+              <img
+                src={product.img}
+                alt={product.name}
+                className="w-full h-40 sm:h-56 md:h-64 lg:h-72 object-cover rounded-lg shadow-lg"
+              />
+              {/* Discount Badge */}
+              <span className="absolute top-2 right-2 bg-white text-black text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 shadow rounded">
+                {product.discount}
+              </span>
+              {/* Details */}
+              <div className="text-center mt-2 sm:mt-3 text-white">
+                <h3 className="font-medium text-xs sm:text-sm md:text-base">
+                  {product.name}
+                </h3>
+                <div className="space-x-1 sm:space-x-2 text-[11px] sm:text-sm md:text-base">
+                  <span className="text-white font-semibold">
+                    {product.price}
+                  </span>
+                  <span className="text-gray-300 line-through">
+                    {product.oldPrice}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -2,22 +2,22 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#FFF2E1] text-gray-800 border-t border-gray-200">
+    <footer className="bg-black text-white border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-sm sm:text-base">
 
         {/* Company Info */}
         <div>
-          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
             Craftra
           </h4>
-          <p className="text-gray-700 leading-relaxed">
+          <p className="text-white leading-relaxed">
             Crafted for creators — explore thoughtfully curated art and stationery supplies made with love.
           </p>
         </div>
 
         {/* Quick Links */}
         <div>
-          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
             Company Info
           </h4>
           <ul className="space-y-2 text-gray-700">
@@ -41,7 +41,7 @@ export default function Footer() {
 
         {/* Customer Service */}
         <div>
-          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
             Customer Service
           </h4>
           <ul className="space-y-2 text-gray-700">
@@ -70,7 +70,7 @@ export default function Footer() {
 
         {/* Contact Info */}
         <div>
-          <h4 className="font-semibold text-[#8B5E3C] mb-3 uppercase tracking-wide text-lg">
+          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
             Get In Touch
           </h4>
           <p className="text-gray-700">

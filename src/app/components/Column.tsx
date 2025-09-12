@@ -1,83 +1,88 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 
-export function Column() {
+export default function ColumnLayout() {
+  const router = useRouter();
+
+  // Example product data (replace with real data)
+  const products = [
+    { id: 1, name: "Heels", image: "https://i.pinimg.com/736x/e3/6d/d0/e36dd01168fd5cc080db6421c75fae76.jpg" },
+    { id: 2, name: "Boots", image: "https://img.fantaskycdn.com/7da4fa4a456952725f98a78448ee5a60_1024x.jpeg" },
+    { id: 3, name: "Flats", image: "https://i.pinimg.com/1200x/2c/5f/ce/2c5fce3b141f356bd107c03ae0265462.jpg" },
+    { id: 4, name: "Shoes", image: "https://i.pinimg.com/736x/98/40/64/98406426afad989b73c36cec7386a028.jpg" },
+    { id: 5, name: "Workwear Smart", image: "https://i.pinimg.com/1200x/c1/7e/ac/c17eac2e6facd6fcf79387622c308a57.jpg" },
+    { id: 6, name: "Bold Black", image: "https://i.pinimg.com/736x/54/29/86/54298698555b135ed05dd42285af7d79.jpg" },
+    { id: 7, name: "Weekend Relaxed", image: "https://i.pinimg.com/1200x/26/cb/92/26cb9265d0cecff3a71a4971a5f1e5b3.jpg" },
+    { id: 8, name: "Formal Blue", image: "https://i.pinimg.com/1200x/04/0c/06/040c06af2f0eb3f380b11f6b795bf33b.jpg" },
+  ];
+
+  // Reusable product card
+  const ProductCard = ({ product }: any) => (
+    <div
+      onClick={() => router.push("/collections")}
+      className="relative rounded-xl shadow cursor-pointer overflow-hidden h-64"
+    >
+      {/* Background Image */}
+      <img
+        src={product.image}
+        alt={product.name}
+        className="w-full h-full object-cover"
+      />
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      {/* Product Name */}
+      <span className="absolute bottom-3 left-3 text-white font-medium text-lg drop-shadow">
+        {product.name}
+      </span>
+    </div>
+  );
+
   return (
-    <section className="w-full flex flex-col gap-20 py-10 px-4 md:px-20 bg-[#f5f1f0]">
-      {/* First Section: Image Left, Text Right */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10">
-        {/* Left Side Image */}
-        <div className="w-full md:w-1/2 flex justify-center">
+    <section className="w-full px-4 py-8">
+      {/* Top Row */}
+      <div className="grid grid-cols-5 gap-4 mb-6">
+        {/* Small Banner (equal height to 4 products) */}
+        <div className="col-span-2">
           <img
-            src="https://i.pinimg.com/1200x/54/16/39/54163940fe7347b72943f8c77537382c.jpg"
-            alt="Brown Shoes"
-            className="w-[500px] h-[400px] object-cover rounded-md"
+            src="https://i.pinimg.com/1200x/07/a8/7f/07a87f16f9df32a189f2bfebeb4163af.jpg"
+            alt="Small Banner"
+            className="w-full h-[32rem] object-cover rounded-xl shadow"
           />
         </div>
 
-        {/* Right Side Content */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center items-center h-[400px]">
-          <div className="text-center md:text-center mb-4">
-            <p className="text-base md:text-lg text-gray-700 mb-1">
-              A refined new direction,
-            </p>
-            
-          </div>
-
-          <div className="flex flex-col items-center">
-            <div className="bg-white p-4 rounded-md shadow-md mb-4 w-[180px] md:w-[200px]">
-              <img
-                src="https://i.pinimg.com/736x/c9/a3/67/c9a367926937502e3151f24245c1bd22.jpg"
-                alt="Grey Mules"
-                className="w-[160px] h-[160px] object-cover mb-2"
-              />
-              <p className="text-gray-800 font-medium text-sm md:text-base text-center">
-                Caia - Stone Grey (Mule)
-              </p>
-              <p className="text-gray-500 text-sm text-center">MRP ₹ 9,690</p>
-            </div>
-            <button className="px-8 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition">
-              View Product
-            </button>
-          </div>
+        {/* Four Product Cards (Right) */}
+        <div className="col-span-3 grid grid-cols-2 grid-rows-2 gap-4">
+          {products.slice(0, 4).map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
       </div>
 
-      {/* Second Section: Text Left, Image Right */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10">
-        {/* Left Side Content (Vertically Centered) */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:items-center h-[400px]">
-          <div className="text-center md:text-left mb-4">
-            <p className="text-base md:text-lg text-gray-700 mb-1">
-              Experience modern elegance,
-            </p>
-            
-          </div>
+      {/* Middle Full-Width Banner */}
+      <div className="w-full mb-6">
+        <img
+          src="/assets/banner6.png"
+          alt="Large Banner"
+          className="w-full h-64 sm:h-80 md:h-[28rem] object-cover rounded-xl shadow"
+        />
+      </div>
 
-          <div className="flex flex-col items-center">
-            <div className="bg-white p-4 rounded-md shadow-md mb-4 w-[180px] md:w-[200px]">
-              <img
-                src="https://i.pinimg.com/1200x/8b/7d/33/8b7d33b213550e2bd5fa3750eb51be81.jpg"
-                alt="Shoes Product"
-                className="w-[160px] h-[160px] object-cover mb-2"
-              />
-              <p className="text-gray-800 font-medium text-sm md:text-base text-center">
-                Nova - Midnight Black
-              </p>
-              <p className="text-gray-500 text-sm text-center">MRP ₹ 11,200</p>
-            </div>
-            <button className="px-8 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition">
-              View Product
-            </button>
-          </div>
+      {/* Bottom Row */}
+      <div className="grid grid-cols-5 gap-4">
+        {/* Four Product Cards (Left) */}
+        <div className="col-span-3 grid grid-cols-2 grid-rows-2 gap-4">
+          {products.slice(4, 8).map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
 
-        {/* Right Side Image */}
-        <div className="w-full md:w-1/2 flex justify-center">
+        {/* Right Banner (equal height to 4 products) */}
+        <div className="col-span-2">
           <img
-            src="https://i.pinimg.com/1200x/c8/c8/67/c8c8679919f71bafc23fb5cc3ab91ffc.jpg"
-            alt="Shoes Product"
-            className="w-[500px] h-[400px] object-cover rounded-md"
+            src="https://i.pinimg.com/1200x/ab/1f/60/ab1f60aa203d02a68ee9e22bea9a6cc0.jpg"
+            alt="Right Banner"
+            className="w-full h-[32rem] object-cover rounded-xl shadow"
           />
         </div>
       </div>

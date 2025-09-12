@@ -6,8 +6,7 @@ import Footer from "./components/Footer";
 import GATracker from "../app/components/GAtracker";
 
 export const metadata = {
-  title: "Craftra",
-  description: "Art and craft products",
+  title: "Count88",
 };
 
 export default function RootLayout({
