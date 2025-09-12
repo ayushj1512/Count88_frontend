@@ -7,25 +7,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const slides = [
   {
-    image: "/assets/banner1.png",
+    image: "/assets/banner3.png",
     position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10",
-    title: "Step into Style",
-    subtitle: "Discover our latest collection",
-    button: "Shop Now",
   },
   {
-    image: "/assets/banner2.png",
+  image: "/assets/banner3.png",
     position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10",
-    title: "Elegant & Comfortable",
-    subtitle: "Perfect pair for every occasion",
-    button: "Explore",
   },
   {
-    image: "/assets/banner4.png",
+   image: "/assets/banner3.png",
     position: "justify-center items-start text-center pt-6 md:pt-10",
-    title: "New Arrivals",
-    subtitle: "Fresh designs just for you",
-    button: "View Collection",
   },
 ];
 
@@ -91,30 +82,6 @@ export default function Hero() {
                     priority={index === 0}
                     className="object-cover"
                   />
-
-                  {/* Text Overlay */}
-                  <div className={`absolute inset-0 z-10 flex ${slide.position} bg-black/20`}>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ delay: 0.1, duration: 0.25, ease: "easeInOut" }}
-                      className="text-white max-w-xs sm:max-w-md md:max-w-xl space-y-2 sm:space-y-4 p-2 sm:p-6"
-                    >
-                      <h2 className="text-lg sm:text-3xl md:text-5xl lg:text-6xl font-bold">
-                        {slide.title}
-                      </h2>
-                      <p className="text-xs sm:text-base md:text-lg">{slide.subtitle}</p>
-                      <motion.button
-                        whileHover={{ scale: 1.08, backgroundColor: "#d4c6b5" }}
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-[#bdb4a9] text-black px-3 sm:px-6 py-1 sm:py-2 rounded-lg font-semibold text-xs sm:text-base md:text-lg"
-                        onClick={() => router.push("/collection")}
-                      >
-                        {slide.button}
-                      </motion.button>
-                    </motion.div>
-                  </div>
                 </motion.div>
               )
           )}
