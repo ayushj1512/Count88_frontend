@@ -1,98 +1,120 @@
 import Link from "next/link";
+import {
+  FaEnvelope,
+  FaPhone,
+  FaInstagram,
+  FaFacebookF,
+  FaTwitter,
+} from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-white border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-sm sm:text-base">
-
-        {/* Company Info */}
+    <footer className="bg-gradient-to-b from-black to-gray-900 text-gray-300">
+      <div className="max-w-full mx-auto px-6 sm:px-8 lg:px-10 py-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 text-sm">
+        
+        {/* Brand Info */}
         <div>
-          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
-            Craftra
+          <h4 className="font-extrabold text-[#cfa76a] mb-5 text-lg tracking-wide">
+            COUNT88
           </h4>
-          <p className="text-white leading-relaxed">
-            Crafted for creators — explore thoughtfully curated art and stationery supplies made with love.
+          <p className="leading-relaxed text-gray-400 text-sm">
+            A premium footwear brand redefining fashion with bold designs and uncompromising quality.
           </p>
+          <div className="flex space-x-4 mt-6">
+            <Link href="#" className="hover:text-[#cfa76a] transition-colors duration-300">
+              <FaInstagram size={20} />
+            </Link>
+            <Link href="#" className="hover:text-[#cfa76a] transition-colors duration-300">
+              <FaFacebookF size={20} />
+            </Link>
+            <Link href="#" className="hover:text-[#cfa76a] transition-colors duration-300">
+              <FaTwitter size={20} />
+            </Link>
+          </div>
         </div>
 
-        {/* Quick Links */}
+        {/* Company */}
         <div>
-          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
-            Company Info
+          <h4 className="font-semibold text-[#cfa76a] mb-5 uppercase tracking-wider text-sm">
+            Company
           </h4>
-          <ul className="space-y-2 text-gray-700">
+          <ul className="space-y-3 text-gray-400">
             <li>
-              <Link href="/about" className="hover:text-red-600 transition">
+              <Link href="/about" className="hover:text-[#cfa76a] transition-colors">
                 About Us
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="hover:text-red-600 transition">
+              <Link href="/contact" className="hover:text-[#cfa76a] transition-colors">
                 Contact
               </Link>
             </li>
             <li>
-              <Link href="/FAQ" className="hover:text-red-600 transition">
+              <Link href="/FAQ" className="hover:text-[#cfa76a] transition-colors">
                 Help & FAQs
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Customer Service */}
+        {/* Support */}
         <div>
-          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
-            Customer Service
+          <h4 className="font-semibold text-[#cfa76a] mb-5 uppercase tracking-wider text-sm">
+            Support
           </h4>
-          <ul className="space-y-2 text-gray-700">
+          <ul className="space-y-3 text-gray-400">
             <li>
-              <Link href="/returns" className="hover:text-red-600 transition">
+              <Link href="/returns" className="hover:text-[#cfa76a] transition-colors">
                 Returns & Exchanges
               </Link>
             </li>
             <li>
-              <Link href="/shipping" className="hover:text-red-600 transition">
+              <Link href="/shipping" className="hover:text-[#cfa76a] transition-colors">
                 Shipping Policy
               </Link>
             </li>
             <li>
-              <Link href="/privacypolicy" className="hover:text-red-600 transition">
+              <Link href="/privacypolicy" className="hover:text-[#cfa76a] transition-colors">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link href="/refund" className="hover:text-red-600 transition">
+              <Link href="/refund" className="hover:text-[#cfa76a] transition-colors">
                 Refund & Cancellation
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Contact Info */}
+        {/* Contact */}
         <div>
-          <h4 className="font-semibold text-white mb-3 uppercase tracking-wide text-lg">
-            Get In Touch
+          <h4 className="font-semibold text-[#cfa76a] mb-5 uppercase tracking-wider text-sm">
+            Contact
           </h4>
-          <p className="text-gray-700">
-            Email:{" "}
+          <p className="flex items-center text-sm mb-3 text-gray-400">
+            <FaEnvelope className="mr-2 text-[#cfa76a]" />
             <a
-              href="mailto: craftraco25@gmail.com"
-              className="underline hover:text-red-600 transition"
+              href="mailto:fashion.count88@gmail.com"
+              className="hover:text-[#cfa76a] underline"
             >
-              craftraco25@gmail.com
+              fashion.count88@gmail.com
             </a>
           </p>
-          <p className="text-gray-700 mt-2">
-            Mobile:{" "}
-            <a href="tel:+919899938464" className="hover:underline">
-              +91 9899938464
+          <p className="flex items-center text-sm text-gray-400">
+            <FaPhone className="mr-2 text-[#cfa76a]" />
+            <a
+              href="tel:+918595534390"
+              className="hover:text-[#cfa76a] underline"
+            >
+              +91 8595534390
             </a>
           </p>
         </div>
       </div>
 
-      <div className="border-t border-gray-300 text-center py-4 text-xs sm:text-sm text-gray-500">
-        © 2025 Craftra. All rights reserved.
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-800 text-center py-5 text-xs text-gray-500">
+        © {new Date().getFullYear()} <span className="text-[#cfa76a]">Count88</span>. All rights reserved.
       </div>
     </footer>
   );

@@ -1,127 +1,110 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FaFilter, FaTimes } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
-type FilterType = 'category' | 'subcategory' | 'brand' | 'tag';
+type FilterType = 'price' | 'size' | 'color' | 'discount' | 'gender';
 
-type FilterSidebarProps = {
-  categories: string[];
-  subcategories: string[];
-  brands: string[];
-  tags: string[];
-  selectedCategories: string[];
-  selectedSubcategories: string[];
-  selectedBrands: string[];
-  selectedTags: string[];
+type FilterBarProps = {
+  filters: {
+    price: string[];
+    size: string[];
+    color: string[];
+    discount: string[];
+    gender: string[];
+  };
+  selected: {
+    price: string[];
+    size: string[];
+    color: string[];
+    discount: string[];
+    gender: string[];
+  };
   toggleFilter: (type: FilterType, value: string) => void;
 };
 
-export default function FilterSidebar({
-  categories,
-  subcategories,
-  brands,
-  tags,
-  selectedCategories,
-  selectedSubcategories,
-  selectedBrands,
-  selectedTags,
-  toggleFilter,
-}: FilterSidebarProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function FilterBar({ filters, selected, toggleFilter }: FilterBarProps) {
+  const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
 
-  const renderFilterSection = (
-    title: string,
-    items: string[],
-    selected: string[],
-    type: FilterType
-  ) => (
-    <div>
-      <h3 className="text-sm font-bold mb-3 text-gray-700 uppercase tracking-wider flex items-center gap-2">
-        <FaFilter className="text-orange-500" />
-        {title}
-      </h3>
-      <div className="space-y-2">
-        {items.map((item) => (
-          <label
-            key={`${type}-${item}`}
-            className={`flex items-center gap-2 cursor-pointer text-sm rounded-lg px-3 py-1.5 transition-all ${
-              selected.includes(item)
-                ? 'bg-orange-100 text-orange-700 font-semibold shadow-sm'
-                : 'hover:bg-gray-100 text-gray-600'
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={selected.includes(item)}
-              onChange={() => toggleFilter(type, item)}
-              className="accent-orange-600"
-              aria-label={`${type}-${item}`}
-            />
-            <span className="capitalize">{item}</span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
+  const renderDropdown = (type: FilterType, options: string[]) => {
+    const selectedItems = selected[type];
 
-  const SidebarContent = (
-    <div className="space-y-8">
-      {renderFilterSection('Categories', categories, selectedCategories, 'category')}
-      {renderFilterSection('Subcategories', subcategories, selectedSubcategories, 'subcategory')}
-      {renderFilterSection('Brands', brands, selectedBrands, 'brand')}
-      {renderFilterSection('Tags', tags, selectedTags, 'tag')}
-    </div>
-  );
-
-  return (
-    <>
-      {/* Mobile Filter Button */}
-      <div className="md:hidden mb-4">
+    return (
+      <div className="relative flex flex-col">
+        {/* Filter Button */}
         <button
-          className="flex items-center gap-2 text-sm px-4 py-2 border border-gray-300 rounded-md bg-white shadow-sm hover:shadow-md transition font-medium"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open Filters"
-        >
-          <FaFilter />
-          Filters
-        </button>
-      </div>
-
-      {/* Mobile Drawer */}
-      <div className="fixed inset-0 z-50 md:hidden pointer-events-none">
-        {isOpen && (
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto"
-            onClick={() => setIsOpen(false)}
-            aria-hidden="true"
-          />
-        )}
-        <div
-          className={`absolute top-0 left-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out pointer-events-auto z-50 ${
-            isOpen ? 'translate-x-0' : '-translate-x-full'
+          onClick={() => setOpenFilter(openFilter === type ? null : type)}
+          className={`px-4 py-2 rounded-full border transition-all font-medium text-sm whitespace-nowrap flex items-center justify-between ${
+            selectedItems.length
+              ? 'bg-red-100 border-red-300 text-red-900'
+              : 'bg-white border-gray-200 text-gray-800 hover:bg-gray-50'
           }`}
         >
-          <div className="p-5 overflow-y-auto h-full">
-            <div className="flex justify-between items-center mb-6 border-b pb-2">
-              <h2 className="text-lg font-semibold text-gray-700">Filters</h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-black"
-                aria-label="Close Filters"
-              >
-                <FaTimes size={20} />
-              </button>
-            </div>
-            {SidebarContent}
-          </div>
-        </div>
+          {type.charAt(0).toUpperCase() + type.slice(1)}
+        </button>
+
+        {/* Dropdown */}
+        <AnimatePresence>
+          {openFilter === type && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-3 grid grid-cols-2 gap-2 max-h-60 overflow-y-auto custom-scroll"
+            >
+              {options.map((option) => {
+                const isSelected = selectedItems.includes(option);
+                return (
+                  <button
+                    key={`${type}-${option}`}
+                    onClick={() => toggleFilter(type, option)}
+                    className={`px-3 py-1.5 rounded-full text-sm border transition-all whitespace-nowrap text-center ${
+                      isSelected
+                        ? 'bg-red-900 text-white border-red-900'
+                        : 'bg-white text-gray-800 border-gray-200 hover:bg-red-50'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  return (
+    <div className="sticky top-0 z-50 bg-white backdrop-blur-md border-b border-gray-200 py-3 px-4 shadow-sm">
+      <div className="flex flex-wrap gap-3 items-center justify-start overflow-x-auto scrollbar-hide">
+        {renderDropdown('price', filters.price)}
+        {renderDropdown('size', filters.size)}
+        {renderDropdown('color', filters.color)}
+        {renderDropdown('discount', filters.discount)}
+        {renderDropdown('gender', filters.gender)}
       </div>
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-full md:w-64 shrink-0 border rounded-xl bg-white shadow p-5 sticky top-4 h-fit">
-        {SidebarContent}
-      </aside>
-    </>
+      {/* Selected Filters */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {Object.keys(selected).map((type) =>
+          selected[type as FilterType].map((item) => (
+            <div
+              key={`${type}-${item}`}
+              className="flex items-center gap-1 bg-red-100 text-red-900 text-xs px-2 py-1 rounded-full border border-red-300"
+            >
+              <span>{item}</span>
+              <button
+                onClick={() => toggleFilter(type as FilterType, item)}
+                className="font-bold"
+              >
+                ×
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }

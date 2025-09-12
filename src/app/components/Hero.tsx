@@ -3,125 +3,176 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 const slides = [
-  { image: "/assets/banner1.png", position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10" },
-  { image: "/assets/banner2.png", position: "justify-end items-end text-right pr-3 sm:pr-6 md:pr-10 pb-3 sm:pb-6 md:pb-10" },
-  { image: "/assets/banner4.png", position: "justify-center items-start text-center pt-6 md:pt-10" },
+  {
+    image: "/assets/banner7.jpg",
+    position:
+      "justify-end items-end text-right pr-4 sm:pr-8 md:pr-12 pb-4 sm:pb-8 md:pb-12",
+    title: "Elegant Ethnic Wear",
+    subtitle: "Step into tradition with style and grace",
+    button: "Shop Collection",
+  },
+  {
+    image: "/assets/banner3.png",
+    position:
+      "justify-left items-end text-left pl-8 pr-4 sm:pr-8 md:pr-12 pb-4 sm:pb-8 md:pb-12",
+    title: "Luxury Juttis & Heels",
+    subtitle: "Handcrafted with love and finesse",
+    button: "Explore Now",
+  },
+  {
+    image: "/assets/banner9.png",
+    position: "justify-center items-start text-center pt-6 md:pt-10",
+    title: "Vibrant Collection",
+    subtitle: "Perfect for festive occasions",
+    button: "View Collection",
+  },
 ];
 
-// Category section data
 const categories = [
-  { name: "JUTTIS", image: "/assets/category1.png", link: "/categories/juttis" },
-  { name: "HEELS", image: "/assets/category2.png", link: "/categories/heels" },
-  { name: "POTLIS", image: "/assets/category3.png", link: "/categories/potlis" },
-  { name: "MULES", image: "/assets/category4.png", link: "/categories/mules" },
-  { name: "MEN", image: "/assets/category5.png", link: "/categories/men" },
+  { name: "HEELS", image: "/assets/1.png", link: "/categories/juttis" },
+  { name: "FLATS", image: "/assets/2.png", link: "/categories/heels" },
+  { name: "SHOES", image: "/assets/3.png", link: "/categories/potlis" },
+  { name: "BOOTS", image: "/assets/4.png", link: "/categories/mules" },
+  { name: "BRIDAL COLLECTION", image: "/assets/5.png", link: "/categories/men" },
 ];
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
-  const [blink, setBlink] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setBlink(true);
-      setTimeout(() => {
-        setCurrent((prev) => (prev + 1) % slides.length);
-        setBlink(false);
-      }, 150);
-    }, 4000);
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <>
+      {/* Categories on small screens */}
+      <div className="block sm:hidden w-full overflow-x-auto no-scrollbar bg-[#f5f0e8] py-4">
+        <div className="flex space-x-4 px-4">
+          {categories.map((cat) => (
+            <motion.div
+              key={cat.name}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col items-center cursor-pointer min-w-[80px]"
+              onClick={() => router.push(cat.link)}
+            >
+              <div className="w-20 h-20 relative overflow-hidden rounded-lg">
+                <Image src={cat.image} alt={cat.name} fill className="object-contain" />
+              </div>
+              <p className="mt-1 text-xs font-semibold text-[#5a1a01] text-center">{cat.name}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
       {/* Hero Banner Section */}
       <section className="relative w-full h-[220px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] overflow-hidden font-[Montserrat]">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
-              index === current ? "opacity-100" : "opacity-0"
-            } ${index === current && blink ? "animate-blink" : ""}`}
-          >
-            <Image
-              src={slide.image}
-              alt={`Slide ${index + 1}`}
-              fill
-              priority={index === 0}
-              className="object-cover"
+        <AnimatePresence mode="wait">
+          {slides.map(
+            (slide, index) =>
+              index === current && (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                  className="absolute top-0 left-0 w-full h-full"
+                >
+                  <Image
+                    src={slide.image}
+                    alt={`Slide ${index + 1}`}
+                    fill
+                    priority={index === 0}
+                    className="object-cover"
+                  />
+
+                  {/* Text Overlay */}
+                  <div className={`absolute inset-0 z-10 flex ${slide.position} bg-black/20`}>
+                    <motion.div
+                      key={slide.title}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ delay: 0.1, duration: 0.25, ease: "easeInOut" }}
+                      className="text-white max-w-xs sm:max-w-md md:max-w-xl space-y-2 sm:space-y-4 p-2 sm:p-6"
+                    >
+                      <h2 className="text-lg sm:text-3xl md:text-5xl lg:text-6xl font-bold">
+                        {slide.title}
+                      </h2>
+                      <p className="text-xs sm:text-base md:text-lg">{slide.subtitle}</p>
+                      <motion.button
+                        whileHover={{ scale: 1.08, backgroundColor: "#d4c6b5" }}
+                        whileTap={{ scale: 0.95 }}
+                        className="bg-[#bdb4a9] text-black px-3 sm:px-6 py-1 sm:py-2 rounded-lg font-semibold text-xs sm:text-base md:text-lg"
+                        onClick={() => router.push("/collection")}
+                      >
+                        {slide.button}
+                      </motion.button>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )
+          )}
+        </AnimatePresence>
+
+        {/* Dots Indicator */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+          {slides.map((_, index) => (
+            <motion.div
+              key={index}
+              onClick={() => setCurrent(index)}
+              className={`w-3 h-3 rounded-full cursor-pointer ${
+                index === current ? "bg-white" : "bg-gray-400"
+              }`}
+              animate={{ opacity: index === current ? [1, 0.5, 1] : 1 }}
+              transition={{ duration: 1, repeat: index === current ? Infinity : 0 }}
             />
-          </div>
-        ))}
-
-        {slides[current].title && (
-          <div
-            className={`absolute inset-0 z-10 flex ${slides[current].position} bg-black/30 transition-all duration-700`}
-          >
-            <div className="text-white max-w-xs sm:max-w-md md:max-w-xl space-y-2 sm:space-y-4 p-3 sm:p-6">
-              <h2 className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold drop-shadow-lg">
-                {slides[current].title}
-              </h2>
-              <p className="text-xs sm:text-sm md:text-base drop-shadow">
-                {slides[current].subtitle}
-              </p>
-              <button
-                className="bg-[#bdb4a9] text-black px-3 sm:px-5 py-1.5 rounded-lg shadow hover:bg-[#a89c90] transition text-xs sm:text-sm md:text-base"
-                onClick={() => router.push("/collection")}
-              >
-                {slides[current].button}
-              </button>
-            </div>
-          </div>
-        )}
-
-        <style jsx>{`
-          .animate-blink {
-            animation: blink 0.3s ease-in-out;
-          }
-
-          @keyframes blink {
-            0% {
-              opacity: 1;
-            }
-            50% {
-              opacity: 0.2;
-            }
-            100% {
-              opacity: 1;
-            }
-          }
-        `}</style>
+          ))}
+        </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-10 sm:py-14 bg-white">
+      {/* Categories for larger screens */}
+      <section className="hidden sm:block py-12 sm:py-16 bg-[#f5f0e8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8 md:gap-10 justify-items-center">
             {categories.map((cat) => (
-              <div
+              <motion.div
                 key={cat.name}
-                className="flex flex-col items-center cursor-pointer group"
+                whileHover={{ scale: 1.2 }}
+                transition={{ duration: 0.4 }}
+                className="flex flex-col items-center cursor-pointer group relative"
                 onClick={() => router.push(cat.link)}
               >
-                <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 relative">
-                  <Image
-                    src={cat.image}
-                    alt={cat.name}
-                    fill
-                    className="object-contain group-hover:scale-110 transition-transform duration-300"
-                  />
+                <div className="w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 relative overflow-hidden rounded-lg">
+                  <Image src={cat.image} alt={cat.name} fill className="object-contain" />
                 </div>
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg font-medium tracking-wide text-gray-800">
+                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg font-semibold tracking-wide text-[#5a1a01]">
                   {cat.name}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Hide scrollbar globally for horizontal scroll */}
+      <style jsx>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </>
   );
 }

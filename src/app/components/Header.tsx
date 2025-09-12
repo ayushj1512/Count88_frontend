@@ -42,7 +42,7 @@ export default function Header() {
   return (
     <>
       {/* Top Moving Promo Bar */}
-      <div className="w-full bg-[#7a0d2e] text-white text-xs sm:text-sm py-1 overflow-hidden">
+      <div className="w-full bg-[#620a1b] text-white text-xs sm:text-sm py-1 overflow-hidden">
         <div className="relative flex overflow-x-auto scrollbar-thin">
           <div className="animate-marquee flex whitespace-nowrap">
             <span className="mx-4">{promoText}</span>
@@ -60,7 +60,7 @@ export default function Header() {
             onClick={() => handleNavClick("/")}
           >
             <Image
-              src="/logo1.png"
+              src="/assets/logo1.png"
               alt="Count88 Logo"
               width={50}
               height={50}
