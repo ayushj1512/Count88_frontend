@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaSearch, FaShoppingBag, FaBars, FaTimes } from "react-icons/fa";
+import { Search, ShoppingBag, Menu, X, User } from "lucide-react";
 import Image from "next/image";
 import CartDrawer from "./CartDrawer";
 import { useCartStore } from "../store/cartStore";
 import type { CartItem } from "../store/cartStore";
+import { useAuthStore } from "../store/useAuthStore"; // ✅ import auth store
 
 export default function Header() {
   const router = useRouter();
@@ -20,9 +21,20 @@ export default function Header() {
     0
   );
 
+  const user = useAuthStore((state) => state.user); // ✅ current auth user
+
   const handleNavClick = (path: string) => {
     router.push(path);
-    setIsMobileMenuOpen(false); // Close mobile menu on navigation
+    setIsMobileMenuOpen(false);
+  };
+
+  // ✅ Handle profile click
+  const handleProfileClick = () => {
+    if (user) {
+      router.push("/profile");
+    } else {
+      router.push("/login");
+    }
   };
 
   const promoText =
@@ -30,7 +42,10 @@ export default function Header() {
 
   const navItems = [
     { label: "NEW ARRIVAL", link: "/new" },
-    { label: "HEELS", submenu: ["Heels", "Block Heel", "Court Shoes", "Pumps", "Wedges"] },
+    {
+      label: "HEELS",
+      submenu: ["Heels", "Block Heel", "Court Shoes", "Pumps", "Wedges"],
+    },
     { label: "FLATS", submenu: ["Belly", "Slipper & Slides"] },
     { label: "SHOES", submenu: ["Casuals", "Sports", "Sneakers"] },
     { label: "BOOTS", link: "/boots" },
@@ -54,7 +69,7 @@ export default function Header() {
       {/* Main Navbar */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-200">
         <header className="flex items-center justify-between px-4 sm:px-6 lg:px-12 py-4">
-          {/* Left: Logo + Brand */}
+          {/* Left: Logo */}
           <div
             className="flex items-center gap-2 sm:gap-3 cursor-pointer"
             onClick={() => handleNavClick("/")}
@@ -67,7 +82,10 @@ export default function Header() {
               className="object-contain"
               priority
             />
-            <span className="text-xl sm:text-3xl md:text-4xl tracking-wide count88-font" style={{ color: "#7a0d2e" }}>
+            <span
+              className="text-xl sm:text-3xl md:text-4xl tracking-wide count88-font"
+              style={{ color: "#7a0d2e" }}
+            >
               Count88
             </span>
           </div>
@@ -78,12 +96,18 @@ export default function Header() {
               <div
                 key={item.label}
                 className="relative group"
-                onMouseEnter={() => setOpenDropdown(item.submenu ? item.label : null)}
+                onMouseEnter={() =>
+                  setOpenDropdown(item.submenu ? item.label : null)
+                }
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <button
-                  onClick={() => item.link ? handleNavClick(item.link) : undefined}
-                  className={`hover:text-gray-600 text-sm ${item.highlight ? "text-red-800 hover:text-red-900" : ""}`}
+                  onClick={() =>
+                    item.link ? handleNavClick(item.link) : undefined
+                  }
+                  className={`hover:text-gray-600 text-sm ${
+                    item.highlight ? "text-red-800 hover:text-red-900" : ""
+                  }`}
                 >
                   {item.label}
                 </button>
@@ -96,7 +120,12 @@ export default function Header() {
                           key={sub}
                           className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
                           onClick={() =>
-                            handleNavClick(`/${item.label.toLowerCase()}/${sub.toLowerCase().replace(/\s+/g, "-")}`)
+                            handleNavClick(
+                              `/${item.label
+                                .toLowerCase()}/${sub
+                                .toLowerCase()
+                                .replace(/\s+/g, "-")}`
+                            )
                           }
                         >
                           {sub}
@@ -109,11 +138,29 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Right: Icons & Mobile Menu */}
-          <div className="flex items-center gap-4 sm:gap-6 text-lg" style={{ color: "#7a0d2e" }}>
-            <FaSearch className="cursor-pointer hover:text-black" onClick={() => handleNavClick("/search")} />
-            <div className="relative cursor-pointer" onClick={() => setIsCartOpen(true)}>
-              <FaShoppingBag className="hover:text-black" />
+          {/* Right: Icons */}
+          <div
+            className="flex items-center gap-4 sm:gap-6 text-lg"
+            style={{ color: "#7a0d2e" }}
+          >
+            {/* Search */}
+            <Search
+              className="cursor-pointer hover:text-black w-5 h-5"
+              onClick={() => handleNavClick("/search")}
+            />
+
+            {/* Profile (check session) */}
+            <User
+              className="cursor-pointer hover:text-black w-5 h-5"
+              onClick={handleProfileClick}
+            />
+
+            {/* Cart */}
+            <div
+              className="relative cursor-pointer"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingBag className="hover:text-black w-5 h-5" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#7a0d0d] text-white text-xs rounded-full px-1">
                   {cartCount}
@@ -121,9 +168,16 @@ export default function Header() {
               )}
             </div>
 
-            {/* Mobile Hamburger */}
-            <div className="md:hidden cursor-pointer" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-              {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+            {/* Mobile Menu */}
+            <div
+              className="md:hidden cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </div>
           </div>
         </header>
@@ -136,14 +190,21 @@ export default function Header() {
                 <li key={item.label} className="px-4 py-2">
                   {item.submenu ? (
                     <details>
-                      <summary className="cursor-pointer font-semibold">{item.label}</summary>
+                      <summary className="cursor-pointer font-semibold">
+                        {item.label}
+                      </summary>
                       <ul className="pl-4 mt-1 flex flex-col gap-1">
                         {item.submenu.map((sub) => (
                           <li
                             key={sub}
                             className="cursor-pointer hover:text-red-700"
                             onClick={() =>
-                              handleNavClick(`/${item.label.toLowerCase()}/${sub.toLowerCase().replace(/\s+/g, "-")}`)
+                              handleNavClick(
+                                `/${item.label
+                                  .toLowerCase()}/${sub
+                                  .toLowerCase()
+                                  .replace(/\s+/g, "-")}`
+                              )
                             }
                           >
                             {sub}
@@ -152,7 +213,10 @@ export default function Header() {
                       </ul>
                     </details>
                   ) : (
-                    <button className="w-full text-left" onClick={() => handleNavClick(item.link!)}>
+                    <button
+                      className="w-full text-left"
+                      onClick={() => handleNavClick(item.link!)}
+                    >
                       {item.label}
                     </button>
                   )}
@@ -166,26 +230,46 @@ export default function Header() {
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+        @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
 
         .count88-font {
-          font-family: 'Great Vibes', cursive;
+          font-family: "Great Vibes", cursive;
         }
 
         @keyframes marquee {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(-100%);
+          }
         }
         @keyframes marquee2 {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-200%); }
+          0% {
+            transform: translateX(0%);
+          }
+          100% {
+            transform: translateX(-200%);
+          }
         }
-        .animate-marquee { animation: marquee 40s linear infinite; }
-        .animate-marquee2 { animation: marquee2 40s linear infinite; }
+        .animate-marquee {
+          animation: marquee 40s linear infinite;
+        }
+        .animate-marquee2 {
+          animation: marquee2 40s linear infinite;
+        }
 
-        .scrollbar-thin::-webkit-scrollbar { height: 4px; width: 4px; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #7a0d2e; border-radius: 9999px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background-color: #7a0d2e; }
+        .scrollbar-thin::-webkit-scrollbar {
+          height: 4px;
+          width: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background-color: #7a0d2e;
+          border-radius: 9999px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background-color: #7a0d2e;
+        }
       `}</style>
     </>
   );

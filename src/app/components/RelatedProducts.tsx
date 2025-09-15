@@ -1,9 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useCartStore } from '../store/cartStore';
-import toast from 'react-hot-toast';
-import { ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 
 type Product = {
@@ -23,8 +20,6 @@ type Props = {
 };
 
 export default function RelatedProducts({ currentSlug, category, allProducts }: Props) {
-  const addToCart = useCartStore((state) => state.addToCart);
-
   const related = allProducts.filter(
     (p) => p.category === category && p.slug !== currentSlug
   );
@@ -67,7 +62,7 @@ export default function RelatedProducts({ currentSlug, category, allProducts }: 
                   />
 
                   {discount > 0 && (
-                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+                    <span className="absolute top-2 left-2 bg-[#7a0d2e] text-white text-xs font-bold px-2 py-1 rounded shadow">
                       {discount}% OFF
                     </span>
                   )}
@@ -75,32 +70,16 @@ export default function RelatedProducts({ currentSlug, category, allProducts }: 
               </Link>
 
               <div className="p-4 flex flex-col justify-between flex-1">
-                <Link href={`/product/${product.slug}`}>
+                <Link href={`/collection/${product.slug}`}>
                   <h4 className="text-sm font-medium text-gray-800 line-clamp-2 min-h-[3rem]">
                     {product.title}
                   </h4>
                 </Link>
 
                 <div className="text-sm text-gray-700 font-medium flex items-center gap-2 mt-2">
-                  <span className="text-pink-600 font-semibold">₹{product.price}</span>
+                  <span className="text-[#7a0d2e] font-semibold">₹{product.price}</span>
                   <span className="line-through text-gray-400">₹{product.mrp}</span>
                 </div>
-
-                <button
-                  onClick={() => {
-                    addToCart({
-                      id: product.id.toString(),
-                      title: product.title,
-                      image: product.images[0],
-                      price: product.price,
-                    });
-                    toast.success(`${product.title} added to cart`);
-                  }}
-                  className="mt-4 w-full flex items-center justify-center gap-2 bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-800 transition"
-                >
-                  <ShoppingCart size={16} />
-                  Add to Cart
-                </button>
               </div>
             </div>
           );

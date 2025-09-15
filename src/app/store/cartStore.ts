@@ -7,6 +7,7 @@ interface CartItem {
   price: number;
   regular?: number;
   colors?: string[];
+  size?: string; // ✅ added size support
   quantity: number;
 }
 
@@ -14,10 +15,11 @@ interface CartState {
   items: CartItem[];
   isOpen: boolean;
   coupon: string;
+
   applyCoupon: (code: string) => void;
   addToCart: (product: Omit<CartItem, "quantity">) => void;
-  removeFromCart: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeFromCart: (id: string, size?: string) => void; // ✅ handle size in removal
+  updateQuantity: (id: string, quantity: number, size?: string) => void; // ✅ handle size in update
   toggleCart: (open?: boolean) => void;
   clearCart: () => void;
   loadCart: () => void;
@@ -39,7 +41,10 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   addToCart: (product) => {
     set((state) => {
-      const index = state.items.findIndex((item) => item.id === product.id);
+      const index = state.items.findIndex(
+        (item) => item.id === product.id && item.size === product.size // ✅ differentiate by size
+      );
+
       const updatedItems = [...state.items];
 
       if (index !== -1) {
@@ -59,9 +64,11 @@ export const useCartStore = create<CartState>((set, get) => ({
     });
   },
 
-  removeFromCart: (id) => {
+  removeFromCart: (id, size) => {
     set((state) => {
-      const updatedItems = state.items.filter((item) => item.id !== id);
+      const updatedItems = state.items.filter(
+        (item) => !(item.id === id && item.size === size) // ✅ remove correct size
+      );
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(updatedItems));
       }
@@ -69,10 +76,12 @@ export const useCartStore = create<CartState>((set, get) => ({
     });
   },
 
-  updateQuantity: (id, quantity) => {
+  updateQuantity: (id, quantity, size) => {
     set((state) => {
       const updatedItems = state.items.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+        item.id === id && item.size === size
+          ? { ...item, quantity: Math.max(1, quantity) }
+          : item
       );
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(updatedItems));

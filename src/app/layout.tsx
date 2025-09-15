@@ -1,19 +1,23 @@
-import { Suspense } from "react";
-import Script from "next/script";
-import { Toaster } from "react-hot-toast";
+/* eslint-disable @next/next/no-page-custom-font */
+/* eslint-disable @next/next/no-sync-scripts */
+"use client";
+
+import { useEffect } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import GATracker from "../app/components/GAtracker";
-
-export const metadata = {
-  title: "Count88",
-};
+import ClientProvider from "./providers/ClientProvider"; 
+import { initAuthListener } from "@/app/store/useAuthStore"; // 🔹 import store listener
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // 🔹 Initialize Firebase auth listener once
+  useEffect(() => {
+    initAuthListener();
+  }, []);
+
   return (
     <html lang="en">
       <head>
@@ -34,39 +38,14 @@ export default function RootLayout({
             font-family: 'Comic Relief', cursive;
           }
         `}</style>
-
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-S0LVNNTB34"
-          strategy="afterInteractive"
-        />
-        <Script
-          id="gtag-init"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-S0LVNNTB34');
-            `,
-          }}
-        />
       </head>
 
       <body className="flex flex-col min-h-screen">
-        <Header />
-        <Suspense fallback={null}>
-          <GATracker />
-        </Suspense>
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            duration: 3000,
-          }}
-        />
+        <ClientProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ClientProvider>
       </body>
     </html>
   );
