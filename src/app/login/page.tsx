@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Mail, Lock, LogIn, X } from "lucide-react";
 import Image from "next/image";
@@ -16,7 +16,22 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 
+/**
+ * ✅ Wrapper page
+ * Suspense ensures useSearchParams can be used safely inside LoginContent
+ */
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-20">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+/**
+ * ✅ Actual login content with useSearchParams
+ */
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/profile";
@@ -43,14 +58,12 @@ export default function LoginPage() {
         form.email,
         form.password
       );
-
       setUser(userCred.user);
-      setLoading(false);
       router.push(callbackUrl);
     } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Invalid credentials.");
+    } finally {
       setLoading(false);
-      if (err instanceof Error) setError(err.message);
-      else setError("Invalid credentials.");
     }
   };
 
@@ -62,14 +75,12 @@ export default function LoginPage() {
     try {
       const provider = new GoogleAuthProvider();
       const userCred: UserCredential = await signInWithPopup(auth, provider);
-
       setUser(userCred.user);
-      setLoading(false);
       router.push(callbackUrl);
     } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Google login failed.");
+    } finally {
       setLoading(false);
-      if (err instanceof Error) setError(err.message);
-      else setError("Google login failed.");
     }
   };
 
