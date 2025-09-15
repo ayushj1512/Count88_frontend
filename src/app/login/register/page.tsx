@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Mail, Lock, User, Phone, UserPlus } from "lucide-react";
 import Image from "next/image";
@@ -15,7 +16,17 @@ import {
   AuthError,
 } from "firebase/auth";
 
+/* ✅ Wrapper with Suspense */
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-10">Loading...</div>}>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+/* ✅ Actual Form Component */
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/profile";
@@ -58,7 +69,6 @@ export default function RegisterPage() {
       router.push(callbackUrl);
     } catch (err: unknown) {
       setLoading(false);
-
       const errorMessage =
         (err as AuthError)?.message || "Unable to register. Please try again.";
       setError(errorMessage);
@@ -100,7 +110,7 @@ export default function RegisterPage() {
         {/* Form */}
         <form onSubmit={handleRegister} className="space-y-4">
           {/* Full Name */}
-          <div className="flex items-center border rounded-lg px-3 py-2">
+          <div className="flex items-center border rounded-lg px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-[#7a0d2e]/50">
             <User className="w-5 h-5 text-gray-400" />
             <input
               type="text"
@@ -113,7 +123,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Phone */}
-          <div className="flex items-center border rounded-lg px-3 py-2">
+          <div className="flex items-center border rounded-lg px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-[#7a0d2e]/50">
             <Phone className="w-5 h-5 text-gray-400" />
             <input
               type="tel"
@@ -127,7 +137,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Email */}
-          <div className="flex items-center border rounded-lg px-3 py-2">
+          <div className="flex items-center border rounded-lg px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-[#7a0d2e]/50">
             <Mail className="w-5 h-5 text-gray-400" />
             <input
               type="email"
@@ -140,7 +150,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Password */}
-          <div className="flex items-center border rounded-lg px-3 py-2">
+          <div className="flex items-center border rounded-lg px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-[#7a0d2e]/50">
             <Lock className="w-5 h-5 text-gray-400" />
             <input
               type="password"
@@ -153,7 +163,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Confirm Password */}
-          <div className="flex items-center border rounded-lg px-3 py-2">
+          <div className="flex items-center border rounded-lg px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-[#7a0d2e]/50">
             <Lock className="w-5 h-5 text-gray-400" />
             <input
               type="password"
@@ -171,7 +181,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#7a0d2e] text-white py-2 hover:bg-[#5a0a22] transition disabled:opacity-70"
+            className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#7a0d2e] text-white py-2 hover:bg-[#5a0a22] transition disabled:opacity-70 shadow-md"
           >
             {loading ? (
               <>
@@ -206,7 +216,7 @@ export default function RegisterPage() {
         {/* Google Auth */}
         <button
           onClick={handleGoogleAuth}
-          className="w-full flex items-center justify-center gap-2 border rounded-lg py-2 text-gray-700 hover:bg-gray-100 transition"
+          className="w-full flex items-center justify-center gap-2 border rounded-lg py-2 text-gray-700 hover:bg-gray-100 transition shadow-sm"
         >
           <Image
             src="https://www.svgrepo.com/show/475656/google-color.svg"
