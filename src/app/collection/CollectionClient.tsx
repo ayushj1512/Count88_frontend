@@ -1,346 +1,376 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { FaSortAmountDown } from "react-icons/fa";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCartStore } from "../store/cartStore";
-import toast from "react-hot-toast";
-import Image from "next/image";
+import { SlidersHorizontal, X, ChevronDown, ChevronUp } from "lucide-react";
 
+type Variant = { size: string };
+type ImageType = { url: string; public_id: string };
 type Product = {
   _id: string;
-  groupId: string;
   name: string;
   slug: string;
+  price: number;
+  discountPrice: number;
   brand: string;
   category: string;
   subcategory?: string;
-  tags?: string[];
-  images: { url: string }[];
-  price: number;
-  discountPrice: number;
-  variants: { size: string }[];
-  isActive: boolean;
+  createdAt: string;
+  images: ImageType[];
+  variants: Variant[];
 };
 
-type FilterType = "price" | "size" | "color" | "discount" | "gender";
-
-// ✅ Simple Sidebar Component
-function FilterSidebar({
-  filters,
-  selected,
-  toggleFilter,
-}: {
-  filters: Record<FilterType, string[]>;
-  selected: Record<FilterType, string[]>;
-  toggleFilter: (section: FilterType, option: string) => void;
-}) {
-  return (
-    <div className="w-full">
-      <h2 className="text-lg font-semibold mb-4">Filters</h2>
-      <div className="space-y-4">
-        {Object.entries(filters).map(([section, options]) => (
-          <div key={section}>
-            <h3 className="text-sm font-medium mb-2">{section}</h3>
-            <div className="space-y-1">
-              {options.map((option) => (
-                <label key={option} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4"
-                    checked={selected[section as FilterType]?.includes(option) || false}
-                    onChange={() => toggleFilter(section as FilterType, option)}
-                  />
-                  {option}
-                </label>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function CollectionClient() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [sortOption, setSortOption] = useState<
-    "priceLowToHigh" | "priceHighToLow" | "alphabetical"
-  >("priceLowToHigh");
   const [loading, setLoading] = useState(true);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [sizes, setSizes] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [sortBy, setSortBy] = useState("");
 
-  const [selected, setSelected] = useState<Record<FilterType, string[]>>({
-    price: [],
-    size: [],
-    color: [],
-    discount: [],
-    gender: [],
-  });
+  const categories = ["asas", "dfg", "Other"];
+  const subcategories = ["dfg", "xyz", "Other"];
+  const allSizes = ["UK 3", "UK 4", "UK 5", "UK 6", "UK 7", "UK 8", "UK 9"];
 
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  // Mobile collapsible sections
+  const [categoryOpen, setCategoryOpen] = useState(true);
+  const [subcategoryOpen, setSubcategoryOpen] = useState(true);
+  const [sizeOpen, setSizeOpen] = useState(true);
+  const [priceOpen, setPriceOpen] = useState(true);
 
-  const addToCart = useCartStore((state) => state.addToCart);
-
-  // 🔹 Sync filters with URL
   useEffect(() => {
-    const getParams = (key: FilterType) => searchParams.getAll(key);
-    setSelected({
-      price: getParams("price"),
-      size: getParams("size"),
-      color: getParams("color"),
-      discount: getParams("discount"),
-      gender: getParams("gender"),
-    });
-  }, [searchParams]);
-
-  // 🔹 Fetch products from API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`,
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("Failed to fetch products");
-        const data = await res.json();
-        setProducts(data);
-      } catch (err) {
-        console.error("Failed to fetch products:", err);
-      } finally {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`)
+      .then((res) => {
+        setProducts(res.data);
+        setFilteredProducts(res.data);
         setLoading(false);
-      }
-    };
-    fetchProducts();
+      })
+      .catch(() => setLoading(false));
   }, []);
 
-  // 🔹 Update URL when filters change
   useEffect(() => {
-    const params = new URLSearchParams();
-    (Object.keys(selected) as FilterType[]).forEach((key) => {
-      selected[key].forEach((val) => params.append(key, val));
-    });
-    router.replace(`?${params.toString()}`);
-  }, [selected, router]);
+    let temp = [...products];
+    if (category) temp = temp.filter((p) => p.category === category);
+    if (subcategory) temp = temp.filter((p) => p.subcategory === subcategory);
+    if (sizes.length > 0)
+      temp = temp.filter((p) => p.variants.some((v) => sizes.includes(v.size)));
+    temp = temp.filter(
+      (p) => p.discountPrice >= priceRange[0] && p.discountPrice <= priceRange[1]
+    );
 
-  // 🔹 Filter + sort products
-  useEffect(() => {
-    const filtered = products; // add filtering logic later
-    const sorted = filtered.sort((a, b) => {
-      if (sortOption === "priceLowToHigh")
-        return a.discountPrice - b.discountPrice;
-      if (sortOption === "priceHighToLow")
-        return b.discountPrice - a.discountPrice;
-      return a.name.localeCompare(b.name);
-    });
-    setFilteredProducts(sorted);
-  }, [products, selected, sortOption]);
+    if (sortBy === "low") temp.sort((a, b) => a.discountPrice - b.discountPrice);
+    if (sortBy === "high") temp.sort((a, b) => b.discountPrice - a.discountPrice);
+    if (sortBy === "newest")
+      temp.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  // 🔹 Common toggle function for filters
-  const handleToggleFilter = (type: FilterType, value: string) => {
-    setSelected((prev) => ({
-      ...prev,
-      [type]: prev[type].includes(value)
-        ? prev[type].filter((v) => v !== value)
-        : [...prev[type], value],
-    }));
+    setFilteredProducts(temp);
+
+    // Update URL
+    const query = new URLSearchParams();
+    if (category) query.set("category", category);
+    if (subcategory) query.set("subcategory", subcategory);
+    if (sizes.length > 0) query.set("sizes", sizes.join(","));
+    if (priceRange[1] < 1000) query.set("price", priceRange[1].toString());
+    if (sortBy) query.set("sort", sortBy);
+    router.replace(`/collection?${query.toString()}`);
+  }, [category, subcategory, sizes, priceRange, sortBy, products, router]);
+
+  const toggleSize = (s: string) =>
+    setSizes(sizes.includes(s) ? sizes.filter((x) => x !== s) : [...sizes, s]);
+
+  const clearAllFilters = () => {
+    setCategory("");
+    setSubcategory("");
+    setSizes([]);
+    setPriceRange([0, 1000]);
+    setSortBy("");
   };
 
-  const filterOptions: Record<FilterType, string[]> = {
-    price: ["Under 1000", "1000-2000", "2000+"],
-    size: ["UK 6", "UK 7", "UK 8", "UK 9"],
-    color: ["Red", "Blue", "Black", "White"],
-    discount: ["10", "20", "30", "50"],
-    gender: ["Men", "Women", "Kids"],
-  };
+  const renderRadioFilter = (
+    title: string,
+    options: string[],
+    selected: string,
+    onChange: (val: string) => void
+  ) => (
+    <div className="space-y-1">
+      {options.map((opt) => (
+        <label key={opt} className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name={title}
+            value={opt}
+            checked={selected === opt}
+            onChange={() => onChange(opt)}
+            className="accent-gray-800"
+          />
+          {opt}
+        </label>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="flex max-w-full">
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:block w-64 border-r p-4">
-        <FilterSidebar
-          filters={filterOptions}
-          selected={selected}
-          toggleFilter={handleToggleFilter}
-        />
-      </aside>
+    <div className="p-4 flex min-h-screen">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block w-64 mr-4">
+        <div className="border p-4 rounded space-y-6">
+          
 
-      {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8">
-        {/* Mobile Filter Toggle + Sort */}
-        <div className="flex items-center justify-between mb-4 md:mb-6">
-          <button
-            className="md:hidden border px-3 py-1 rounded-md text-sm"
-            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-          >
-            {mobileFiltersOpen ? "Close Filters" : "Filters"}
-          </button>
+          <h3 className="font-bold text-lg mt-4">Categories</h3>
+          {renderRadioFilter("category", categories, category, setCategory)}
 
-          {/* Sort with animation */}
-          <AnimatePresence>
-            <motion.div
-              key={sortOption}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center gap-2 text-sm"
-            >
-              <FaSortAmountDown className="text-gray-500" />
-              <select
-                className="border border-gray-300 px-3 py-1.5 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-red-900"
-                value={sortOption}
-                onChange={(e) =>
-                  setSortOption(
-                    e.target.value as
-                      | "priceLowToHigh"
-                      | "priceHighToLow"
-                      | "alphabetical"
-                  )
-                }
+          <h3 className="font-bold text-lg mt-4">Subcategories</h3>
+          {renderRadioFilter("subcategory", subcategories, subcategory, setSubcategory)}
+
+          <h3 className="font-bold text-lg mt-4">Sizes</h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {allSizes.map((s) => (
+              <button
+                key={s}
+                onClick={() => toggleSize(s)}
+                className={`border px-2 py-1 rounded ${
+                  sizes.includes(s) ? "bg-gray-800 text-white" : ""
+                }`}
               >
-                <option value="priceLowToHigh">Price: Low to High</option>
-                <option value="priceHighToLow">Price: High to Low</option>
-                <option value="alphabetical">Alphabetical</option>
-              </select>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Mobile Sidebar */}
-        {mobileFiltersOpen && (
-          <div className="md:hidden mb-4 border p-4 rounded-md bg-gray-50">
-            <FilterSidebar
-              filters={filterOptions}
-              selected={selected}
-              toggleFilter={handleToggleFilter}
-            />
-          </div>
-        )}
-
-        {/* Products Grid */}
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse bg-gray-200 h-72 rounded-xl"
-              ></div>
+                {s}
+              </button>
             ))}
           </div>
-        ) : (
-          <motion.div
-            layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          >
-            <AnimatePresence>
-              {filteredProducts.map((product) => {
-                const mrp = product.price;
-                const price = product.discountPrice;
-                const discount =
-                  mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
-                const image =
-                  product.images?.[0]?.url || "https://via.placeholder.com/300";
 
-                return (
+          <h3 className="font-bold text-lg mt-4">Price</h3>
+          <div className="mt-2 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>₹{priceRange[0]}</span>
+              <span>₹{priceRange[1]}</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={1000}
+              value={priceRange[1]}
+              onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+              className="w-full"
+            />
+          </div>
+          <button
+            onClick={clearAllFilters}
+            className="bg-red-600 text-white px-2 py-1 rounded w-full"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Top Filters Bar */}
+        <div className="flex flex-wrap items-center gap-4 mb-4 justify-between">
+          {/* Mobile Filters button */}
+          <button
+            onClick={() => setShowMobileFilters(true)}
+            className="flex items-center gap-2 border px-2 py-1 rounded md:hidden"
+          >
+            <SlidersHorizontal /> Filters
+          </button>
+
+          {/* Sort dropdown */}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="border px-2 py-1 rounded ml-auto"
+          >
+            <option value="">Sort By</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+
+        {/* Products Grid */}
+        <div className="flex-1">
+          {loading ? (
+            <div>Loading...</div>
+          ) : filteredProducts.length === 0 ? (
+            <div>No products found</div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <AnimatePresence>
+                {filteredProducts.map((p) => (
                   <motion.div
-                    key={product._id}
+                    key={p._id}
                     layout
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
+                    className="border rounded shadow hover:shadow-lg cursor-pointer overflow-hidden"
+                    onClick={() => router.push(`/collection/${p.slug}`)}
                   >
-                    <div className="relative bg-white rounded-xl border shadow-md hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col h-full">
-                      <Link
-                        href={`/collection/${product.slug}`}
-                        className="flex-1 flex flex-col"
-                      >
-                        <div className="relative w-full h-56 sm:h-64 md:h-72 overflow-hidden">
-                          <Image
-                            src={image}
-                            alt={product.name}
-                            fill
-                            className="object-cover rounded-t-xl group-hover:scale-105 transition-transform duration-300"
-                            sizes="(max-width: 768px) 100vw, 25vw"
-                          />
-                          {discount > 0 && (
-                            <div className="absolute top-2 left-2 bg-red-900 text-white text-xs font-bold px-2 py-1 rounded">
-                              {discount}% OFF
-                            </div>
-                          )}
-                          {product.tags?.length ? (
-                            <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap">
-                              {product.tags?.map((tag, i) => (
-                                <span
-                                  key={i}
-                                  className="bg-black/80 text-white text-[10px] px-2 py-1 rounded"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          ) : null}
-                        </div>
-
-                        <div className="p-4 flex flex-col gap-1">
-                          <h4 className="text-gray-900 font-semibold text-sm sm:text-md truncate">
-                            {product.name}
-                          </h4>
-                          <p className="text-gray-500 text-xs sm:text-sm">
-                            {product.brand}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            {mrp > price ? (
-                              <>
-                                <span className="line-through text-gray-400 text-xs sm:text-sm">
-                                  ₹{mrp}
-                                </span>
-                                <span className="text-black font-bold text-sm sm:text-base">
-                                  ₹{price}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-black font-bold text-sm sm:text-base">
-                                ₹{price}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </Link>
-                      <div className="p-4 pt-2">
-                        <button
-                          onClick={() => {
-                            addToCart({
-                              id: product._id,
-                              title: product.name,
-                              image: image,
-                              price: price,
-                            });
-                            toast.success(`${product.name} added to cart`);
-                          }}
-                          className="w-full py-2 rounded-md bg-gradient-to-r from-red-900 to-black text-white hover:opacity-90 transition-colors duration-300 text-sm font-semibold"
-                        >
-                          🛒 Add to Cart
-                        </button>
-                      </div>
+                    <img
+                      src={p.images[0]?.url}
+                      alt={p.name}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-2">
+                      <h3 className="font-bold">{p.name}</h3>
+                      <p className="text-sm text-gray-500">{p.brand}</p>
+                      <p className="mt-1">
+                        ₹{p.discountPrice}{" "}
+                        <span className="line-through text-gray-400">₹{p.price}</span>
+                      </p>
                     </div>
                   </motion.div>
-                );
-              })}
-            </AnimatePresence>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Filter Drawer */}
+      <AnimatePresence>
+        {showMobileFilters && (
+          <motion.div
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            className="fixed inset-0 bg-white z-50 w-64 p-4 shadow-lg overflow-y-auto"
+          >
+            <div className="flex justify-end mb-4">
+              <button onClick={() => setShowMobileFilters(false)}>
+                <X />
+              </button>
+            </div>
+
+            <button
+              onClick={clearAllFilters}
+              className="bg-red-600 text-white px-2 py-1 rounded mb-4 w-full"
+            >
+              Clear All Filters
+            </button>
+
+            {/* Collapsible Category */}
+            <div>
+              <div
+                className="flex justify-between cursor-pointer items-center"
+                onClick={() => setCategoryOpen(!categoryOpen)}
+              >
+                <h3 className="font-bold text-lg">Categories</h3>
+                {categoryOpen ? <ChevronUp /> : <ChevronDown />}
+              </div>
+              <AnimatePresence>
+                {categoryOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="space-y-1 overflow-hidden mt-2"
+                  >
+                    {renderRadioFilter("category", categories, category, setCategory)}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Collapsible Subcategory */}
+            <div className="mt-4">
+              <div
+                className="flex justify-between cursor-pointer items-center"
+                onClick={() => setSubcategoryOpen(!subcategoryOpen)}
+              >
+                <h3 className="font-bold text-lg">Subcategories</h3>
+                {subcategoryOpen ? <ChevronUp /> : <ChevronDown />}
+              </div>
+              <AnimatePresence>
+                {subcategoryOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="space-y-1 overflow-hidden mt-2"
+                  >
+                    {renderRadioFilter("subcategory", subcategories, subcategory, setSubcategory)}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Collapsible Sizes */}
+            <div className="mt-4">
+              <div
+                className="flex justify-between cursor-pointer items-center"
+                onClick={() => setSizeOpen(!sizeOpen)}
+              >
+                <h3 className="font-bold text-lg">Sizes</h3>
+                {sizeOpen ? <ChevronUp /> : <ChevronDown />}
+              </div>
+              <AnimatePresence>
+                {sizeOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="flex flex-wrap gap-2 mt-2 overflow-hidden"
+                  >
+                    {allSizes.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => toggleSize(s)}
+                        className={`border px-2 py-1 rounded ${
+                          sizes.includes(s) ? "bg-gray-800 text-white" : ""
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Collapsible Price */}
+            <div className="mt-4">
+              <div
+                className="flex justify-between cursor-pointer items-center"
+                onClick={() => setPriceOpen(!priceOpen)}
+              >
+                <h3 className="font-bold text-lg">Price</h3>
+                {priceOpen ? <ChevronUp /> : <ChevronDown />}
+              </div>
+              <AnimatePresence>
+                {priceOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="mt-2 space-y-2 overflow-hidden"
+                  >
+                    <div className="flex justify-between text-sm">
+                      <span>₹{priceRange[0]}</span>
+                      <span>₹{priceRange[1]}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={1000}
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+                      className="w-full"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         )}
-
-        {!filteredProducts.length && !loading && (
-          <p className="text-center text-gray-600 mt-10">No products found.</p>
-        )}
-      </main>
+      </AnimatePresence>
     </div>
   );
 }

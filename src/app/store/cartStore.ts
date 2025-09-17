@@ -7,8 +7,15 @@ interface CartItem {
   price: number;
   regular?: number;
   colors?: string[];
-  size?: string; // ✅ added size support
+  size?: string;
   quantity: number;
+
+  // ✅ New fields for order snapshot
+  brand?: string;
+  category?: string;
+  subcategory?: string;
+  gender?: "Men" | "Women" | "Unisex" | "Kids";
+  discountPrice?: number;
 }
 
 interface CartState {
@@ -18,8 +25,8 @@ interface CartState {
 
   applyCoupon: (code: string) => void;
   addToCart: (product: Omit<CartItem, "quantity">) => void;
-  removeFromCart: (id: string, size?: string) => void; // ✅ handle size in removal
-  updateQuantity: (id: string, quantity: number, size?: string) => void; // ✅ handle size in update
+  removeFromCart: (id: string, size?: string) => void;
+  updateQuantity: (id: string, quantity: number, size?: string) => void;
   toggleCart: (open?: boolean) => void;
   clearCart: () => void;
   loadCart: () => void;
@@ -35,16 +42,13 @@ export const useCartStore = create<CartState>((set, get) => ({
   isOpen: false,
   coupon: "",
 
-  applyCoupon: (code) => {
-    set({ coupon: code.toLowerCase() });
-  },
+  applyCoupon: (code) => set({ coupon: code.toLowerCase() }),
 
   addToCart: (product) => {
     set((state) => {
       const index = state.items.findIndex(
-        (item) => item.id === product.id && item.size === product.size // ✅ differentiate by size
+        (item) => item.id === product.id && item.size === product.size
       );
-
       const updatedItems = [...state.items];
 
       if (index !== -1) {
@@ -59,7 +63,6 @@ export const useCartStore = create<CartState>((set, get) => ({
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(updatedItems));
       }
-
       return { items: updatedItems, isOpen: true };
     });
   },
@@ -67,7 +70,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   removeFromCart: (id, size) => {
     set((state) => {
       const updatedItems = state.items.filter(
-        (item) => !(item.id === id && item.size === size) // ✅ remove correct size
+        (item) => !(item.id === id && item.size === size)
       );
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(updatedItems));
@@ -90,14 +93,10 @@ export const useCartStore = create<CartState>((set, get) => ({
     });
   },
 
-  toggleCart: (open = false) => {
-    set(() => ({ isOpen: open }));
-  },
+  toggleCart: (open = false) => set(() => ({ isOpen: open })),
 
   clearCart: () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("cart");
-    }
+    if (typeof window !== "undefined") localStorage.removeItem("cart");
     set(() => ({ items: [], coupon: "" }));
   },
 
@@ -106,11 +105,8 @@ export const useCartStore = create<CartState>((set, get) => ({
       try {
         const stored = localStorage.getItem("cart");
         const parsed = stored ? JSON.parse(stored) : [];
-        if (Array.isArray(parsed)) {
-          set(() => ({ items: parsed }));
-        } else {
-          throw new Error("Cart data is not an array");
-        }
+        if (Array.isArray(parsed)) set(() => ({ items: parsed }));
+        else throw new Error("Cart data is not an array");
       } catch (error) {
         console.error("Failed to load cart:", error);
         set(() => ({ items: [] }));
@@ -118,10 +114,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  subtotal: () => {
-    const items = get().items;
-    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  },
+  subtotal: () => get().items.reduce((sum, item) => sum + item.price * item.quantity, 0),
 
   discount: () => {
     const coupon = get().coupon;
@@ -132,8 +125,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   shipping: () => {
     const subtotal = get().subtotal();
     const discount = get().discount();
-    const afterDiscount = subtotal - discount;
-    return afterDiscount >= 500 ? 0 : 60;
+    return subtotal - discount >= 500 ? 0 : 60;
   },
 
   total: () => {
