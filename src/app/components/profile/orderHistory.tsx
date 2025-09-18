@@ -62,15 +62,22 @@ export default function OrderHistory() {
     if (!user?.uid || !BASE_URL) return;
 
     const fetchOrders = async () => {
-      try {
-        const res = await axios.get<Order[]>(`${BASE_URL}/api/orders/user/${user.uid}`);
-        setOrders(res.data);
-      } catch (err: any) {
-        console.error("Fetch orders error:", err);
-        setError(err?.response?.data?.error || "Failed to fetch orders");
-      } finally {
-        setLoading(false);
-      }
+     try {
+  const res = await axios.get(`${BASE_URL}/api/orders/user/${user.uid}`);
+  const data = Array.isArray(res.data) ? res.data : [];
+  setOrders(data);
+} catch (err: unknown) {
+  if (axios.isAxiosError(err)) {
+    setError(err.response?.data?.error || "Failed to fetch orders");
+  } else if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError("Failed to fetch orders");
+  }
+} finally {
+  setLoading(false);
+}
+
     };
 
     fetchOrders();
@@ -93,7 +100,7 @@ export default function OrderHistory() {
     );
   }
 
-  if (orders.length === 0) {
+  if (!orders || orders.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-600">
         <ShoppingBag className="w-10 h-10 text-gray-400 mb-4" />
@@ -102,7 +109,8 @@ export default function OrderHistory() {
     );
   }
 
-  const displayedOrders = orders.slice(0, 3);
+  // Safe slice
+  const displayedOrders = orders.slice(0, Math.min(3, orders.length));
 
   return (
     <div className="min-h-screen p-4 sm:p-6 bg-gray-50 flex flex-col items-center">
@@ -137,11 +145,12 @@ export default function OrderHistory() {
             <div className="mt-2">
               <p className="font-medium text-gray-800 mb-1">Products:</p>
               <ul className="list-disc list-inside text-gray-600 text-sm">
-                {order.products.map((p) => (
-                  <li key={p.productId}>
-                    {p.name} x{p.quantity} - ₹{p.price * p.quantity}
-                  </li>
-                ))}
+                {Array.isArray(order.products) &&
+                  order.products.map((p) => (
+                    <li key={p.productId}>
+                      {p.name} x{p.quantity} - ₹{p.price * p.quantity}
+                    </li>
+                  ))}
               </ul>
             </div>
 
@@ -153,7 +162,7 @@ export default function OrderHistory() {
         ))}
       </div>
 
-      {orders.length > 1 && (
+      {orders.length > 3 && (
         <button
           onClick={() => router.push("/profile/orders")}
           className="mt-6 px-6 py-2 bg-[#7a0d2e] text-white rounded-lg hover:bg-[#5f0a23] transition"
