@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { fetchCoupons } from "../utils/fetchCoupons";
 
 interface CartItem {
   id: string;
@@ -9,21 +10,28 @@ interface CartItem {
   colors?: string[];
   size?: string;
   quantity: number;
+}
 
-  // ✅ New fields for order snapshot
-  brand?: string;
-  category?: string;
-  subcategory?: string;
-  gender?: "Men" | "Women" | "Unisex" | "Kids";
-  discountPrice?: number;
+interface Coupon {
+  code: string;
+  discountType: "PERCENTAGE" | "FLAT";
+  discountValue: number;
+  isActive: boolean;
+  minOrderAmount: number;
+  maxDiscount?: number;
+  startDate: string;
+  expiryDate: string;
+  usedCount: number;
+  usageLimit?: number | null;
 }
 
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
   coupon: string;
+  appliedCoupon?: Coupon;
 
-  applyCoupon: (code: string) => void;
+  applyCoupon: (code: string) => Promise<void>;
   addToCart: (product: Omit<CartItem, "quantity">) => void;
   removeFromCart: (id: string, size?: string) => void;
   updateQuantity: (id: string, quantity: number, size?: string) => void;
@@ -41,14 +49,61 @@ export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   isOpen: false,
   coupon: "",
+  appliedCoupon: undefined,
 
-  applyCoupon: (code) => set({ coupon: code.toLowerCase() }),
+  // ✅ Apply coupon with debug logs
+  applyCoupon: async (code) => {
+    console.log("[CartStore] Applying coupon:", code);
+
+    try {
+      const coupons: Coupon[] = await fetchCoupons();
+      console.log("[CartStore] Coupons fetched from API:", coupons);
+
+      const coupon = coupons.find(
+        (c) =>
+          c?.code &&
+          c.code.toLowerCase() === code.toLowerCase() &&
+          c.isActive &&
+          new Date(c.startDate) <= new Date() &&
+          new Date(c.expiryDate) >= new Date() &&
+          (!c.usageLimit || c.usedCount < c.usageLimit)
+      );
+
+      console.log("[CartStore] Matched coupon:", coupon);
+
+      if (!coupon) {
+        console.warn("[CartStore] Coupon invalid or expired");
+        alert("Coupon is invalid or expired");
+        set({ coupon: "", appliedCoupon: undefined });
+        return;
+      }
+
+      const subtotal = get().subtotal();
+      console.log("[CartStore] Cart subtotal:", subtotal);
+      if (subtotal < coupon.minOrderAmount) {
+        console.warn(
+          `[CartStore] Minimum order amount not met. Required: ₹${coupon.minOrderAmount}`
+        );
+        alert(`Minimum order amount for this coupon is ₹${coupon.minOrderAmount}`);
+        set({ coupon: "", appliedCoupon: undefined });
+        return;
+      }
+
+      set({ coupon: coupon.code, appliedCoupon: coupon });
+      console.log("[CartStore] Coupon applied successfully:", coupon.code);
+    } catch (err) {
+      console.error("[CartStore] Error applying coupon:", err);
+      alert("Failed to apply coupon. Check console for details.");
+      set({ coupon: "", appliedCoupon: undefined });
+    }
+  },
 
   addToCart: (product) => {
     set((state) => {
       const index = state.items.findIndex(
         (item) => item.id === product.id && item.size === product.size
       );
+
       const updatedItems = [...state.items];
 
       if (index !== -1) {
@@ -63,6 +118,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(updatedItems));
       }
+
       return { items: updatedItems, isOpen: true };
     });
   },
@@ -93,11 +149,13 @@ export const useCartStore = create<CartState>((set, get) => ({
     });
   },
 
-  toggleCart: (open = false) => set(() => ({ isOpen: open })),
+  toggleCart: (open = false) => {
+    set(() => ({ isOpen: open }));
+  },
 
   clearCart: () => {
     if (typeof window !== "undefined") localStorage.removeItem("cart");
-    set(() => ({ items: [], coupon: "" }));
+    set(() => ({ items: [], coupon: "", appliedCoupon: undefined }));
   },
 
   loadCart: () => {
@@ -117,15 +175,24 @@ export const useCartStore = create<CartState>((set, get) => ({
   subtotal: () => get().items.reduce((sum, item) => sum + item.price * item.quantity, 0),
 
   discount: () => {
-    const coupon = get().coupon;
+    const coupon = get().appliedCoupon;
     const subtotal = get().subtotal();
-    return coupon === "craftra10" ? Math.floor(subtotal * 0.1) : 0;
+    if (!coupon) return 0;
+
+    let discount = 0;
+    if (coupon.discountType === "PERCENTAGE") {
+      discount = (subtotal * coupon.discountValue) / 100;
+      if (coupon.maxDiscount) discount = Math.min(discount, coupon.maxDiscount);
+    } else if (coupon.discountType === "FLAT") {
+      discount = coupon.discountValue;
+    }
+
+    return Math.min(discount, subtotal);
   },
 
   shipping: () => {
-    const subtotal = get().subtotal();
-    const discount = get().discount();
-    return subtotal - discount >= 500 ? 0 : 60;
+    const subtotalAfterDiscount = get().subtotal() - get().discount();
+    return subtotalAfterDiscount >= 500 ? 0 : 60;
   },
 
   total: () => {
@@ -136,4 +203,4 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 }));
 
-export type { CartItem };
+export type { CartItem, Coupon };

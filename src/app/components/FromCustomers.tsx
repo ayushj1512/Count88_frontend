@@ -1,13 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
-import { MdOutlineFingerprint } from "react-icons/md";
-import { TfiGift } from "react-icons/tfi";
-import { PiHandHeartLight } from "react-icons/pi";
-import { IoDiamondOutline } from "react-icons/io5";
-import { PiCrownLight } from "react-icons/pi";
-import { BsFeather } from "react-icons/bs";
+import { useRouter } from "next/navigation";
+
 
 const customers = [
   { image: "https://i.pinimg.com/1200x/97/fb/c4/97fbc413173c22dd3e10a1135a2bcf6a.jpg" },
@@ -18,6 +13,7 @@ const customers = [
 ];
 
 export default function FromOurCustomers() {
+  const router = useRouter();
   const duplicated = [...customers, ...customers];
 
   return (
@@ -41,7 +37,7 @@ export default function FromOurCustomers() {
             As a 100% vegan and cruelty-free brand, we believe fashion should never come at the expense of animals or the planet. Every pair we design is crafted with sustainable materials, innovative techniques, and premium craftsmanship to ensure lasting quality and comfort.
           </p>
           <button
-            onClick={() => window.scrollTo({ top: 800, behavior: "smooth" })}
+            onClick={() => router.push("/collection")}
             className="mt-4 px-4 py-2 bg-red-700 hover:bg-red-800 text-white text-xs sm:text-sm rounded-md font-semibold opacity-0 animate-fadeInRight delay-500 transition"
           >
             Explore More
@@ -50,16 +46,19 @@ export default function FromOurCustomers() {
       </div>
 
       {/* Customers Carousel */}
-      <h2 className="text-2xl bg-[#f7e5cc] sm:text-3xl md:text-4xl font-bold text-center mt-12 mb-4">
-        From Our Customers
-      </h2>
+     <h2
+  className="text-2xl bg-[#f7e5cc] sm:text-3xl md:text-4xl font-bold text-center mt-8 mb-4 py-4"
+>
+  From Our Customers
+</h2>
 
       <div className="overflow-x-auto w-full py-4 scrollbar-none">
         <div className="flex w-max gap-6 px-4 animate-[scroll_60s_linear_infinite]">
           {duplicated.map((customer, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-64 sm:w-72 h-80 relative rounded-xl overflow-hidden shadow-lg"
+              onClick={() => router.push("/collection")}
+              className="flex-shrink-0 w-64 sm:w-72 h-80 relative rounded-xl overflow-hidden shadow-lg cursor-pointer"
             >
               <Image
                 src={customer.image}
@@ -74,7 +73,7 @@ export default function FromOurCustomers() {
       </div>
 
       {/* Why Count88 Section */}
-      <div className="relative pt-8 pb-8 z-10 bg-[url('https://i.pinimg.com/736x/d9/18/eb/d918eb1c6399cc38440a290b959d51e8.jpg')] max-w-full pt-4 pb-4 mx-auto">
+      {/* <div className="relative pt-8 pb-8 z-10 bg-[url('https://i.pinimg.com/736x/d9/18/eb/d918eb1c6399cc38440a290b959d51e8.jpg')] max-w-full pt-4 pb-4 mx-auto">
         <h2 className="text-2xl text-white sm:text-3xl font-bold text-center mb-6">
           Why Count88?
         </h2>
@@ -105,7 +104,7 @@ export default function FromOurCustomers() {
             <p className="text-sm font-semibold">SUPER COMFY</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Styles */}
       <style>
@@ -120,6 +119,7 @@ export default function FromOurCustomers() {
           }
           .animate-fadeInRight { animation: fadeInRight 1s ease forwards; }
           .delay-300 { animation-delay: 0.3s; }
+          .delay-500 { animation-delay: 0.5s; }
           .scrollbar-none::-webkit-scrollbar { display: none; }
           .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
         `}

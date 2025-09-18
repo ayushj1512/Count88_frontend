@@ -21,13 +21,23 @@ export default function Footer() {
             A premium footwear brand redefining fashion with bold designs and uncompromising quality.
           </p>
           <div className="flex space-x-4 mt-6">
-            <Link href="#" className="hover:text-[#f3d9c0] transition-colors duration-300">
+            <Link
+              href="https://www.instagram.com/the.count88/"
+              target="_blank"
+              className="hover:text-[#f3d9c0] transition-colors duration-300"
+            >
               <FaInstagram size={20} />
             </Link>
-            <Link href="#" className="hover:text-[#f3d9c0] transition-colors duration-300">
+            <Link
+              href="#"
+              className="hover:text-[#f3d9c0] transition-colors duration-300"
+            >
               <FaFacebookF size={20} />
             </Link>
-            <Link href="#" className="hover:text-[#f3d9c0] transition-colors duration-300">
+            <Link
+              href="#"
+              className="hover:text-[#f3d9c0] transition-colors duration-300"
+            >
               <FaTwitter size={20} />
             </Link>
           </div>

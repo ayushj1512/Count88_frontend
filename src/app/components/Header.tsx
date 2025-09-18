@@ -32,11 +32,7 @@ export default function Header() {
   ];
 
   const handleNavClick = (path: string) => {
-    if (!path.startsWith("/collection") && path.includes("/")) {
-      router.push("/collection");
-    } else {
-      router.push(path);
-    }
+    router.push(path);
     setIsMobileMenuOpen(false);
   };
 
@@ -64,12 +60,31 @@ export default function Header() {
       </div>
 
       {/* Navbar */}
-      <div className="sticky top-0 z-30 bg-white border-b border-gray-200">
+      <div className="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
         <header className="flex items-center justify-between px-4 sm:px-6 lg:px-12 py-4">
+          <div
+              className="md:hidden cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </div>
           {/* Logo */}
-          <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => handleNavClick("/")}>
-            <Image src="/assets/logo1.png" alt="Count88 Logo" width={50} height={50} className="object-contain" priority />
-            <span className="text-xl sm:text-3xl md:text-4xl tracking-wide count88-font" style={{ color: "#7a0d2e" }}>
+          <div
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer"
+            onClick={() => handleNavClick("/")}
+          >
+            <Image
+              src="/assets/logo1.png"
+              alt="Count88 Logo"
+              width={50}
+              height={50}
+              className="object-contain"
+              priority
+            />
+            <span
+              className="text-xl sm:text-3xl md:text-4xl tracking-wide count88-font"
+              style={{ color: "#7a0d2e" }}
+            >
               Count88
             </span>
           </div>
@@ -85,7 +100,9 @@ export default function Header() {
               >
                 <button
                   onClick={() => item.link && handleNavClick(item.link)}
-                  className={`${item.highlight ? "text-red-800 hover:text-red-900" : "hover:text-gray-600"} text-sm`}
+                  className={`${
+                    item.highlight ? "text-red-800 hover:text-red-900" : "hover:text-gray-600"
+                  } text-sm`}
                 >
                   {item.label}
                 </button>
@@ -95,9 +112,12 @@ export default function Header() {
                       {item.submenu.map((sub) => (
                         <li
                           key={sub}
-                          className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                          className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm text-[#7a0d2e] font-medium"
                           onClick={() =>
-                            handleSubNavClick(item.label.toLowerCase(), sub.toLowerCase().replace(/\s+/g, "-"))
+                            handleSubNavClick(
+                              item.label.toLowerCase(),
+                              sub.toLowerCase().replace(/\s+/g, "-")
+                            )
                           }
                         >
                           {sub}
@@ -112,63 +132,85 @@ export default function Header() {
 
           {/* Right Icons */}
           <div className="flex items-center gap-4 sm:gap-6 text-lg" style={{ color: "#7a0d2e" }}>
-            <Search className="cursor-pointer hover:text-black w-5 h-5" onClick={() => handleNavClick("/search")} />
-            <User className="cursor-pointer hover:text-black w-5 h-5" onClick={handleProfileClick} />
-            <div className="relative cursor-pointer" onClick={() => setIsCartOpen(true)}>
-              <ShoppingBag className="hover:text-black w-5 h-5" />
-              {cartCount > 0 && <span className="absolute -top-2 -right-2 bg-[#7a0d0d] text-white text-xs rounded-full px-1">{cartCount}</span>}
+            <Search
+              className="cursor-pointer hover:text-black w-5 h-5 transition-colors"
+              onClick={() => handleNavClick("/search")}
+            />
+            <User
+              className="cursor-pointer hover:text-black w-5 h-5 transition-colors"
+              onClick={handleProfileClick}
+            />
+            <div
+              className="relative cursor-pointer"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingBag className="hover:text-black w-5 h-5 transition-colors" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#7a0d2e] text-white text-xs rounded-full px-1">
+                  {cartCount}
+                </span>
+              )}
             </div>
             {/* Mobile Drawer Trigger */}
-            <div className="md:hidden cursor-pointer" onClick={() => setIsMobileMenuOpen(true)}>
-              <Menu className="w-6 h-6" />
-            </div>
+            
           </div>
         </header>
 
         {/* Mobile Drawer */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              className="fixed inset-y-0 right-0 z-50 bg-white w-72 p-6 shadow-xl flex flex-col"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-xl font-semibold">Menu</span>
-                <X className="w-6 h-6 cursor-pointer" onClick={() => setIsMobileMenuOpen(false)} />
-              </div>
-              <ul className="flex flex-col gap-3">
-                {navItems.map((item) => (
-                  <li key={item.label}>
-                    {item.submenu ? (
-                      <details>
-                        <summary className="cursor-pointer font-semibold">{item.label}</summary>
-                        <ul className="pl-4 mt-1 flex flex-col gap-1">
-                          {item.submenu.map((sub) => (
-                            <li
-                              key={sub}
-                              className="cursor-pointer hover:text-red-700"
-                              onClick={() =>
-                                handleSubNavClick(item.label.toLowerCase(), sub.toLowerCase().replace(/\s+/g, "-"))
-                              }
-                            >
-                              {sub}
-                            </li>
-                          ))}
-                        </ul>
-                      </details>
-                    ) : (
-                      <button className="w-full text-left" onClick={() => handleNavClick(item.link!)}>
-                        {item.label}
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <AnimatePresence>
+  {isMobileMenuOpen && (
+    <motion.div
+      initial={{ x: "-100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "-100%" }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="fixed inset-y-0 left-0 z-50 bg-white w-72 p-6 shadow-xl flex flex-col"
+    >
+      <div className="flex justify-between items-center mb-6">
+        <span className="text-xl font-semibold text-[#7a0d2e]">Menu</span>
+        <X
+          className="w-6 h-6 cursor-pointer text-[#7a0d2e]"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      </div>
+      <ul className="flex flex-col gap-4">
+        {navItems.map((item) => (
+          <li key={item.label}>
+            {item.submenu ? (
+              <details className="text-[#7a0d2e] font-medium">
+                <summary className="cursor-pointer select-none">{item.label}</summary>
+                <ul className="pl-4 mt-2 flex flex-col gap-2">
+                  {item.submenu.map((sub) => (
+                    <li
+                      key={sub}
+                      className="cursor-pointer text-[#7a0d2e] hover:text-red-700"
+                      onClick={() =>
+                        handleSubNavClick(
+                          item.label.toLowerCase(),
+                          sub.toLowerCase().replace(/\s+/g, "-")
+                        )
+                      }
+                    >
+                      {sub}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : (
+              <button
+                className="w-full text-left text-[#7a0d2e] font-medium hover:text-red-700"
+                onClick={() => handleNavClick(item.link!)}
+              >
+                {item.label}
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+    </motion.div>
+  )}
+</AnimatePresence>
+
       </div>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
@@ -182,7 +224,7 @@ export default function Header() {
         .animate-marquee2 { animation: marquee2 40s linear infinite; }
         .scrollbar-thin::-webkit-scrollbar { height: 4px; width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #7a0d2e; border-radius: 9999px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background-color: #7a0d2e; }
+        .scrollbar-thin::-webkit-scrollbar-track { background-color: #f3f3f3; }
       `}</style>
     </>
   );

@@ -17,7 +17,6 @@ export default function ColumnLayout() {
     { id: 2, name: "Boots", image: "https://i.pinimg.com/1200x/2c/5f/ce/2c5fce3b141f356bd107c03ae0265462.jpg" },
     { id: 3, name: "Flats", image: "https://i.pinimg.com/1200x/2c/5f/ce/2c5fce3b141f356bd107c03ae0265462.jpg" },
     { id: 4, name: "Shoes", image: "https://i.pinimg.com/736x/98/40/64/98406426afad989b73c36cec7386a028.jpg" },
-    
   ];
 
   const ProductCard = ({ product }: { product: Product }) => (
@@ -61,7 +60,7 @@ export default function ColumnLayout() {
           ))}
         </div>
 
-        {/* Middle Banner (mobile version) */}
+        {/* Middle Banner */}
         <div onClick={() => router.push("/collection")} className="w-full cursor-pointer">
           <Image
             src="https://i.pinimg.com/736x/4b/5d/f9/4b5df9e0a2e0e5e4127faeab56ad8da0.jpg"
@@ -71,12 +70,6 @@ export default function ColumnLayout() {
             className="w-full h-64 sm:h-80 object-cover rounded-xl shadow"
           />
         </div>
-
-        {/* Third Banner */}
-       
-
-        {/* Second Products Row */}
-  
       </div>
 
       {/* DESKTOP LAYOUT */}
@@ -99,7 +92,7 @@ export default function ColumnLayout() {
           </div>
         </div>
 
-        {/* Middle Full-Width Banner (desktop version) */}
+        {/* Middle Full-Width Banner */}
         <div onClick={() => router.push("/collection")} className="w-full cursor-pointer">
           <Image
             src="/assets/banner6.png"
@@ -117,7 +110,6 @@ export default function ColumnLayout() {
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
-          
         </div>
       </div>
 

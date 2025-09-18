@@ -1,7 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function BannerSection() {
+  const router = useRouter();
+
   const videos = [
     "/assets/video1.mp4",
     "/assets/video2.mp4",
@@ -29,7 +32,8 @@ export default function BannerSection() {
             key={index}
             whileHover={{ scale: 1.04 }}
             transition={{ duration: 0.3 }}
-            className="relative flex-shrink-0 w-[180px] sm:w-[220px] md:w-[18%] h-[340px] rounded-lg overflow-hidden group snap-start shadow-md"
+            onClick={() => router.push("/collection")}
+            className="relative flex-shrink-0 w-[180px] sm:w-[220px] md:w-[18%] h-[340px] rounded-lg overflow-hidden group snap-start shadow-md cursor-pointer"
           >
             <video
               src={video}

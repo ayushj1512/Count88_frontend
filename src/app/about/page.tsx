@@ -1,324 +1,174 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { FaSortAmountDown } from "react-icons/fa";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import { motion } from "framer-motion";
+import { Check, Users, Heart } from "lucide-react";
 
-type Product = {
-  _id: string;
-  groupId: string;
-  name: string;
-  slug: string;
-  brand: string;
-  category: string;
-  subcategory?: string;
-  tags?: string[];
-  images: { url: string }[];
-  price: number;
-  discountPrice: number;
-  variants: { size: string }[];
-  isActive: boolean;
-};
-
-type FilterType = "price" | "size" | "color" | "discount" | "gender";
-
-// ✅ Simple Sidebar Component
-function FilterSidebar({
-  filters,
-  selected,
-  toggleFilter,
-}: {
-  filters: Record<FilterType, string[]>;
-  selected: Record<FilterType, string[]>;
-  toggleFilter: (section: FilterType, option: string) => void;
-}) {
+export default function AboutPage() {
   return (
-    <div className="w-full">
-      <h2 className="text-lg font-semibold mb-4">Filters</h2>
-      <div className="space-y-4">
-        {Object.entries(filters).map(([section, options]) => (
-          <div key={section}>
-            <h3 className="text-sm font-medium mb-2">{section}</h3>
-            <div className="space-y-1">
-              {options.map((option) => (
-                <label key={option} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4"
-                    checked={selected[section as FilterType]?.includes(option) || false}
-                    onChange={() => toggleFilter(section as FilterType, option)}
-                  />
-                  {option}
-                </label>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+    <div className="bg-white text-gray-800 font-sans">
 
-export default function CollectionClient() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [sortOption, setSortOption] = useState<
-    "priceLowToHigh" | "priceHighToLow" | "alphabetical"
-  >("priceLowToHigh");
-  const [loading, setLoading] = useState(true);
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const [selected, setSelected] = useState<Record<FilterType, string[]>>({
-    price: [],
-    size: [],
-    color: [],
-    discount: [],
-    gender: [],
-  });
-
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-
-  // Sync filters with URL
-  useEffect(() => {
-    const getParams = (key: FilterType) => searchParams.getAll(key);
-    setSelected({
-      price: getParams("price"),
-      size: getParams("size"),
-      color: getParams("color"),
-      discount: getParams("discount"),
-      gender: getParams("gender"),
-    });
-  }, [searchParams]);
-
-  // Fetch products from API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`,
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("Failed to fetch products");
-        const data = await res.json();
-        setProducts(data);
-      } catch (err) {
-        console.error("Failed to fetch products:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  // Update URL when filters change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    (Object.keys(selected) as FilterType[]).forEach((key) => {
-      selected[key].forEach((val) => params.append(key, val));
-    });
-    router.replace(`?${params.toString()}`);
-  }, [selected, router]);
-
-  // Filter + sort products
-  useEffect(() => {
-    const filtered = products; // add filtering logic later
-    const sorted = filtered.sort((a, b) => {
-      if (sortOption === "priceLowToHigh") return a.discountPrice - b.discountPrice;
-      if (sortOption === "priceHighToLow") return b.discountPrice - a.discountPrice;
-      return a.name.localeCompare(b.name);
-    });
-    setFilteredProducts(sorted);
-  }, [products, selected, sortOption]);
-
-  // Toggle filter
-  const handleToggleFilter = (type: FilterType, value: string) => {
-    setSelected((prev) => ({
-      ...prev,
-      [type]: prev[type].includes(value)
-        ? prev[type].filter((v) => v !== value)
-        : [...prev[type], value],
-    }));
-  };
-
-  const filterOptions: Record<FilterType, string[]> = {
-    price: ["Under 1000", "1000-2000", "2000+"],
-    size: ["UK 6", "UK 7", "UK 8", "UK 9"],
-    color: ["Red", "Blue", "Black", "White"],
-    discount: ["10", "20", "30", "50"],
-    gender: ["Men", "Women", "Kids"],
-  };
-
-  return (
-    <div className="flex max-w-full">
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:block w-64 border-r p-4">
-        <FilterSidebar
-          filters={filterOptions}
-          selected={selected}
-          toggleFilter={handleToggleFilter}
-        />
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8">
-        {/* Mobile Filter Toggle + Sort */}
-        <div className="flex items-center justify-between mb-4 md:mb-6">
-          <button
-            className="md:hidden border px-3 py-1 rounded-md text-sm"
-            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+      {/* Hero Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="bg-[#7a0d2e] py-20 px-4 text-center text-white"
+      >
+        <div className="max-w-4xl mx-auto space-y-6">
+          <motion.h1 
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl sm:text-4xl font-bold"
           >
-            {mobileFiltersOpen ? "Close Filters" : "Filters"}
-          </button>
-
-          <AnimatePresence>
-            <motion.div
-              key={sortOption}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center gap-2 text-sm"
-            >
-              <FaSortAmountDown className="text-gray-500" />
-              <select
-                className="border border-gray-300 px-3 py-1.5 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-red-900"
-                value={sortOption}
-                onChange={(e) =>
-                  setSortOption(
-                    e.target.value as "priceLowToHigh" | "priceHighToLow" | "alphabetical"
-                  )
-                }
-              >
-                <option value="priceLowToHigh">Price: Low to High</option>
-                <option value="priceHighToLow">Price: High to Low</option>
-                <option value="alphabetical">Alphabetical</option>
-              </select>
-            </motion.div>
-          </AnimatePresence>
+            ABOUT US
+          </motion.h1>
+          <p className="text-md sm:text-lg leading-relaxed">
+            We are a footwear brand with a vision to transform the way the world sees fashion—without compromise. Since stepping
+            into manufacturing in 2010, we have been committed to creating shoes that combine style, comfort, and responsibility.
+          </p>
+          <p className="text-md sm:text-lg leading-relaxed">
+            As a <span className="font-semibold">100% vegan and cruelty-free</span> brand, we believe fashion should never come at the
+            expense of animals or the planet. Every pair we design is crafted with sustainable materials, innovative techniques,
+            and premium craftsmanship to ensure lasting quality and comfort.
+          </p>
         </div>
+      </motion.section>
 
-        {/* Mobile Sidebar */}
-        {mobileFiltersOpen && (
-          <div className="md:hidden mb-4 border p-4 rounded-md bg-gray-50">
-            <FilterSidebar
-              filters={filterOptions}
-              selected={selected}
-              toggleFilter={handleToggleFilter}
-            />
-          </div>
-        )}
+      {/* Our Journey */}
+      <motion.section
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-[#f7e6ea]"
+      >
+        <div className="max-w-6xl mx-auto space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-6 text-[#7a0d2e] flex items-center gap-3">
+            <Users className="w-6 h-6 text-[#7a0d2e]" /> OUR JOURNEY
+          </h2>
+          <p className="text-gray-800 leading-7 sm:leading-8 text-md sm:text-lg text-justify">
+            Our journey is driven by purpose: to prove that stylish footwear can be ethical, eco-conscious, and accessible.
+            Since 2010, we have continuously refined our processes, partnered with responsible suppliers, and innovated
+            material alternatives so that every step taken in our shoes leaves a smaller footprint and a better story.
+            <br /><br />
+            With each collection, we strive to inspire a future where fashion is kind—to people, animals, and the environment.
+          </p>
+        </div>
+      </motion.section>
 
-        {/* Products Grid */}
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse bg-gray-200 h-72 rounded-xl"
-              ></div>
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          >
-            <AnimatePresence>
-              {filteredProducts.map((product) => {
-                const mrp = product.price;
-                const price = product.discountPrice;
-                const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
-                const primaryImage = product.images?.[0]?.url || "https://via.placeholder.com/300";
-                const secondaryImage = product.images?.[1]?.url || primaryImage;
+      {/* Our Philosophy */}
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-white"
+      >
+        <div className="max-w-5xl mx-auto text-center p-6 rounded-lg">
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-[#7a0d2e] flex justify-center items-center gap-2">
+            <Check className="w-6 h-6 text-[#7a0d2e]" /> OUR PHILOSOPHY
+          </h2>
+          <p className="text-gray-700 text-md sm:text-lg leading-relaxed">
+            At the heart of our brand lies a simple promise: to deliver premium-quality footwear made with natural, ethical, and
+            eco-conscious materials. By choosing us, you’re choosing a lifestyle that celebrates design, comfort, and compassion—without compromise.
+          </p>
+        </div>
+      </motion.section>
 
-                return (
-                  <motion.div
-                    key={product._id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="relative bg-white rounded-xl border shadow-md group overflow-hidden flex flex-col h-full hover:shadow-2xl hover:border-red-900 transition-all duration-300">
-                      <Link
-                        href={`/collection/${product.slug}`}
-                        className="flex-1 flex flex-col"
-                      >
-                        <div className="relative w-full h-56 sm:h-64 md:h-72 overflow-hidden">
-                          <Image
-                            src={primaryImage}
-                            alt={product.name}
-                            fill
-                            className="object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105 group-hover:brightness-90 group-hover:opacity-0"
-                          />
-                          <Image
-                            src={secondaryImage}
-                            alt={product.name}
-                            fill
-                            className="object-cover rounded-t-xl absolute top-0 left-0 transition-opacity duration-500 opacity-0 group-hover:opacity-100 group-hover:brightness-100"
-                          />
-                          {discount > 0 && (
-                            <div className="absolute top-2 left-2 bg-red-900 text-white text-xs font-bold px-2 py-1 rounded">
-                              {discount}% OFF
-                            </div>
-                          )}
-                          {product.tags?.length ? (
-                            <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap">
-                              {product.tags?.map((tag, i) => (
-                                <span
-                                  key={i}
-                                  className="bg-black/80 text-white text-[10px] px-2 py-1 rounded"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          ) : null}
-                        </div>
+      {/* Sourcing & Materials */}
+      <motion.section
+        initial={{ opacity: 0, x: 50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-[#f7e6ea]"
+      >
+        <div className="max-w-6xl mx-auto space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-6 text-[#7a0d2e] flex items-center gap-2">
+            <Heart className="w-6 h-6 text-[#7a0d2e]" /> SOURCING & MATERIALS
+          </h2>
+          <p className="text-gray-800 leading-7 sm:leading-8 text-md sm:text-lg text-justify">
+            We source only the best natural and cruelty-free alternatives to leather and synthetic materials. From plant-based fibers
+            to eco-friendly textiles, every raw material is carefully selected for its durability, comfort, and environmental impact.
+            Our sustainable sourcing ensures that each creation is as kind to the earth as it is to your feet.
+          </p>
+          <p className="text-gray-800 leading-7 sm:leading-8 text-md sm:text-lg text-justify">
+            Our partnerships with local and global suppliers reflect our commitment to ethical production. Every step of the supply chain is monitored to maintain transparency and uphold environmental standards.
+          </p>
+        </div>
+      </motion.section>
 
-                        <div className="p-4 flex flex-col gap-1">
-                          <h4 className="text-gray-900 font-semibold text-sm sm:text-md truncate">
-                            {product.name}
-                          </h4>
-                          <p className="text-gray-500 text-xs sm:text-sm">
-                            {product.brand}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            {mrp > price ? (
-                              <>
-                                <span className="line-through text-gray-400 text-xs sm:text-sm">
-                                  ₹{mrp}
-                                </span>
-                                <span className="text-black font-bold text-sm sm:text-base">
-                                  ₹{price}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-black font-bold text-sm sm:text-base">
-                                ₹{price}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
-        )}
+      {/* Craftsmanship & Quality */}
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-white"
+      >
+        <div className="max-w-5xl mx-auto text-center p-6 rounded-lg">
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-[#7a0d2e]">CRAFTSMANSHIP AND QUALITY</h2>
+          <p className="text-gray-800 leading-relaxed text-md sm:text-lg">
+            Quality is not negotiable. Combining cutting-edge technology with timeless craftsmanship, we design collections that are elegant,
+            durable, and luxuriously comfortable. Each shoe undergoes rigorous quality checks to ensure it is built to last, while remaining
+            lightweight and breathable.
+          </p>
+          <p className="text-gray-800 leading-relaxed text-md sm:text-lg mt-4">
+            Our skilled artisans bring decades of experience to each product, ensuring attention to detail and consistency in every pair.
+          </p>
+        </div>
+      </motion.section>
 
-        {!filteredProducts.length && !loading && (
-          <p className="text-center text-gray-600 mt-10">No products found.</p>
-        )}
-      </main>
+      {/* Our Collection */}
+      <motion.section
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-12 px-4 sm:px-6 lg:px-8 bg-[#f7e6ea]"
+      >
+        <div className="max-w-6xl mx-auto space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#7a0d2e]">Our Collection</h2>
+          <p className="text-gray-800">
+            Our footwear is designed for everyday wear—balancing modern style and conscious living. 
+            Every collection embodies our brand values:
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-gray-800 text-md sm:text-lg">
+            <li><span className="font-semibold">100% Vegan and Cruelty-Free</span> — no animal-derived materials used.</li>
+            <li><span className="font-semibold">Premium, Sustainable Materials</span> — thoughtfully selected for longevity and comfort.</li>
+            <li><span className="font-semibold">Timeless Aesthetics with Modern Comfort</span> — pieces that pair with many wardrobes.</li>
+            <li><span className="font-semibold">Responsible Manufacturing Practices</span> — transparency and care throughout production.</li>
+            <li><span className="font-semibold">Community & Giving Back</span> — supporting initiatives that improve lives and the environment.</li>
+          </ul>
+        </div>
+      </motion.section>
+
+      {/* Our Mission */}
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-white"
+      >
+        <div className="max-w-6xl mx-auto space-y-6 text-center p-6 rounded-lg">
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 text-[#7a0d2e]">OUR MISSION</h2>
+          <p className="text-gray-800 text-md sm:text-lg leading-relaxed">
+            We aim to inspire conscious choices by proving that sustainability and luxury can walk hand in hand. 
+            Our mission goes beyond creating footwear — it is about building a future where fashion respects people, 
+            animals, and the planet. Alongside our commitment to sustainable practices, we prioritize your trust and 
+            safety. Every purchase is supported by secure transactions, trusted gateways, and complete data protection, 
+            ensuring that your personal information is safeguarded at every step.
+          </p>
+          <p className="text-gray-800 text-md sm:text-lg leading-relaxed">
+            Through education, awareness campaigns, and collaborations, we hope to foster a community of mindful consumers who value ethical choices and sustainable living.
+          </p>
+        </div>
+      </motion.section>
+
+      {/* Footer */}
+     
     </div>
   );
 }
