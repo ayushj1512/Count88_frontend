@@ -1,9 +1,8 @@
 import { create } from "zustand";
-import { User } from "firebase/auth";
-import { onAuthStateChanged } from "firebase/auth";
+import { User as FirebaseUser, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/app/utils/firebase";
 
-interface CleanUser {
+export interface CleanUser {
   uid: string;
   name: string | null;
   email: string | null;
@@ -14,7 +13,7 @@ interface CleanUser {
 interface AuthState {
   user: CleanUser | null;
   loading: boolean;
-  setUser: (user: User | null) => void;
+  setUser: (user: FirebaseUser | null) => void;
   clearUser: () => void;
 }
 
@@ -24,7 +23,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   loading: true,
   setUser: (user) => {
     if (user) {
-      // 🧾 Clean only necessary info
       const cleanUser: CleanUser = {
         uid: user.uid,
         name: user.displayName ?? null,

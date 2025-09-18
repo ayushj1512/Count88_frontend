@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "../store/useAuthStore";
 import { auth } from "../utils/firebase";
 import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
-import { LogOut, User, ShoppingBag, Loader2 } from "lucide-react";
-import OrderHistory from "../components/profile/orderHistory"; // 🔹 Import the new component
+import { LogOut, User as UserIcon, Loader2 } from "lucide-react";
+import OrderHistory from "../components/profile/orderHistory";
 
 export default function ProfilePage() {
   const { user, setUser, clearUser } = useAuthStore();
@@ -17,21 +17,11 @@ export default function ProfilePage() {
   // Sync Firebase Auth → Zustand store
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        setUser({
-          uid: firebaseUser.uid,
-          name: firebaseUser.displayName ?? null,
-          email: firebaseUser.email ?? null,
-          phone: firebaseUser.phoneNumber ?? null,
-          image: firebaseUser.photoURL ?? null,
-        });
-      } else {
-        clearUser();
-      }
+      setUser(firebaseUser); // ✅ Store handles cleaning & typing
       setLoadingUser(false);
     });
     return () => unsubscribe();
-  }, [setUser, clearUser]);
+  }, [setUser]);
 
   const handleConfirmLogout = async () => {
     await firebaseSignOut(auth);
@@ -63,7 +53,7 @@ export default function ProfilePage() {
       <div className="w-full max-w-3xl bg-white shadow-md rounded-2xl p-6 sm:p-8">
         <div className="flex flex-col items-center text-center">
           <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center bg-gradient-to-tr from-pink-100 to-red-100 rounded-full shadow-inner">
-            <User className="w-10 h-10 sm:w-12 sm:h-12 text-red-600" />
+            <UserIcon className="w-10 h-10 sm:w-12 sm:h-12 text-red-600" />
           </div>
           <h2 className="mt-3 sm:mt-4 text-xl sm:text-2xl font-bold text-gray-800">
             {user.name ?? "Guest User"}
