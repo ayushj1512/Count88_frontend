@@ -1,90 +1,86 @@
 "use client";
 
-import { useState } from "react";
-import { Info } from "lucide-react";
-import { FaEnvelope, FaUndo, FaGift, FaBox } from "react-icons/fa";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import { motion } from "framer-motion";
+import { Repeat, Package, Clock } from "lucide-react";
 
 export default function ReturnsPage() {
-  const [orderNumber, setOrderNumber] = useState("");
-  const [emailOrMobile, setEmailOrMobile] = useState("");
-
   return (
-    <>
-
-      {/* Main Section */}
-      <section className="max-w-7xl mx-auto py-16 px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center min-h-[70vh]">
-        {/* Left: Text */}
-        <div>
-          <h1 className="text-4xl font-bold mb-4">Return & Exchanges</h1>
-          <p className="text-gray-600 text-lg leading-relaxed">
-            Return/Exchange your product in just a few clicks. Please enter your order number and email / mobile number to continue.
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <section className="max-w-7xl mx-auto py-16 px-6">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl font-bold mb-4 text-[#7a0d2e]">Return & Exchange Policy</h1>
+          <p className="text-gray-700 text-lg leading-relaxed">
+            Easily manage your returns and exchanges. Please read the policy carefully to know how you can return or exchange your products.
           </p>
-        </div>
-
-        {/* Right: Form */}
-        <div className="bg-gray-50 shadow-md rounded-2xl p-8 w-full max-w-md mx-auto">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Get Started</h2>
-          <form className="space-y-4">
-            {/* Order Number */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Order Number"
-                value={orderNumber}
-                onChange={(e) => setOrderNumber(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <Info className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
-            </div>
-
-            {/* Email or Mobile */}
-            <input
-              type="text"
-              placeholder="Email / Mobile Number"
-              value={emailOrMobile}
-              onChange={(e) => setEmailOrMobile(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
-            />
-
-            {/* Button */}
-            <button
-              type="submit"
-              className="w-full bg-green-100 text-black py-3 rounded-lg font-semibold hover:bg-black hover:text-white transition"
-            >
-              CONTINUE
-            </button>
-          </form>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Info Section */}
-      <div className="bg-green-100 border-t border-gray-300 py-10">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center px-4">
-          <div className="flex flex-col items-center space-y-2">
-            <FaEnvelope size={30} className="text-gray-700" />
-            <h4 className="font-semibold">Get in touch</h4>
-            <p className="text-sm text-gray-600">Expert help & advice</p>
+      {/* Policy Sections */}
+      <section className="max-w-7xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Size Exchange Fee */}
+        <motion.div
+          whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+          className="bg-white rounded-2xl shadow-md p-6 flex gap-4 items-start transition-all"
+        >
+          <Repeat className="w-8 h-8 text-[#7a0d2e] mt-1" />
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Size Exchange Fee</h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-1">
+              <li>Free First Exchange: Request a free size exchange within 7 days of delivery.</li>
+              <li>Second Exchange Fee: Rs. 200 for additional exchanges for the same product.</li>
+            </ul>
           </div>
-          <div className="flex flex-col items-center space-y-2">
-            <FaUndo size={30} className="text-gray-700" />
-            <h4 className="font-semibold">Returns & exchanges</h4>
-            <p className="text-sm text-gray-600">All you need to know</p>
-          </div>
-          <div className="flex flex-col items-center space-y-2">
-            <FaGift size={30} className="text-gray-700" />
-            <h4 className="font-semibold">Rewards</h4>
-            <p className="text-sm text-gray-600">Unlock Exclusive Benefits</p>
-          </div>
-          <div className="flex flex-col items-center space-y-2">
-            <FaBox size={30} className="text-gray-700" />
-            <h4 className="font-semibold">Bulk Order</h4>
-            <p className="text-sm text-gray-600">Get Customized Stationery</p>
-          </div>
-        </div>
-      </div>
+        </motion.div>
 
-    </>
+        {/* Return Fee */}
+        <motion.div
+          whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+          className="bg-white rounded-2xl shadow-md p-6 flex gap-4 items-start transition-all"
+        >
+          <Package className="w-8 h-8 text-[#7a0d2e] mt-1" />
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Return Fee</h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-1">
+              <li>Return within 7 days if unsatisfied.</li>
+              <li>A nominal return fee of Rs. 100 covers pickup, packaging, and logistics.</li>
+            </ul>
+          </div>
+        </motion.div>
+
+        {/* Return / Exchange Process */}
+        <motion.div
+          whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+          className="bg-white rounded-2xl shadow-md p-6 flex gap-4 items-start transition-all"
+        >
+          <Repeat className="w-8 h-8 text-[#7a0d2e] mt-1" />
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Return / Exchange Process</h3>
+            <p className="text-gray-700 text-sm">
+              Contact <span className="font-semibold text-[#7a0d2e]">support@count88.in</span> with order details, product photos with tags, and unboxing video. Return/exchange in original packaging once approved.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Refund Eligibility & Timeframe */}
+        <motion.div
+          whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+          className="bg-white rounded-2xl shadow-md p-6 flex gap-4 items-start transition-all"
+        >
+          <Clock className="w-8 h-8 text-[#7a0d2e] mt-1" />
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Refund Eligibility & Timeframe</h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-1 text-sm">
+              <li>COUNT88 may refuse any return/exchange/refund if policy conditions are not met.</li>
+              <li>Refunds processed within 7–10 business days after receiving the returned item. Notification via email once processed.</li>
+            </ul>
+          </div>
+        </motion.div>
+      </section>
+    </div>
   );
 }

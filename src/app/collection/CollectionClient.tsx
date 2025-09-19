@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { SlidersHorizontal, X, ChevronDown, ChevronUp } from "lucide-react";
+import { SlidersHorizontal, Heart } from "lucide-react";
+import Image from "next/image";
+import FilterSidebar from "../components/collectionPage/FilterSidebar";
+import { useAuthStore } from "../store/useAuthStore";
 
 type Variant = { size: string };
 type ImageType = { url: string; public_id: string };
@@ -22,12 +25,19 @@ type Product = {
   variants: Variant[];
 };
 
+type WishlistItem = {
+  _id: string;
+  productId: Product;
+};
+
 export default function CollectionClient() {
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [wishlist, setWishlist] = useState<string[]>([]);
 
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -39,13 +49,9 @@ export default function CollectionClient() {
   const subcategories = ["dfg", "xyz", "Other"];
   const allSizes = ["UK 3", "UK 4", "UK 5", "UK 6", "UK 7", "UK 8", "UK 9"];
 
-  // Mobile collapsible sections
-  const [categoryOpen, setCategoryOpen] = useState(true);
-  const [subcategoryOpen, setSubcategoryOpen] = useState(true);
-  const [sizeOpen, setSizeOpen] = useState(true);
-  const [priceOpen, setPriceOpen] = useState(true);
-
+  // Fetch products
   useEffect(() => {
+    setLoading(true);
     axios
       .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`)
       .then((res) => {
@@ -56,6 +62,22 @@ export default function CollectionClient() {
       .catch(() => setLoading(false));
   }, []);
 
+  // Fetch wishlist for authenticated user
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    axios
+      .get<{ message: string; data: WishlistItem[] }>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/${user.uid}`
+      )
+      .then((res) => {
+        const wishlistIds = res.data.data.map((item) => item.productId._id);
+        setWishlist(wishlistIds);
+      })
+      .catch(() => setWishlist([]));
+  }, [user?.uid]);
+
+  // Filter products
   useEffect(() => {
     let temp = [...products];
     if (category) temp = temp.filter((p) => p.category === category);
@@ -94,86 +116,49 @@ export default function CollectionClient() {
     setSortBy("");
   };
 
-  const renderRadioFilter = (
-    title: string,
-    options: string[],
-    selected: string,
-    onChange: (val: string) => void
-  ) => (
-    <div className="space-y-1">
-      {options.map((opt) => (
-        <label key={opt} className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name={title}
-            value={opt}
-            checked={selected === opt}
-            onChange={() => onChange(opt)}
-            className="accent-gray-800"
-          />
-          {opt}
-        </label>
-      ))}
-    </div>
-  );
+  // Toggle wishlist
+  const toggleWishlist = async (productId: string) => {
+    if (!user?.uid) return;
+    try {
+      if (wishlist.includes(productId)) {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/remove`, {
+          userId: user.uid,
+          productId,
+        });
+        setWishlist((prev) => prev.filter((id) => id !== productId));
+      } else {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/add`, {
+          userId: user.uid,
+          productId,
+        });
+        setWishlist((prev) => [...prev, productId]);
+      }
+    } catch (err) {
+      console.error("Wishlist error:", err);
+    }
+  };
 
   return (
     <div className="p-4 flex min-h-screen">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block w-64 mr-4">
-        <div className="border p-4 rounded space-y-6">
-          
+      <FilterSidebar
+        categories={categories}
+        subcategories={subcategories}
+        allSizes={allSizes}
+        category={category}
+        setCategory={setCategory}
+        subcategory={subcategory}
+        setSubcategory={setSubcategory}
+        sizes={sizes}
+        toggleSize={toggleSize}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        clearAllFilters={clearAllFilters}
+        showMobile={showMobileFilters}
+        setShowMobile={setShowMobileFilters}
+      />
 
-          <h3 className="font-bold text-lg mt-4">Categories</h3>
-          {renderRadioFilter("category", categories, category, setCategory)}
-
-          <h3 className="font-bold text-lg mt-4">Subcategories</h3>
-          {renderRadioFilter("subcategory", subcategories, subcategory, setSubcategory)}
-
-          <h3 className="font-bold text-lg mt-4">Sizes</h3>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {allSizes.map((s) => (
-              <button
-                key={s}
-                onClick={() => toggleSize(s)}
-                className={`border px-2 py-1 rounded ${
-                  sizes.includes(s) ? "bg-gray-800 text-white" : ""
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-
-          <h3 className="font-bold text-lg mt-4">Price</h3>
-          <div className="mt-2 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>₹{priceRange[0]}</span>
-              <span>₹{priceRange[1]}</span>
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={1000}
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([0, Number(e.target.value)])}
-              className="w-full"
-            />
-          </div>
-          <button
-            onClick={clearAllFilters}
-            className="bg-red-600 text-white px-2 py-1 rounded w-full"
-          >
-            Clear All Filters
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        {/* Top Filters Bar */}
         <div className="flex flex-wrap items-center gap-4 mb-4 justify-between">
-          {/* Mobile Filters button */}
           <button
             onClick={() => setShowMobileFilters(true)}
             className="flex items-center gap-2 border px-2 py-1 rounded md:hidden"
@@ -181,7 +166,6 @@ export default function CollectionClient() {
             <SlidersHorizontal /> Filters
           </button>
 
-          {/* Sort dropdown */}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -194,7 +178,6 @@ export default function CollectionClient() {
           </select>
         </div>
 
-        {/* Products Grid */}
         <div className="flex-1">
           {loading ? (
             <div>Loading...</div>
@@ -210,20 +193,37 @@ export default function CollectionClient() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="border rounded shadow hover:shadow-lg cursor-pointer overflow-hidden"
-                    onClick={() => router.push(`/collection/${p.slug}`)}
+                    className="border rounded shadow hover:shadow-lg cursor-pointer overflow-hidden relative"
                   >
-                    <img
-                      src={p.images[0]?.url}
-                      alt={p.name}
-                      className="w-full h-48 object-cover"
-                    />
+                    <div onClick={() => router.push(`/collection/${p.slug}`)} className="relative w-full h-48">
+                      {p.images[0]?.url && (
+                        <Image
+                          src={p.images[0].url}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
+
+                    {/* Wishlist button */}
+                    <button
+                      onClick={() => toggleWishlist(p._id)}
+                      className="absolute top-2 right-2 text-red-600 z-10"
+                    >
+                      <Heart
+                        fill={wishlist.includes(p._id) ? "red" : "none"}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      />
+                    </button>
+
                     <div className="p-2">
                       <h3 className="font-bold">{p.name}</h3>
                       <p className="text-sm text-gray-500">{p.brand}</p>
                       <p className="mt-1">
                         ₹{p.discountPrice}{" "}
-                        <span className="line-through text-gray-400">₹{p.price}</span>
+                        <span className="line-through text-gray-400">{p.price}</span>
                       </p>
                     </div>
                   </motion.div>
@@ -233,144 +233,6 @@ export default function CollectionClient() {
           )}
         </div>
       </div>
-
-      {/* Mobile Filter Drawer */}
-      <AnimatePresence>
-        {showMobileFilters && (
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            className="fixed inset-0 bg-white z-50 w-64 p-4 shadow-lg overflow-y-auto"
-          >
-            <div className="flex justify-end mb-4">
-              <button onClick={() => setShowMobileFilters(false)}>
-                <X />
-              </button>
-            </div>
-
-            <button
-              onClick={clearAllFilters}
-              className="bg-red-600 text-white px-2 py-1 rounded mb-4 w-full"
-            >
-              Clear All Filters
-            </button>
-
-            {/* Collapsible Category */}
-            <div>
-              <div
-                className="flex justify-between cursor-pointer items-center"
-                onClick={() => setCategoryOpen(!categoryOpen)}
-              >
-                <h3 className="font-bold text-lg">Categories</h3>
-                {categoryOpen ? <ChevronUp /> : <ChevronDown />}
-              </div>
-              <AnimatePresence>
-                {categoryOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="space-y-1 overflow-hidden mt-2"
-                  >
-                    {renderRadioFilter("category", categories, category, setCategory)}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Collapsible Subcategory */}
-            <div className="mt-4">
-              <div
-                className="flex justify-between cursor-pointer items-center"
-                onClick={() => setSubcategoryOpen(!subcategoryOpen)}
-              >
-                <h3 className="font-bold text-lg">Subcategories</h3>
-                {subcategoryOpen ? <ChevronUp /> : <ChevronDown />}
-              </div>
-              <AnimatePresence>
-                {subcategoryOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="space-y-1 overflow-hidden mt-2"
-                  >
-                    {renderRadioFilter("subcategory", subcategories, subcategory, setSubcategory)}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Collapsible Sizes */}
-            <div className="mt-4">
-              <div
-                className="flex justify-between cursor-pointer items-center"
-                onClick={() => setSizeOpen(!sizeOpen)}
-              >
-                <h3 className="font-bold text-lg">Sizes</h3>
-                {sizeOpen ? <ChevronUp /> : <ChevronDown />}
-              </div>
-              <AnimatePresence>
-                {sizeOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="flex flex-wrap gap-2 mt-2 overflow-hidden"
-                  >
-                    {allSizes.map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => toggleSize(s)}
-                        className={`border px-2 py-1 rounded ${
-                          sizes.includes(s) ? "bg-gray-800 text-white" : ""
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Collapsible Price */}
-            <div className="mt-4">
-              <div
-                className="flex justify-between cursor-pointer items-center"
-                onClick={() => setPriceOpen(!priceOpen)}
-              >
-                <h3 className="font-bold text-lg">Price</h3>
-                {priceOpen ? <ChevronUp /> : <ChevronDown />}
-              </div>
-              <AnimatePresence>
-                {priceOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="mt-2 space-y-2 overflow-hidden"
-                  >
-                    <div className="flex justify-between text-sm">
-                      <span>₹{priceRange[0]}</span>
-                      <span>₹{priceRange[1]}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={1000}
-                      value={priceRange[1]}
-                      onChange={(e) => setPriceRange([0, Number(e.target.value)])}
-                      className="w-full"
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

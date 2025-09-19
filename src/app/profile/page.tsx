@@ -7,6 +7,7 @@ import { auth } from "../utils/firebase";
 import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import { LogOut, User as UserIcon, Loader2 } from "lucide-react";
 import OrderHistory from "../components/profile/orderHistory";
+import AddressOverview from "../components/profile/AddressOverview";
 
 export default function ProfilePage() {
   const { user, setUser, clearUser } = useAuthStore();
@@ -69,6 +70,11 @@ export default function ProfilePage() {
             <LogOut className="w-4 h-4" /> Logout
           </button>
         </div>
+      </div>
+
+      {/* Address Overview Component */}
+      <div className="w-full max-w-3xl mt-6 sm:mt-8">
+        <AddressOverview />
       </div>
 
       {/* Order History Component */}

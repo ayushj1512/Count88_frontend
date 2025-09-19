@@ -1,267 +1,259 @@
 "use client";
 
-import { useState } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  SlidersHorizontal,
-  X,
-} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-type FilterType = {
-  categories?: string[];
-  brands?: string[];
-  price?: { min: number; max: number; step: number };
-};
+import { X, ChevronDown, ChevronUp } from "lucide-react";
+import React from "react";
 
 type FilterSidebarProps = {
-  filters: FilterType;
-  selected: {
-    categories: string[];
-    brands: string[];
-    price: number;
-  };
-  onChange: (filter: {
-    categories?: string[];
-    brands?: string[];
-    price?: number;
-  }) => void;
+  categories: string[];
+  subcategories: string[];
+  allSizes: string[];
+  category: string;
+  setCategory: (v: string) => void;
+  subcategory: string;
+  setSubcategory: (v: string) => void;
+  sizes: string[];
+  toggleSize: (s: string) => void;
+  priceRange: [number, number];
+  setPriceRange: (v: [number, number]) => void;
+  clearAllFilters: () => void;
+  showMobile: boolean;
+  setShowMobile: (v: boolean) => void;
 };
 
-// 🔹 Custom Slider Component
-function Slider({
-  min = 0,
-  max = 100,
-  step = 1,
-  defaultValue = 50,
-  onChange,
-}: {
-  min?: number;
-  max?: number;
-  step?: number;
-  defaultValue?: number;
-  onChange?: (value: number) => void;
-}) {
-  const [value, setValue] = useState(defaultValue);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(e.target.value);
-    setValue(newValue);
-    onChange?.(newValue);
-  };
-
-  return (
-    <div className="w-full flex flex-col items-start space-y-2">
-      <div className="flex justify-between w-full text-xs text-gray-600">
-        <span>{min}</span>
-        <span className="font-semibold text-[#7a0d2e]">{value}</span>
-        <span>{max}</span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={handleChange}
-        className="w-full accent-[#7a0d2e] cursor-pointer"
-      />
-    </div>
-  );
-}
-
-// 🔹 Collapsible Card Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50 transition"
-      >
-        <span>{title}</span>
-        {isOpen ? (
-          <ChevronUp className="w-4 h-4 text-[#7a0d2e]" />
-        ) : (
-          <ChevronDown className="w-4 h-4 text-[#7a0d2e]" />
-        )}
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="px-4 py-3 bg-gray-50 text-sm space-y-3"
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// 🔹 Filter Sidebar Component with Drawer
 export default function FilterSidebar({
-  filters,
-  selected,
-  onChange,
+  categories,
+  subcategories,
+  allSizes,
+  category,
+  setCategory,
+  subcategory,
+  setSubcategory,
+  sizes,
+  toggleSize,
+  priceRange,
+  setPriceRange,
+  clearAllFilters,
+  showMobile,
+  setShowMobile,
 }: FilterSidebarProps) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [categoryOpen, setCategoryOpen] = React.useState(true);
+  const [subcategoryOpen, setSubcategoryOpen] = React.useState(true);
+  const [sizeOpen, setSizeOpen] = React.useState(true);
+  const [priceOpen, setPriceOpen] = React.useState(true);
 
-  const handleCategoryChange = (cat: string) => {
-    const updated = selected.categories.includes(cat)
-      ? selected.categories.filter((c) => c !== cat)
-      : [...selected.categories, cat];
-    onChange({ categories: updated });
-  };
+  const renderRadioFilter = (
+    title: string,
+    options: string[],
+    selected: string,
+    onChange: (val: string) => void
+  ) => (
+    <div className="space-y-1">
+      {options.map((opt) => (
+        <label key={opt} className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name={title}
+            value={opt}
+            checked={selected === opt}
+            onChange={() => onChange(opt)}
+            className="accent-gray-800"
+          />
+          {opt}
+        </label>
+      ))}
+    </div>
+  );
 
-  const handleBrandChange = (brand: string) => {
-    const updated = selected.brands.includes(brand)
-      ? selected.brands.filter((b) => b !== brand)
-      : [...selected.brands, brand];
-    onChange({ brands: updated });
-  };
+  // Desktop version
+  const desktopFilters = (
+    <div className="border p-4 rounded space-y-6">
+      <h3 className="font-bold text-lg mt-4">Categories</h3>
+      {renderRadioFilter("category", categories, category, setCategory)}
 
-  const handlePriceChange = (value: number) => {
-    onChange({ price: value });
-  };
+      <h3 className="font-bold text-lg mt-4">Subcategories</h3>
+      {renderRadioFilter("subcategory", subcategories, subcategory, setSubcategory)}
 
-  // Sidebar content
-  const SidebarContent = (
-    <div className="w-72 bg-gray-50 h-full p-4 space-y-4 overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-5 h-5 text-[#7a0d2e]" />
-          <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
-        </div>
-        {/* Close button (mobile only) */}
-        <button
-          className="lg:hidden text-gray-600 hover:text-[#7a0d2e]"
-          onClick={() => setMobileOpen(false)}
-        >
-          <X className="w-5 h-5" />
-        </button>
+      <h3 className="font-bold text-lg mt-4">Sizes</h3>
+      <div className="flex flex-wrap gap-2 mt-2">
+        {allSizes.map((s) => (
+          <button
+            key={s}
+            onClick={() => toggleSize(s)}
+            className={`border px-2 py-1 rounded ${
+              sizes.includes(s) ? "bg-gray-800 text-white" : ""
+            }`}
+          >
+            {s}
+          </button>
+        ))}
       </div>
 
-      {/* Price Range */}
-      {filters.price && (
-        <CollapsibleCard title="Price Range" defaultOpen>
-          <Slider
-            min={filters.price.min}
-            max={filters.price.max}
-            step={filters.price.step}
-            defaultValue={selected.price}
-            onChange={handlePriceChange}
-          />
-        </CollapsibleCard>
-      )}
-
-      {/* Categories */}
-      {filters.categories && (
-        <CollapsibleCard title="Categories">
-          <div className="space-y-2">
-            {filters.categories.map((cat) => (
-              <label
-                key={cat}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.categories.includes(cat)}
-                  onChange={() => handleCategoryChange(cat)}
-                  className="accent-[#7a0d2e] w-4 h-4 rounded"
-                />
-                <span className="text-gray-700">{cat}</span>
-              </label>
-            ))}
-          </div>
-        </CollapsibleCard>
-      )}
-
-      {/* Brands */}
-      {filters.brands && (
-        <CollapsibleCard title="Brands">
-          <div className="space-y-2">
-            {filters.brands.map((brand) => (
-              <label
-                key={brand}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.brands.includes(brand)}
-                  onChange={() => handleBrandChange(brand)}
-                  className="accent-[#7a0d2e] w-4 h-4 rounded"
-                />
-                <span className="text-gray-700">{brand}</span>
-              </label>
-            ))}
-          </div>
-        </CollapsibleCard>
-      )}
+      <h3 className="font-bold text-lg mt-4">Price</h3>
+      <div className="mt-2 space-y-2">
+        <div className="flex justify-between text-sm">
+          <span>₹{priceRange[0]}</span>
+          <span>₹{priceRange[1]}</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={1000}
+          value={priceRange[1]}
+          onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+          className="w-full"
+        />
+      </div>
+      <button
+        onClick={clearAllFilters}
+        className="bg-red-600 text-white px-2 py-1 rounded w-full"
+      >
+        Clear All Filters
+      </button>
     </div>
+  );
+
+  // Mobile drawer version
+  const mobileFilters = (
+    <AnimatePresence>
+      {showMobile && (
+        <motion.div
+          initial={{ x: "-100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "-100%" }}
+          className="fixed inset-0 bg-white z-50 w-64 p-4 shadow-lg overflow-y-auto"
+        >
+          <div className="flex justify-end mb-4">
+            <button onClick={() => setShowMobile(false)}>
+              <X />
+            </button>
+          </div>
+
+          <button
+            onClick={clearAllFilters}
+            className="bg-red-600 text-white px-2 py-1 rounded mb-4 w-full"
+          >
+            Clear All Filters
+          </button>
+
+          {/* Collapsible Sections */}
+          <div>
+            <div
+              className="flex justify-between cursor-pointer items-center"
+              onClick={() => setCategoryOpen(!categoryOpen)}
+            >
+              <h3 className="font-bold text-lg">Categories</h3>
+              {categoryOpen ? <ChevronUp /> : <ChevronDown />}
+            </div>
+            <AnimatePresence>
+              {categoryOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="space-y-1 overflow-hidden mt-2"
+                >
+                  {renderRadioFilter("category", categories, category, setCategory)}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="mt-4">
+            <div
+              className="flex justify-between cursor-pointer items-center"
+              onClick={() => setSubcategoryOpen(!subcategoryOpen)}
+            >
+              <h3 className="font-bold text-lg">Subcategories</h3>
+              {subcategoryOpen ? <ChevronUp /> : <ChevronDown />}
+            </div>
+            <AnimatePresence>
+              {subcategoryOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="space-y-1 overflow-hidden mt-2"
+                >
+                  {renderRadioFilter("subcategory", subcategories, subcategory, setSubcategory)}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="mt-4">
+            <div
+              className="flex justify-between cursor-pointer items-center"
+              onClick={() => setSizeOpen(!sizeOpen)}
+            >
+              <h3 className="font-bold text-lg">Sizes</h3>
+              {sizeOpen ? <ChevronUp /> : <ChevronDown />}
+            </div>
+            <AnimatePresence>
+              {sizeOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="flex flex-wrap gap-2 mt-2 overflow-hidden"
+                >
+                  {allSizes.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => toggleSize(s)}
+                      className={`border px-2 py-1 rounded ${
+                        sizes.includes(s) ? "bg-gray-800 text-white" : ""
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="mt-4">
+            <div
+              className="flex justify-between cursor-pointer items-center"
+              onClick={() => setPriceOpen(!priceOpen)}
+            >
+              <h3 className="font-bold text-lg">Price</h3>
+              {priceOpen ? <ChevronUp /> : <ChevronDown />}
+            </div>
+            <AnimatePresence>
+              {priceOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="mt-2 space-y-2 overflow-hidden"
+                >
+                  <div className="flex justify-between text-sm">
+                    <span>₹{priceRange[0]}</span>
+                    <span>₹{priceRange[1]}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1000}
+                    value={priceRange[1]}
+                    onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+                    className="w-full"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:block border-r border-gray-200 h-screen">
-        {SidebarContent}
-      </aside>
-
-      {/* Mobile Button */}
-      <div className="lg:hidden p-2">
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#7a0d2e] text-white rounded-lg shadow-md"
-        >
-          <SlidersHorizontal className="w-4 h-4" />
-          Filters
-        </button>
-      </div>
-
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black z-40"
-              onClick={() => setMobileOpen(false)}
-            />
-
-            {/* Drawer */}
-            <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed inset-y-0 left-0 z-50 bg-white w-72 shadow-lg"
-            >
-              {SidebarContent}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <div className="hidden md:block w-64 mr-4">{desktopFilters}</div>
+      {mobileFilters}
     </>
   );
 }

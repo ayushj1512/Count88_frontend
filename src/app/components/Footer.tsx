@@ -4,7 +4,6 @@ import {
   FaPhone,
   FaInstagram,
   FaFacebookF,
-  FaTwitter,
 } from "react-icons/fa";
 
 export default function Footer() {
@@ -34,12 +33,7 @@ export default function Footer() {
             >
               <FaFacebookF size={20} />
             </Link>
-            <Link
-              href="#"
-              className="hover:text-[#f3d9c0] transition-colors duration-300"
-            >
-              <FaTwitter size={20} />
-            </Link>
+            
           </div>
         </div>
 
@@ -86,11 +80,6 @@ export default function Footer() {
             <li>
               <Link href="/privacypolicy" className="hover:text-[#f3d9c0] transition-colors">
                 Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/refund" className="hover:text-[#f3d9c0] transition-colors">
-                Refund & Cancellation
               </Link>
             </li>
           </ul>

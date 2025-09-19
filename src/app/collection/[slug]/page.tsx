@@ -1,14 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, MouseEvent } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useCartStore } from '../../store/cartStore';
-import toast from 'react-hot-toast';
-import RelatedProducts from '../../components/RelatedProducts';
-import Image from 'next/image';
-import '../../components/loader2.css';
+import { useEffect, useRef, useState, MouseEvent } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useCartStore } from "../../store/cartStore";
+import { useAuthStore } from "../../store/useAuthStore";
+import toast from "react-hot-toast";
+import RelatedProducts from "../../components/RelatedProducts";
+import Image from "next/image";
+import { Heart } from "lucide-react";
+import "../../components/loader2.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
 // ---------- Types ----------
 interface Variant {
@@ -65,7 +67,9 @@ export default function ProductFromCollectionPage() {
   const [allProducts, setAllProducts] = useState<TransformedProductCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState<string | null>(null);
-  const [selectedVariant, setSelectedVariant] = useState<{ variant: string } | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<{ variant: string } | null>(
+    null
+  );
   const [lensVisible, setLensVisible] = useState(false);
   const [lensData, setLensData] = useState({ left: 0, top: 0, bgX: 0, bgY: 0 });
 
@@ -75,6 +79,11 @@ export default function ProductFromCollectionPage() {
 
   const addToCart = useCartStore((state) => state.addToCart);
   const clearCart = useCartStore((state) => state.clearCart);
+  const user = useAuthStore((state) => state.user);
+
+  // wishlist states
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const [wishLoading, setWishLoading] = useState(false);
 
   // ---------- Fetch Data ----------
   useEffect(() => {
@@ -82,7 +91,7 @@ export default function ProductFromCollectionPage() {
       try {
         const res = await fetch(`${API_BASE}/api/products/slug/${slug}`);
         const all = await fetch(`${API_BASE}/api/products`);
-        if (!res.ok || !all.ok) throw new Error('Failed to fetch');
+        if (!res.ok || !all.ok) throw new Error("Failed to fetch");
 
         const productData: Product = await res.json();
         const allData: Product[] = await all.json();
@@ -95,19 +104,21 @@ export default function ProductFromCollectionPage() {
           images: productData.images,
         };
 
-        const transformedProducts: TransformedProductCard[] = allData.map((p, index) => ({
-          id: index,
-          slug: p.slug,
-          title: p.name,
-          price: p.discountPrice ?? p.price,
-          mrp: p.price,
-          images: p.images?.map((img) => img.url) || [],
-          category: p.category,
-        }));
+        const transformedProducts: TransformedProductCard[] = allData.map(
+          (p, index) => ({
+            id: index,
+            slug: p.slug,
+            title: p.name,
+            price: p.discountPrice ?? p.price,
+            mrp: p.price,
+            images: p.images?.map((img) => img.url) || [],
+            category: p.category,
+          })
+        );
 
         setProduct(transformedProduct);
         setAllProducts(transformedProducts);
-        setActiveImage(productData.images?.[0]?.url || '');
+        setActiveImage(productData.images?.[0]?.url || "");
         setSelectedVariant(null); // force user to pick size
       } catch (error) {
         console.error(error);
@@ -119,6 +130,102 @@ export default function ProductFromCollectionPage() {
 
     if (slug) fetchData();
   }, [slug]);
+
+  // ---------- Wishlist: check if current product is in user's wishlist ----------
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (!user?.uid || !product?._id) {
+        setIsInWishlist(false);
+        return;
+      }
+
+      setWishLoading(true);
+
+      
+
+      interface WishlistItem {
+  productId: string | { _id: string };
+}
+      try {
+  const res = await fetch(`${API_BASE}/api/wishlist/${user.uid}`);
+  const data = await res.json();
+
+  if (res.ok) {
+    const found = Array.isArray(data.data)
+      ? data.data.some((item: WishlistItem | null) => {
+          if (!item) return false;
+          const pid = item.productId;
+          if (!pid) return false;
+
+          if (typeof pid === "string") return pid === product._id;
+          return pid._id === product._id;
+        })
+      : false;
+
+    setIsInWishlist(Boolean(found));
+  } else {
+    console.error("Failed to fetch wishlist:", data);
+  }
+} catch (err) {
+  console.error("checkWishlist error:", err);
+} finally {
+  setWishLoading(false);
+}
+    };
+
+    checkWishlist();
+  }, [user?.uid, product?._id]);
+
+  // ---------- Toggle wishlist ----------
+  const toggleWishlist = async () => {
+    if (!user?.uid) {
+      toast.error("Please log in to manage wishlist");
+      router.push("/login");
+      return;
+    }
+    if (!product?._id) {
+      toast.error("Product not loaded yet");
+      return;
+    }
+
+    setWishLoading(true);
+    try {
+      if (isInWishlist) {
+        const res = await fetch(`${API_BASE}/api/wishlist/remove`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.uid, productId: product._id }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setIsInWishlist(false);
+          toast.success("Removed from wishlist");
+        } else {
+          console.error("Remove wishlist failed:", data);
+          toast.error(data.message || "Failed to remove from wishlist");
+        }
+      } else {
+        const res = await fetch(`${API_BASE}/api/wishlist/add`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.uid, productId: product._id }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setIsInWishlist(true);
+          toast.success("Added to wishlist");
+        } else {
+          console.error("Add wishlist failed:", data);
+          toast.error(data.message || "Failed to add to wishlist");
+        }
+      }
+    } catch (err) {
+      console.error("toggleWishlist error:", err);
+      toast.error("Something went wrong");
+    } finally {
+      setWishLoading(false);
+    }
+  };
 
   // ---------- Lens Handler ----------
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
@@ -140,9 +247,9 @@ export default function ProductFromCollectionPage() {
 
   // ---------- Helpers ----------
   const parseDescription = (desc?: string): string[] =>
-    typeof desc === 'string'
+    typeof desc === "string"
       ? desc
-          .split('.')
+          .split(".")
           .map((d) => d.trim())
           .filter((d) => d.length > 3)
       : [];
@@ -159,8 +266,18 @@ export default function ProductFromCollectionPage() {
 
   if (!product) return <div className="p-10 text-center text-red-600">Product not found</div>;
 
-  const { _id, name, brand, category, description, images, variants, mrp, discountedPrice, tags } =
-    product;
+  const {
+    _id,
+    name,
+    brand,
+    category,
+    description,
+    images,
+    variants,
+    mrp,
+    discountedPrice,
+    tags,
+  } = product;
 
   const discount = mrp > discountedPrice ? Math.round(((mrp - discountedPrice) / mrp) * 100) : 0;
   const descriptionPoints = parseDescription(description);
@@ -197,17 +314,17 @@ export default function ProductFromCollectionPage() {
                 left: `${lensData.left}px`,
                 top: `${lensData.top}px`,
                 backgroundImage: `url(${activeImage})`,
-                backgroundRepeat: 'no-repeat',
+                backgroundRepeat: "no-repeat",
                 backgroundSize: `${zoom * 100}%`,
                 backgroundPosition: `${lensData.bgX}% ${lensData.bgY}%`,
-                borderRadius: '0px',
-                display: lensVisible ? 'block' : 'none',
+                borderRadius: "0px",
+                display: lensVisible ? "block" : "none",
               }}
             />
 
             {/* Discount */}
             <span className="absolute top-3 left-3 bg-[#7a0d2e] text-white text-xs font-bold px-2 py-1 rounded shadow">
-              {discount > 0 ? `${discount}% OFF` : 'Best Price'}
+              {discount > 0 ? `${discount}% OFF` : "Best Price"}
             </span>
           </div>
 
@@ -221,9 +338,7 @@ export default function ProductFromCollectionPage() {
                 width={80}
                 height={80}
                 className={`h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-md border cursor-pointer transition ${
-                  activeImage === img.url
-                    ? 'ring-2 ring-[#7a0d2e]'
-                    : 'hover:ring-2 hover:ring-[#7a0d2e]/60'
+                  activeImage === img.url ? "ring-2 ring-[#7a0d2e]" : "hover:ring-2 hover:ring-[#7a0d2e]/60"
                 }`}
                 onClick={() => setActiveImage(img.url)}
               />
@@ -259,8 +374,8 @@ export default function ProductFromCollectionPage() {
                     onClick={() => setSelectedVariant(v)}
                     className={`px-4 py-2 rounded-md border text-sm font-medium transition ${
                       selectedVariant?.variant === v.variant
-                        ? 'bg-[#7a0d2e] text-white border-[#7a0d2e]'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-[#7a0d2e] hover:text-[#7a0d2e]'
+                        ? "bg-[#7a0d2e] text-white border-[#7a0d2e]"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-[#7a0d2e] hover:text-[#7a0d2e]"
                     }`}
                   >
                     {v.variant}
@@ -294,46 +409,66 @@ export default function ProductFromCollectionPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <button
-              onClick={() => {
-                if (!selectedVariant) {
-                  toast.error('Please select a size before adding to cart');
-                  return;
-                }
-                addToCart({
-                  id: _id,
-                  title: name,
-                  image: activeImage ?? '',
-                  price: discountedPrice,
-                  size: selectedVariant.variant,
-                });
-                toast.success(`${name} (${selectedVariant.variant}) added to cart`);
-              }}
-              className="bg-[#7a0d2e] text-white px-6 py-3 rounded-md font-medium shadow hover:scale-[1.02] transition w-full sm:w-auto"
-            >
-              Add to Cart
-            </button>
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 items-start sm:items-center">
+            <div className="w-full sm:w-auto">
+              <button
+                onClick={() => {
+                  if (!selectedVariant) {
+                    toast.error("Please select a size before adding to cart");
+                    return;
+                  }
+                  addToCart({
+                    id: _id,
+                    title: name,
+                    image: activeImage ?? "",
+                    price: discountedPrice,
+                    size: selectedVariant.variant,
+                  });
+                  toast.success(`${name} (${selectedVariant.variant}) added to cart`);
+                }}
+                className="bg-[#7a0d2e] text-white px-6 py-3 rounded-md font-medium shadow hover:scale-[1.02] transition w-full sm:w-auto"
+              >
+                Add to Cart
+              </button>
+            </div>
 
+            <div className="w-full sm:w-auto">
+              <button
+                onClick={() => {
+                  if (!selectedVariant) {
+                    toast.error("Please select a size before buying");
+                    return;
+                  }
+                  clearCart();
+                  addToCart({
+                    id: _id,
+                    title: name,
+                    image: activeImage ?? "",
+                    price: discountedPrice,
+                    size: selectedVariant.variant,
+                  });
+                  router.push("/checkout");
+                }}
+                className="bg-white border border-[#7a0d2e] text-[#7a0d2e] px-6 py-3 rounded-md font-medium hover:bg-[#7a0d2e]/10 transition w-full sm:w-auto"
+              >
+                Buy Now
+              </button>
+            </div>
+
+            {/* Wishlist toggle */}
             <button
-              onClick={() => {
-                if (!selectedVariant) {
-                  toast.error('Please select a size before buying');
-                  return;
-                }
-                clearCart();
-                addToCart({
-                  id: _id,
-                  title: name,
-                  image: activeImage ?? '',
-                  price: discountedPrice,
-                  size: selectedVariant.variant,
-                });
-                router.push('/checkout');
-              }}
-              className="bg-white border border-[#7a0d2e] text-[#7a0d2e] px-6 py-3 rounded-md font-medium hover:bg-[#7a0d2e]/10 transition w-full sm:w-auto"
+              onClick={toggleWishlist}
+              disabled={wishLoading}
+              aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              className={`flex items-center justify-center p-3 rounded-md border ${
+                isInWishlist ? "bg-[#7a0d2e] text-white border-[#7a0d2e]" : "bg-white text-[#7a0d2e] border-[#e5e7eb]"
+              }`}
+              title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
             >
-              Buy Now
+              <Heart
+                className={`w-5 h-5 ${isInWishlist ? "text-white" : "text-[#7a0d2e]"}`}
+                fill={isInWishlist ? "#ffffff" : "none"}
+              />
             </button>
           </div>
 
@@ -354,11 +489,7 @@ export default function ProductFromCollectionPage() {
       </div>
 
       {/* Related Products */}
-      <RelatedProducts
-        currentSlug={product.slug}
-        category={product.category}
-        allProducts={allProducts}
-      />
+      <RelatedProducts currentSlug={product.slug} category={product.category} allProducts={allProducts} />
     </div>
   );
 }
