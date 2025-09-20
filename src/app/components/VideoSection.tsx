@@ -44,11 +44,7 @@ export default function BannerSection() {
               className="w-full h-full object-cover group-hover:brightness-90 transition"
             />
             {/* Overlay */}
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white">
-              <p className="text-xs font-semibold tracking-wide">
-                Luxury • Elegance
-              </p>
-            </div>
+           
           </motion.div>
         ))}
       </div>
