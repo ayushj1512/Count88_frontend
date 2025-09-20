@@ -73,7 +73,7 @@ export default function CheckoutPage() {
         paymentMethod: "COD",
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
