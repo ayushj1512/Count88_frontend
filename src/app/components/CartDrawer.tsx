@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaTimes, FaShoppingCart } from "react-icons/fa";
-import Link from "next/link";
+import toast from "react-hot-toast";
+import { useAuthStore } from "../store/useAuthStore";
 
 type CartItem = {
   id: string;
@@ -22,6 +23,7 @@ type CartDrawerProps = {
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     if (typeof window !== "undefined" && isOpen) {
@@ -65,87 +67,110 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     localStorage.removeItem("cart");
   };
 
+ const handleCheckout = () => {
+  if (!user) {
+    toast("Please login to proceed to checkout ", {
+      icon: "😊",
+      style: {
+        borderRadius: '8px',
+        background: '#fff3f3',
+        color: '#7a0d2e',
+      },
+    });
+    onClose();
+    router.push("/login");
+    return;
+  }
+  router.push("/checkout");
+  onClose();
+};
+
+
   const total = cartItems.reduce((s, it) => s + it.price * it.quantity, 0);
 
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />}
       <div
-        className={`fixed top-0 right-0 w-full sm:w-[400px] h-full bg-white z-50 flex flex-col transition-transform duration-300 transform ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 right-0 w-full sm:w-[400px] h-full bg-white z-50 flex flex-col transition-transform duration-300 transform ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
-        <div className="p-4 flex justify-between items-center border-b">
-          <div className="flex items-center gap-2 text-lg font-semibold">
-            <FaShoppingCart />
-            Your cart · <span>{cartItems.length} {cartItems.length === 1 ? "item" : "items"}</span>
-          </div>
-          <button onClick={onClose} className="text-2xl font-light">×</button>
-        </div>
+       <div className="p-4 flex justify-between items-center border-b" style={{ color: "#7a0d2e" }}>
+  <div className="flex items-center gap-2 text-lg font-semibold">
+    <FaShoppingCart />
+    Your cart · <span>{cartItems.length} {cartItems.length === 1 ? "item" : "items"}</span>
+  </div>
+  <button onClick={onClose} className="text-2xl font-light" style={{ color: "#7a0d2e" }}>×</button>
+</div>
 
-        <div className="flex-1 overflow-y-auto p-4 pb-24">
-          {cartItems.length === 0 ? (
-            <div className="text-center mt-10">
-              <p>Your cart is empty.</p>
-              <button
-                onClick={() => {
-                  onClose();
-                  router.push("/");
-                }}
-                className="mt-4 bg-black text-white px-4 py-2 rounded"
-              >
-                Continue Shopping
-              </button>
+       <div className="flex-1 overflow-y-auto p-4 pb-24">
+  {cartItems.length === 0 ? (
+    <div className="text-center mt-10" style={{ color: "#7a0d2e" }}>
+      <p>Your cart is currently empty 😅</p>
+      <p className="text-sm mt-1">Add some items to continue shopping!</p>
+      <button
+        onClick={() => {
+          onClose();
+          router.push("/");
+        }}
+        className="mt-4 bg-[#7a0d2e] text-white px-4 py-2 rounded hover:bg-[#900b2e] transition"
+      >
+        Continue Shopping
+      </button>
+    </div>
+  ) : (
+    <>
+      {cartItems.map((it, i) => (
+        <div key={i} className="flex items-start gap-4 mb-4">
+          <Image src={it.image} alt={it.title} width={60} height={60} className="rounded border" />
+          <div className="flex-grow">
+            <p className="font-medium" style={{ color: "#7a0d2e" }}>{it.title}</p>
+            <p className="text-sm text-gray-500">0.5mm / Black</p>
+            <div className="flex items-center gap-2 mt-1">
+              <button onClick={() => dec(i)} className="w-6 h-6 text-lg bg-gray-200 rounded">−</button>
+              <span>{it.quantity}</span>
+              <button onClick={() => inc(i)} className="w-6 h-6 text-lg bg-gray-200 rounded">+</button>
             </div>
-          ) : (
-            <>
-              {cartItems.map((it, i) => (
-                <div key={i} className="flex items-start gap-4 mb-4">
-                  <Image src={it.image} alt={it.title} width={60} height={60} className="rounded border" />
-                  <div className="flex-grow">
-                    <p className="font-medium">{it.title}</p>
-                    <p className="text-sm text-gray-500">0.5mm / Black</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <button onClick={() => dec(i)} className="w-6 h-6 text-lg bg-gray-200 rounded">−</button>
-                      <span>{it.quantity}</span>
-                      <button onClick={() => inc(i)} className="w-6 h-6 text-lg bg-gray-200 rounded">+</button>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <button onClick={() => removeItem(i)} className="text-red-500">
-                      <FaTimes />
-                    </button>
-                    <p className="font-medium mt-2">₹{it.price * it.quantity}</p>
-                  </div>
-                </div>
-              ))}
-
-              <button
-                onClick={clearCart}
-                className="w-full bg-gray-100 text-gray-800 py-2 mt-4 rounded hover:bg-gray-200 text-sm font-medium"
-              >
-                Clear Cart
-              </button>
-            </>
-          )}
-        </div>
-
-        <div className="p-4 border-t bg-white">
-          <div className="flex justify-between items-center mb-2">
-            <p className="text-lg font-medium">₹{total}</p>
-            <span className="text-sm text-gray-500">Estimated total</span>
           </div>
-          <Link href="/checkout" onClick={onClose}>
-            <button
-              className={`w-full py-3 rounded text-center font-medium transition ${cartItems.length === 0
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-black text-white hover:bg-gray-900"
-                }`}
-              disabled={cartItems.length === 0}
-            >
-              Go to Checkout
+          <div className="flex flex-col items-end">
+            <button onClick={() => removeItem(i)} className="text-red-500">
+              <FaTimes />
             </button>
-          </Link>
+            <p className="font-medium mt-2" style={{ color: "#7a0d2e" }}>₹{it.price * it.quantity}</p>
+          </div>
         </div>
+      ))}
+
+      <button
+        onClick={clearCart}
+        className="w-full bg-[#7a0d2e]/10 text-[#7a0d2e] py-2 mt-4 rounded hover:bg-[#7a0d2e]/20 text-sm font-medium transition"
+      >
+        Clear Cart
+      </button>
+    </>
+  )}
+</div>
+
+
+   <div className="p-4 border-t bg-white">
+  <div className="flex justify-between items-center mb-2">
+    <p className="text-lg font-bold" style={{ color: "#7a0d2e" }}>₹{total}</p>
+    <span className="text-sm text-gray-500">Estimated total</span>
+  </div>
+  <button
+    onClick={handleCheckout}
+    className={`w-full py-3 rounded text-center font-medium transition ${
+      cartItems.length === 0
+        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+        : "bg-[#7a0d2e] text-white hover:bg-[#900b2e]"
+    }`}
+    disabled={cartItems.length === 0}
+  >
+    Proceed to Checkout
+  </button>
+</div>
+
       </div>
     </>
   );
