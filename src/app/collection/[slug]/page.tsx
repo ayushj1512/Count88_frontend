@@ -9,6 +9,7 @@ import RelatedProducts from "../../components/RelatedProducts";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import "../../components/loader2.css";
+import GroupedProducts from "../../components/productDetailPage/GroupedProducts";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -34,7 +35,9 @@ interface Product {
   variants: Variant[];
   images: ImageType[];
   tags?: string[];
+  groupId?: string; // ✅ added this
 }
+
 interface TransformedProduct {
   _id: string;
   name: string;
@@ -47,7 +50,9 @@ interface TransformedProduct {
   variants: { variant: string }[];
   images: ImageType[];
   tags?: string[];
+  groupId?: string; // ✅ add this line
 }
+
 interface TransformedProductCard {
   id: number;
   slug: string;
@@ -97,12 +102,14 @@ export default function ProductFromCollectionPage() {
         const allData: Product[] = await all.json();
 
         const transformedProduct: TransformedProduct = {
-          ...productData,
-          variants: productData.variants?.map((v) => ({ variant: v.size })) || [],
-          mrp: productData.price,
-          discountedPrice: productData.discountPrice ?? productData.price,
-          images: productData.images,
-        };
+  ...productData,
+  variants: productData.variants?.map((v) => ({ variant: v.size })) || [],
+  mrp: productData.price,
+  discountedPrice: productData.discountPrice ?? productData.price,
+  images: productData.images,
+  groupId: productData.groupId, // ✅ include groupId
+};
+
 
         const transformedProducts: TransformedProductCard[] = allData.map(
           (p, index) => ({
@@ -362,6 +369,14 @@ export default function ProductFromCollectionPage() {
               </>
             )}
           </div>
+
+          {product.groupId && (
+  <GroupedProducts
+    currentSlug={product.slug}
+    groupId={product.groupId}
+    apiBase={API_BASE}
+  />
+)}
 
           {/* Size Selector */}
           {variants.length > 0 && (
